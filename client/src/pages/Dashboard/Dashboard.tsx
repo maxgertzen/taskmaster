@@ -2,6 +2,7 @@ import { FC, Suspense } from 'react';
 
 import { ListSidebar, TaskList, AddTaskInput, Header } from '../../components';
 import { useLists } from '../../hooks/useLists';
+import { useTasksMutation } from '../../hooks/useTaskMutation';
 import { useTaskStore, useUserStore } from '../../store/store';
 
 import {
@@ -18,15 +19,26 @@ import {
 // - Implement a way to edit a list
 // - Implement a way to reorder lists
 export const Dashboard: FC = () => {
-  const selectedListId = useTaskStore((state) => state.selectedListId ?? '1');
-  // const setSelectedListId = useTaskStore((state) => state.setSelectedListId);
+  const selectedListId = useTaskStore((state) => state.selectedListId);
+  const setSelectedListId = useTaskStore((state) => state.setSelectedListId);
 
   const userDetails = useUserStore((state) => state.user);
 
   const { lists } = useLists();
 
-  const handleAddTask = (task: string) => {
-    console.log(task);
+  const addTask = useTasksMutation('add');
+
+  const handleAddTask = async (task: string) => {
+    await addTask.mutateAsync({ listId: selectedListId, text: task });
+  };
+
+  const handleSelectList = (listId: string) => () => {
+    if (selectedListId !== listId) setSelectedListId(listId);
+    else setSelectedListId(null);
+  };
+
+  const handleDeleteList = () => {
+    setSelectedListId(null);
   };
 
   return (
@@ -37,17 +49,25 @@ export const Dashboard: FC = () => {
           <Suspense fallback={<div>Loading lists...</div>}>
             <ListSidebar
               lists={lists}
-              selectedList={
-                selectedListId
-              } /* onSelectList={setSelectedListId} */
+              selectedList={selectedListId}
+              onSelectList={handleSelectList}
+              onDeleteList={handleDeleteList}
             />
           </Suspense>
         </SidebarContainer>
         <TaskContainer>
           <Suspense fallback={<div>Loading tasks...</div>}>
-            <h4>{lists.find((list) => list.id === selectedListId)?.name}</h4>
-            <AddTaskInput onAddTask={handleAddTask} />
-            <TaskList selectedListId={selectedListId} />
+            {selectedListId ? (
+              <>
+                <h4>
+                  {lists.find((list) => list.id === selectedListId)?.name}
+                </h4>
+                <AddTaskInput onAddTask={handleAddTask} />
+                <TaskList selectedListId={selectedListId} />
+              </>
+            ) : (
+              <h4>Select a list to view tasks</h4>
+            )}
           </Suspense>
         </TaskContainer>
       </MainLayout>

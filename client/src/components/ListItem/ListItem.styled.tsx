@@ -12,6 +12,12 @@ export const ListItemContainer = styled.li<{ isActive?: boolean }>(
     cursor: 'pointer',
     '&:hover': {
       backgroundColor: theme.colors.accent,
+      color: theme.colors.text,
     },
   })
 );
+
+export const ActionsContainer = styled.div({
+  display: 'flex',
+  gap: '0.5rem',
+});

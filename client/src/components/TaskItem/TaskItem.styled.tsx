@@ -11,11 +11,18 @@ export const TaskItemContainer = styled.li(({ theme }) => ({
   boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
 }));
 
-export const Container = styled.div<{ gap?: number }>(({ theme, gap = 0 }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: theme.spacing(gap),
-}));
+export const Container = styled.div<{ gap?: number; isCompleted?: boolean }>(
+  ({ theme, gap = 0, isCompleted = false }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing(gap),
+    span: {
+      textDecoration: isCompleted ? 'line-through' : 'none',
+      color: isCompleted ? theme.colors.secondary : theme.colors.text,
+    },
+    cursor: 'default',
+  })
+);
 
 export const DragIconWrapper = styled.div(({ theme }) => ({
   cursor: 'grab',

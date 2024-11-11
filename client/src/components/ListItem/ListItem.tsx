@@ -1,24 +1,76 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 
 import { FaIcon } from '../FontAwesomeIcon/FontAwesomeIcon';
+import { ListInput } from '../ListInput/ListInput';
 
-import { ListItemContainer } from './ListItem.styled';
+import { ActionsContainer, ListItemContainer } from './ListItem.styled';
 
 interface ListItemProps {
   name: string;
+  isEditing?: boolean;
+  handleSelectList: () => void;
+  handleDeleteList: () => void;
+  onEdit: (newName: string) => void;
   isActive?: boolean;
 }
 
 // TODO:
-// - Implement remove button that will remove the list
-// - Implement edit button that will allow the user to edit the list name
-// - Implement a button to select the list
 // - Implement a button to reorder lists
-export const ListItem: FC<ListItemProps> = ({ name, isActive = false }) => {
+export const ListItem: FC<ListItemProps> = ({
+  name,
+  handleSelectList,
+  handleDeleteList,
+  onEdit,
+  isActive = false,
+}) => {
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleEditSubmit = (newName: string) => {
+    onEdit(newName);
+    setIsEditing(false);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  const handleActionClick =
+    (action: 'edit' | 'delete') => (event: React.MouseEvent) => {
+      event.stopPropagation();
+
+      if (action === 'edit') {
+        setIsEditing(true);
+      } else {
+        handleDeleteList();
+      }
+    };
+
   return (
-    <ListItemContainer isActive={isActive}>
-      {name}
-      <FaIcon icon={['fas', 'trash']} size='xs' />
+    <ListItemContainer isActive={isActive} onClick={handleSelectList}>
+      {isEditing ? (
+        <ListInput
+          initialName={name}
+          placeholder='Update list name'
+          onSubmit={handleEditSubmit}
+          onCancel={handleCancelEdit}
+        />
+      ) : (
+        <>
+          {name}
+          <ActionsContainer>
+            <FaIcon
+              icon={['fas', 'edit']}
+              size='xs'
+              onClick={handleActionClick('edit')}
+            />
+            <FaIcon
+              icon={['fas', 'trash']}
+              size='xs'
+              onClick={handleActionClick('delete')}
+            />
+          </ActionsContainer>
+        </>
+      )}
     </ListItemContainer>
   );
 };
