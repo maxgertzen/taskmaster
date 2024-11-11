@@ -7,3 +7,7 @@ export type List = {
   id: string;
   name: string;
 };
+
+export type User = {
+  name: string;
+};
