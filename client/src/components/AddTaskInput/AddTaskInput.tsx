@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { FaIcon } from '../FontAwesomeIcon/FontAwesomeIcon';
+
 import { AddTaskInputContainer, Input } from './AddTaskInput.styled';
 
 interface AddTaskInputProps {
@@ -39,7 +41,7 @@ export const AddTaskInput: React.FC<AddTaskInputProps> = ({ onAddTask }) => {
         onKeyDown={handleKeyDown}
         placeholder='Add a task'
       />
-      <button onClick={handleAddTask}>Add Task</button>
+      <FaIcon icon={['fas', 'plus']} size='2x' onClick={handleAddTask} />
     </AddTaskInputContainer>
   );
 };

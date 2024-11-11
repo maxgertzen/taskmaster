@@ -1,7 +1,6 @@
 import { FC, Suspense } from 'react';
 
-import { ListSidebar, TaskList } from '../../components';
-import { Header } from '../../components/Header/Header';
+import { ListSidebar, TaskList, AddTaskInput, Header } from '../../components';
 import { useLists } from '../../hooks/useLists';
 import { useTaskStore, useUserStore } from '../../store/store';
 
@@ -19,12 +18,16 @@ import {
 // - Implement a way to edit a list
 // - Implement a way to reorder lists
 export const Dashboard: FC = () => {
-  const selectedListId = useTaskStore((state) => state.selectedListId);
+  const selectedListId = useTaskStore((state) => state.selectedListId ?? '1');
   // const setSelectedListId = useTaskStore((state) => state.setSelectedListId);
 
   const userDetails = useUserStore((state) => state.user);
 
   const { lists } = useLists();
+
+  const handleAddTask = (task: string) => {
+    console.log(task);
+  };
 
   return (
     <DashboardContainer>
@@ -32,11 +35,18 @@ export const Dashboard: FC = () => {
       <MainLayout>
         <SidebarContainer>
           <Suspense fallback={<div>Loading lists...</div>}>
-            <ListSidebar lists={lists} /* onSelectList={setSelectedListId} */ />
+            <ListSidebar
+              lists={lists}
+              selectedList={
+                selectedListId
+              } /* onSelectList={setSelectedListId} */
+            />
           </Suspense>
         </SidebarContainer>
         <TaskContainer>
           <Suspense fallback={<div>Loading tasks...</div>}>
+            <h4>{lists.find((list) => list.id === selectedListId)?.name}</h4>
+            <AddTaskInput onAddTask={handleAddTask} />
             <TaskList selectedListId={selectedListId} />
           </Suspense>
         </TaskContainer>

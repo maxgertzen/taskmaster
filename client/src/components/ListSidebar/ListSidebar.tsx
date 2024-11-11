@@ -2,11 +2,16 @@ import { FC } from 'react';
 
 import { List } from '../../types/shared';
 import { ListItem } from '../ListItem/ListItem';
+import { ListsActions } from '../ListsActions/ListsActions';
 
-import { ListSidebarContainer } from './ListSidebar.styled';
+import {
+  ListSidebarContainer,
+  ListSidebarUnorderedList,
+} from './ListSidebar.styled';
 
 interface ListSidebarProps {
   lists: List[];
+  selectedList: string | null;
 }
 
 // TODO:
@@ -15,12 +20,17 @@ interface ListSidebarProps {
 // - Implement a way to remove a list
 // - Implement a way to edit a list
 // - Implement a way to reorder lists
-export const ListSidebar: FC<ListSidebarProps> = ({ lists }) => {
+export const ListSidebar: FC<ListSidebarProps> = ({ lists, selectedList }) => {
   return (
-    <ListSidebarContainer>
-      {lists.map(({ id, name }) => (
-        <ListItem key={id} name={name} />
-      ))}
-    </ListSidebarContainer>
+    <>
+      <ListSidebarContainer>
+        <ListsActions addList={() => console.log('Add list')} />
+        <ListSidebarUnorderedList>
+          {lists.map(({ id, name }) => (
+            <ListItem key={id} name={name} isActive={selectedList === id} />
+          ))}
+        </ListSidebarUnorderedList>
+      </ListSidebarContainer>
+    </>
   );
 };
