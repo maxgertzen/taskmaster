@@ -35,7 +35,7 @@ a {
   cursor: pointer;
 }
 
-button, input, select, textarea {
+button, input:not([type="text"]), select, textarea {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
