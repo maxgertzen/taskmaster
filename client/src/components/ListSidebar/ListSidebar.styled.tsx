@@ -6,8 +6,11 @@ export const ListSidebarContainer = styled.div(({ theme }) => ({
   gap: theme.spacing(2),
 }));
 
-export const ListSidebarUnorderedList = styled.ul({
-  listStyle: 'none',
-  padding: 0,
-  margin: 0,
-});
+export const ListSidebarUnorderedList = styled.ul<{ isDraggingOver: boolean }>(
+  ({ isDraggingOver, theme }) => ({
+    listStyle: 'none',
+    padding: 0,
+    margin: 0,
+    backgroundColor: isDraggingOver ? theme.colors.secondary : 'transparent',
+  })
+);

@@ -1,8 +1,4 @@
-import {
-  QueryClient,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
   mockAddTask,
@@ -12,6 +8,7 @@ import {
 } from '../api/api';
 import { Task } from '../types/shared';
 import { debounce } from '../utils/debounce';
+import { reorderArray } from '../utils/reorderArray';
 
 type TaskOperation = 'add' | 'edit' | 'delete' | 'reorder';
 
@@ -27,16 +24,10 @@ type TaskMutationInput = {
 };
 
 const debouncedReorder = debounce(
-  async (
-    listId: string,
-    oldIndex: number,
-    newIndex: number,
-    queryClient: QueryClient
-  ) => {
-    await mockReorderTasks(listId, oldIndex, newIndex);
-    queryClient.invalidateQueries({ queryKey: ['tasks', listId] });
+  async (listId: string, oldIndex: number, newIndex: number) => {
+    return mockReorderTasks(listId, oldIndex, newIndex);
   },
-  500
+  1500
 );
 
 const handleAddTask = async (listId: string, text: string) => {
@@ -84,6 +75,18 @@ const updateTasksOptimistically = (
       );
     case 'delete':
       return oldTasks.filter((t) => t.id !== input.taskId);
+    case 'reorder':
+      if (
+        input.reorderingObject?.oldIndex !== undefined &&
+        input.reorderingObject?.newIndex !== undefined
+      ) {
+        return reorderArray(
+          oldTasks,
+          input.reorderingObject.oldIndex,
+          input.reorderingObject.newIndex
+        );
+      }
+      return oldTasks;
     default:
       return oldTasks;
   }
@@ -98,14 +101,13 @@ export const useTasksMutation = (operation: TaskOperation) => {
     if (
       operation === 'reorder' &&
       listId &&
-      reorderingObject?.newIndex &&
-      reorderingObject?.oldIndex
+      reorderingObject?.newIndex !== undefined &&
+      reorderingObject?.oldIndex !== undefined
     ) {
       return debouncedReorder(
         listId,
         reorderingObject.oldIndex,
-        reorderingObject.newIndex,
-        queryClient
+        reorderingObject.newIndex
       );
     }
 
@@ -142,7 +144,7 @@ export const useTasksMutation = (operation: TaskOperation) => {
     },
     onSettled: (_data, _error, input) => {
       const listId = input.listId || input.taskId;
-      if (listId)
+      if (listId && operation !== 'reorder')
         queryClient.invalidateQueries({ queryKey: ['tasks', listId] });
     },
   });

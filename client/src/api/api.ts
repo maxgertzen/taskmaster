@@ -1,33 +1,33 @@
 import { Task, List } from '../types/shared';
 import { reorderArray } from '../utils/reorderArray';
 
-const mockLists = new Set<List>([
+let mockLists: List[] = [
   { id: '1', name: 'Work' },
   { id: '2', name: 'Personal' },
   { id: '3', name: 'Shopping' },
-]);
+];
 
-const tasks: Record<string, Set<Task>> = {
-  '1': new Set([
+const tasks: Record<string, Task[]> = {
+  '1': [
     { id: '1', text: 'Task 1', completed: false },
     { id: '2', text: 'Task 2', completed: false },
-  ]),
-  '2': new Set([
+  ],
+  '2': [
     { id: '3', text: 'Task A', completed: false },
     { id: '4', text: 'Task B', completed: false },
-  ]),
-  '3': new Set([
+  ],
+  '3': [
     { id: '5', text: 'Buy Milk', completed: false },
     { id: '6', text: 'Buy Bread', completed: false },
-  ]),
+  ],
 };
 
 export const fetchMockLists = async (): Promise<List[]> => {
-  return Array.from(mockLists);
+  return mockLists;
 };
 
 export const fetchMockTasks = async (listId: string): Promise<Task[]> => {
-  return tasks[listId] ? Array.from(tasks[listId]) : [];
+  return tasks[listId] || [];
 };
 
 export const mockAddTask = async (
@@ -36,9 +36,9 @@ export const mockAddTask = async (
 ): Promise<Task> => {
   const newTask = { id: Date.now().toString(), text, completed: false };
   if (!tasks[listId]) {
-    tasks[listId] = new Set();
+    tasks[listId] = [];
   }
-  tasks[listId].add(newTask);
+  tasks[listId].push(newTask);
   return newTask;
 };
 
@@ -49,10 +49,8 @@ export const mockEditTask = async (
 ): Promise<void> => {
   if (!listId || !tasks[listId]) return;
 
-  tasks[listId] = new Set(
-    Array.from(tasks[listId]).map((task) =>
-      task.id === taskId ? { ...task, ...updates } : task
-    )
+  tasks[listId] = tasks[listId].map((task) =>
+    task.id === taskId ? { ...task, ...updates } : task
   );
 };
 
@@ -61,9 +59,7 @@ export const mockDeleteTask = async (
   listId: string
 ): Promise<{ id: string }> => {
   if (tasks[listId]) {
-    tasks[listId] = new Set(
-      Array.from(tasks[listId]).filter((t) => t.id !== taskId)
-    );
+    tasks[listId] = tasks[listId].filter((task) => task.id !== taskId);
   }
   return { id: taskId };
 };
@@ -73,16 +69,24 @@ export const mockReorderTasks = async (
   oldIndex: number,
   newIndex: number
 ): Promise<Task[]> => {
-  const taskArray = tasks[listId] ? Array.from(tasks[listId]) : [];
-  const reorderedTasks = reorderArray(taskArray, oldIndex, newIndex);
-  tasks[listId] = new Set(reorderedTasks);
-  return reorderedTasks;
+  if (!tasks[listId]) return [];
+  tasks[listId] = reorderArray(tasks[listId], oldIndex, newIndex);
+  return tasks[listId];
+};
+
+export const mockReorderLists = async (
+  oldIndex: number,
+  newIndex: number
+): Promise<List[]> => {
+  const reorderedLists = reorderArray(mockLists, oldIndex, newIndex);
+  mockLists = reorderedLists;
+  return reorderedLists;
 };
 
 export const mockAddList = async (name: string): Promise<List> => {
   const newList = { id: Date.now().toString(), name };
-  mockLists.add(newList);
-  tasks[newList.id] = new Set();
+  mockLists.push(newList);
+  tasks[newList.id] = [];
   return newList;
 };
 
@@ -90,22 +94,17 @@ export const mockEditList = async (
   listId: string,
   name: string
 ): Promise<List | undefined> => {
-  const existingList = Array.from(mockLists).find((list) => list.id === listId);
+  const existingList = mockLists.find((list) => list.id === listId);
   if (existingList) {
-    mockLists.delete(existingList);
-    const updatedList = { ...existingList, name };
-    mockLists.add(updatedList);
-    return updatedList;
+    Object.assign(existingList, { name });
+    return existingList;
   }
 };
 
 export const mockDeleteList = async (
   listId: string
 ): Promise<{ id: string }> => {
-  const existingList = Array.from(mockLists).find((list) => list.id === listId);
-  if (existingList) {
-    mockLists.delete(existingList);
-    delete tasks[listId];
-  }
+  mockLists = mockLists.filter((list) => list.id !== listId);
+  delete tasks[listId];
   return { id: listId };
 };

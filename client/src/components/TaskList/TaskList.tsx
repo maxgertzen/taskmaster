@@ -17,8 +17,6 @@ interface TaskListProps {
   selectedListId: string | null;
 }
 
-// TODO:
-// - Implement a way to reorder tasks
 export const TaskList: FC<TaskListProps> = ({ selectedListId }) => {
   const { tasks } = useTasks(selectedListId);
 
@@ -78,6 +76,7 @@ export const TaskList: FC<TaskListProps> = ({ selectedListId }) => {
                 )}
               </Draggable>
             ))}
+            {provided.placeholder}
           </TaskListContainer>
         )}
       </Droppable>

@@ -20,8 +20,6 @@ interface TaskProps {
   onCompletedTask: (updates: Partial<Task>) => void;
 }
 
-// TODO:
-// - Implement a button to reorder tasks
 export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
   (
     {
