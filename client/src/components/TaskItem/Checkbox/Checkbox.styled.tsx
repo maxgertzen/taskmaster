@@ -17,7 +17,6 @@ export const StyledCheckbox = styled.input<{ checked: boolean }>(
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    transition: 'all 150ms',
     cursor: 'pointer',
     color: theme.colors.text,
     '&::checked': {

@@ -1,3 +1,9 @@
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from '@hello-pangea/dnd';
 import { FC } from 'react';
 
 import { useTasksMutation } from '../../hooks/useTaskMutation';
@@ -18,6 +24,7 @@ export const TaskList: FC<TaskListProps> = ({ selectedListId }) => {
 
   const editTask = useTasksMutation('edit');
   const deleteTask = useTasksMutation('delete');
+  const reorderTasks = useTasksMutation('reorder');
 
   const handleDeleteTask = (taskId: string) => async () => {
     await deleteTask.mutateAsync({ taskId, listId: selectedListId });
@@ -32,16 +39,48 @@ export const TaskList: FC<TaskListProps> = ({ selectedListId }) => {
       });
     };
 
+  const handleOnDragEnd = async (result: DropResult) => {
+    if (!result.destination) {
+      return;
+    }
+
+    await reorderTasks.mutateAsync({
+      listId: selectedListId,
+      reorderingObject: {
+        oldIndex: result.source.index,
+        newIndex: result.destination.index,
+      },
+    });
+  };
+
   return (
-    <TaskListContainer>
-      {tasks?.map((task) => (
-        <TaskItem
-          key={task.id}
-          task={task}
-          onDeleteTask={handleDeleteTask(task.id)}
-          onCompletedTask={handleCompletedTask(task.id)}
-        />
-      ))}
-    </TaskListContainer>
+    <DragDropContext onDragEnd={handleOnDragEnd}>
+      <Droppable droppableId='task-list'>
+        {(provided, snapshot) => (
+          <TaskListContainer
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            isDraggingOver={snapshot.isDraggingOver}
+          >
+            {tasks?.map((task, index) => (
+              <Draggable key={task.id} index={index} draggableId={task.id}>
+                {(provided, snapshot) => (
+                  <TaskItem
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.draggableProps.style}
+                    dragHandleProps={provided.dragHandleProps}
+                    isDragging={snapshot.isDragging}
+                    task={task}
+                    onDeleteTask={handleDeleteTask(task.id)}
+                    onCompletedTask={handleCompletedTask(task.id)}
+                  />
+                )}
+              </Draggable>
+            ))}
+          </TaskListContainer>
+        )}
+      </Droppable>
+    </DragDropContext>
   );
 };

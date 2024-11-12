@@ -1,4 +1,5 @@
 import { Task, List } from '../types/shared';
+import { reorderArray } from '../utils/reorderArray';
 
 const mockLists = new Set<List>([
   { id: '1', name: 'Work' },
@@ -65,6 +66,17 @@ export const mockDeleteTask = async (
     );
   }
   return { id: taskId };
+};
+
+export const mockReorderTasks = async (
+  listId: string,
+  oldIndex: number,
+  newIndex: number
+): Promise<Task[]> => {
+  const taskArray = tasks[listId] ? Array.from(tasks[listId]) : [];
+  const reorderedTasks = reorderArray(taskArray, oldIndex, newIndex);
+  tasks[listId] = new Set(reorderedTasks);
+  return reorderedTasks;
 };
 
 export const mockAddList = async (name: string): Promise<List> => {

@@ -8,6 +8,6 @@ export const FaIcon = styled(FontAwesomeIcon)<{ isActive?: boolean }>(
       filter: 'invert(0.5)',
     },
     visibility: isActive ? 'hidden' : 'visible',
-    transition: 'all 150ms',
+    transition: 'filter 150ms',
   })
 );

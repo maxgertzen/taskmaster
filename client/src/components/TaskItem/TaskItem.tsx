@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
+import React, { useState, forwardRef } from 'react';
 
 import { Task } from '../../types/shared';
 import { FaIcon } from '../FontAwesomeIcon/FontAwesomeIcon';
@@ -13,66 +14,81 @@ import {
 
 interface TaskProps {
   task: Task;
+  dragHandleProps: DraggableProvidedDragHandleProps | null;
+  isDragging?: boolean;
   onDeleteTask: () => void;
   onCompletedTask: (updates: Partial<Task>) => void;
 }
 
 // TODO:
 // - Implement a button to reorder tasks
-export const TaskItem: React.FC<TaskProps> = ({
-  task,
-  onDeleteTask,
-  onCompletedTask,
-}) => {
-  const [isCheckboxChecked, setIsCheckboxChecked] = useState(task.completed);
-  const [isEditing, setIsEditing] = useState(false);
+export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
+  (
+    {
+      task,
+      onDeleteTask,
+      onCompletedTask,
+      isDragging,
+      dragHandleProps,
+      ...rest
+    },
+    ref
+  ) => {
+    const [isCheckboxChecked, setIsCheckboxChecked] = useState(task.completed);
+    const [isEditing, setIsEditing] = useState(false);
 
-  const handleToggleComplete = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsCheckboxChecked(e.target.checked);
-    onCompletedTask({ completed: e.target.checked });
-  };
+    const handleToggleComplete = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsCheckboxChecked(e.target.checked);
+      onCompletedTask({ completed: e.target.checked });
+    };
 
-  const handleEditSubmit = (newText: string) => {
-    setIsEditing(false);
-    if (newText === task.text) return;
-    onCompletedTask({ text: newText });
-  };
+    const handleEditSubmit = (newText: string) => {
+      setIsEditing(false);
+      if (newText === task.text) return;
+      onCompletedTask({ text: newText });
+    };
 
-  const onEditClick = () => {
-    setIsEditing(true);
-  };
+    const onEditClick = () => {
+      setIsEditing(true);
+    };
 
-  const handleCancelEdit = () => {
-    setIsEditing(false);
-  };
+    const handleCancelEdit = () => {
+      setIsEditing(false);
+    };
 
-  return (
-    <TaskItemContainer>
-      <Container isCompleted={isCheckboxChecked}>
-        <DragIconWrapper>
-          <FaIcon icon={['fas', 'grip-vertical']} size='sm' />
-        </DragIconWrapper>
-        <Checkbox checked={isCheckboxChecked} onChange={handleToggleComplete} />
-        {isEditing ? (
-          <TaskEditInput
-            initialText={task.text}
-            placeholder='Edit task'
-            onSubmit={handleEditSubmit}
-            onCancel={handleCancelEdit}
+    return (
+      <TaskItemContainer ref={ref} {...rest} isDragging={isDragging}>
+        <Container isCompleted={isCheckboxChecked}>
+          <DragIconWrapper {...dragHandleProps}>
+            <FaIcon icon={['fas', 'grip-vertical']} size='sm' />
+          </DragIconWrapper>
+          <Checkbox
+            checked={isCheckboxChecked}
+            onChange={handleToggleComplete}
           />
-        ) : (
-          <span>{task.text}</span>
-        )}
-      </Container>
-      <Container gap={2}>
-        <FaIcon
-          icon={['fas', 'edit']}
-          size='sm'
-          onClick={onEditClick}
-          isActive={isEditing}
-        />
-        <FaIcon icon={['fas', 'trash']} size='sm' onClick={onDeleteTask} />
-      </Container>
-    </TaskItemContainer>
-  );
-};
+          {isEditing ? (
+            <TaskEditInput
+              initialText={task.text}
+              placeholder='Edit task'
+              onSubmit={handleEditSubmit}
+              onCancel={handleCancelEdit}
+            />
+          ) : (
+            <span>{task.text}</span>
+          )}
+        </Container>
+        <Container gap={2}>
+          <FaIcon
+            icon={['fas', 'edit']}
+            size='sm'
+            onClick={onEditClick}
+            isActive={isEditing}
+          />
+          <FaIcon icon={['fas', 'trash']} size='sm' onClick={onDeleteTask} />
+        </Container>
+      </TaskItemContainer>
+    );
+  }
+);
+
+TaskItem.displayName = 'TaskItem';
