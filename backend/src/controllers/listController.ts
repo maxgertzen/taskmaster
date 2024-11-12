@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import * as listService from "../services/listsService";
-import { GetListResponse } from "../types/responses";
 import {
   CreateListRequest,
   DeleteListRequest,
@@ -10,8 +9,8 @@ import {
 import { List } from "../models/listModel";
 
 export const getLists = async (
-  req: Request,
-  res: Response<GetListResponse>,
+  _req: Request,
+  res: Response<List[]>,
   next: NextFunction
 ): Promise<void> => {
   try {

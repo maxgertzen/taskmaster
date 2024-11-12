@@ -33,3 +33,49 @@ export type ReorderListRequestBody = {
 export interface ReorderListRequest extends Request {
   body: ReorderListRequestBody;
 }
+
+export type CreateTaskRequestBody = {
+  text: string;
+  listId: string;
+};
+
+export interface CreateTaskRequest extends Request {
+  body: CreateTaskRequestBody;
+}
+
+export type GetTasksRequestBody = {
+  listId: string;
+};
+
+export interface GetTasksRequest extends Request {
+  body: GetTasksRequestBody;
+}
+
+export type UpdateTaskRequestBody = {
+  id: string;
+  text?: string;
+  completed?: boolean;
+};
+
+export interface UpdateTaskRequest extends Request {
+  body: UpdateTaskRequestBody;
+}
+
+export type DeleteTaskRequestBody = {
+  taskId: string;
+  listId: string;
+};
+
+export interface DeleteTaskRequest extends Request {
+  body: DeleteTaskRequestBody;
+}
+
+export type ReorderTasksRequestBody = {
+  listId: string;
+  oldIndex: number;
+  newIndex: number;
+};
+
+export interface ReorderTasksRequest extends Request {
+  body: ReorderTasksRequestBody;
+}
