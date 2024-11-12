@@ -1,31 +1,122 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { mockAddTask, mockEditTask, mockDeleteTask } from '../api/api';
+import {
+  mockAddTask,
+  mockEditTask,
+  mockDeleteTask,
+  mockReorderTasks,
+} from '../api/api';
 import { Task } from '../types/shared';
+import { debounce } from '../utils/debounce';
+import { reorderArray } from '../utils/reorderArray';
 
-type TaskOperation = 'add' | 'edit' | 'delete';
+type TaskOperation = 'add' | 'edit' | 'delete' | 'reorder';
 
 type TaskMutationInput = {
   listId: string | null;
   taskId?: string;
   text?: string;
   completed?: boolean;
+  reorderingObject?: {
+    oldIndex: number;
+    newIndex: number;
+  };
+};
+
+const debouncedReorder = debounce(
+  async (listId: string, oldIndex: number, newIndex: number) => {
+    return mockReorderTasks(listId, oldIndex, newIndex);
+  },
+  1500
+);
+
+const handleAddTask = async (listId: string, text: string) => {
+  return mockAddTask(listId, text);
+};
+
+const handleEditTask = async (
+  taskId: string,
+  listId: string | null,
+  updates: Partial<Task>
+) => {
+  return mockEditTask(taskId, listId, updates);
+};
+
+const handleDeleteTask = async (taskId: string, listId: string) => {
+  return mockDeleteTask(taskId, listId);
+};
+
+const mutationFunctions = {
+  add: handleAddTask,
+  edit: handleEditTask,
+  delete: handleDeleteTask,
+};
+
+const updateTasksOptimistically = (
+  operation: TaskOperation,
+  input: TaskMutationInput,
+  oldTasks: Task[] = []
+) => {
+  switch (operation) {
+    case 'add':
+      return [
+        ...oldTasks,
+        { id: Date.now().toString(), text: input.text || '', completed: false },
+      ];
+    case 'edit':
+      return oldTasks.map((t) =>
+        t.id === input.taskId
+          ? {
+              ...t,
+              text: input.text || t.text,
+              completed: input.completed ?? t.completed,
+            }
+          : t
+      );
+    case 'delete':
+      return oldTasks.filter((t) => t.id !== input.taskId);
+    case 'reorder':
+      if (
+        input.reorderingObject?.oldIndex !== undefined &&
+        input.reorderingObject?.newIndex !== undefined
+      ) {
+        return reorderArray(
+          oldTasks,
+          input.reorderingObject.oldIndex,
+          input.reorderingObject.newIndex
+        );
+      }
+      return oldTasks;
+    default:
+      return oldTasks;
+  }
 };
 
 export const useTasksMutation = (operation: TaskOperation) => {
   const queryClient = useQueryClient();
 
   const mutationFn = async (input: TaskMutationInput) => {
-    const { listId, taskId, text, completed } = input;
-    if (operation === 'add' && listId && text) {
-      return mockAddTask(listId, text);
+    const { listId, taskId, text, completed, reorderingObject } = input;
+
+    if (
+      operation === 'reorder' &&
+      listId &&
+      reorderingObject?.newIndex !== undefined &&
+      reorderingObject?.oldIndex !== undefined
+    ) {
+      return debouncedReorder(
+        listId,
+        reorderingObject.oldIndex,
+        reorderingObject.newIndex
+      );
     }
-    if (operation === 'edit' && taskId && text) {
-      return mockEditTask(taskId, listId, { text, completed });
-    }
-    if (operation === 'delete' && taskId) {
-      return mockDeleteTask(taskId, listId || '');
-    }
+
+    if (operation === 'add' && listId && text)
+      return mutationFunctions[operation](listId, text);
+    if (operation === 'edit' && taskId && text)
+      return mutationFunctions[operation](taskId, listId, { text, completed });
+    if (operation === 'delete' && taskId)
+      return mutationFunctions[operation](taskId, listId || '');
   };
 
   return useMutation({
@@ -39,33 +130,9 @@ export const useTasksMutation = (operation: TaskOperation) => {
 
       const previousTasks = queryClient.getQueryData<Task[]>(queryKey);
 
-      queryClient.setQueryData(queryKey, (oldTasks: Task[] = []) => {
-        switch (operation) {
-          case 'add':
-            return [
-              ...oldTasks,
-              {
-                id: Date.now().toString(),
-                text: input.text || '',
-                completed: false,
-              },
-            ];
-          case 'edit':
-            return oldTasks.map((t) =>
-              t.id === input.taskId
-                ? {
-                    ...t,
-                    text: input.text || t.text,
-                    completed: input.completed ?? t.completed,
-                  }
-                : t
-            );
-          case 'delete':
-            return oldTasks.filter((t) => t.id !== input.taskId);
-          default:
-            return oldTasks;
-        }
-      });
+      queryClient.setQueryData(queryKey, (oldTasks: Task[] = []) =>
+        updateTasksOptimistically(operation, input, oldTasks)
+      );
 
       return { previousTasks };
     },
@@ -77,7 +144,7 @@ export const useTasksMutation = (operation: TaskOperation) => {
     },
     onSettled: (_data, _error, input) => {
       const listId = input.listId || input.taskId;
-      if (listId)
+      if (listId && operation !== 'reorder')
         queryClient.invalidateQueries({ queryKey: ['tasks', listId] });
     },
   });

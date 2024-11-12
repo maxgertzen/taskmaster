@@ -1,6 +1,10 @@
 import styled from '@emotion/styled';
+import { DraggableStyle } from '@hello-pangea/dnd';
 
-export const TaskItemContainer = styled.li(({ theme }) => ({
+export const TaskItemContainer = styled.li<{
+  style?: DraggableStyle;
+  isDragging?: boolean;
+}>(({ theme, style, isDragging }) => ({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
@@ -9,6 +13,8 @@ export const TaskItemContainer = styled.li(({ theme }) => ({
   borderRadius: theme.spacing(0.5),
   marginBottom: theme.spacing(1),
   boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  ...style,
+  backgroundColor: isDragging ? theme.colors.accent : theme.colors.background,
 }));
 
 export const Container = styled.div<{ gap?: number; isCompleted?: boolean }>(

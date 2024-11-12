@@ -1,3 +1,9 @@
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from '@hello-pangea/dnd';
 import { FC, useState } from 'react';
 
 import { useListsMutation } from '../../hooks/useListMutation';
@@ -19,8 +25,6 @@ interface ListSidebarProps {
   onDeleteList: () => void;
 }
 
-// TODO:
-// - Implement a way to reorder lists
 export const ListSidebar: FC<ListSidebarProps> = ({
   lists,
   selectedList,
@@ -32,6 +36,7 @@ export const ListSidebar: FC<ListSidebarProps> = ({
   const addList = useListsMutation('add');
   const editList = useListsMutation('edit');
   const deleteList = useListsMutation('delete');
+  const reorderLists = useListsMutation('reorder');
 
   const handleAddList = async (name: string) => {
     await addList.mutateAsync({ name });
@@ -49,32 +54,63 @@ export const ListSidebar: FC<ListSidebarProps> = ({
     await editList.mutateAsync({ listId, name: newName });
   };
 
+  const handleOnDragEnd = async (result: DropResult) => {
+    if (!result.destination) {
+      return;
+    }
+
+    await reorderLists.mutateAsync({
+      reorderingObject: {
+        oldIndex: result.source.index,
+        newIndex: result.destination.index,
+      },
+    });
+  };
+
   return (
-    <>
+    <DragDropContext onDragEnd={handleOnDragEnd}>
       <ListSidebarContainer>
         <ListsActions addList={() => setIsAdding(true)} />
-        <ListSidebarUnorderedList>
-          {lists.map(({ id, name }) => (
-            <ListItem
-              key={id}
-              name={name}
-              isActive={selectedList === id}
-              handleDeleteList={handleDeleteList(id)}
-              handleSelectList={onSelectList(id)}
-              onEdit={handleEditList(id)}
-            />
-          ))}
-          {isAdding && (
-            <ListItemContainer>
-              <ListInput
-                placeholder='Enter new list name'
-                onSubmit={handleAddList}
-                onCancel={() => setIsAdding(false)}
-              />
-            </ListItemContainer>
+        <Droppable droppableId='list-sidebar'>
+          {(provided, snapshot) => (
+            <ListSidebarUnorderedList
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              isDraggingOver={snapshot.isDraggingOver}
+            >
+              {lists.map(({ id, name }, index) => (
+                <Draggable key={id} index={index} draggableId={id}>
+                  {(provided, snapshot) => (
+                    <ListItem
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.draggableProps.style}
+                      dragHandleProps={provided.dragHandleProps}
+                      isDragging={snapshot.isDragging}
+                      key={id}
+                      name={name}
+                      isActive={selectedList === id}
+                      handleDeleteList={handleDeleteList(id)}
+                      handleSelectList={onSelectList(id)}
+                      onEdit={handleEditList(id)}
+                    />
+                  )}
+                </Draggable>
+              ))}
+              {isAdding && (
+                <ListItemContainer>
+                  <ListInput
+                    placeholder='Enter new list name'
+                    onSubmit={handleAddList}
+                    onCancel={() => setIsAdding(false)}
+                  />
+                </ListItemContainer>
+              )}
+              {provided.placeholder}
+            </ListSidebarUnorderedList>
           )}
-        </ListSidebarUnorderedList>
+        </Droppable>
       </ListSidebarContainer>
-    </>
+    </DragDropContext>
   );
 };

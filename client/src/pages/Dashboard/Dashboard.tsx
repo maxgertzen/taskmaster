@@ -12,12 +12,6 @@ import {
   TaskContainer,
 } from './Dashboard.styled';
 
-// TODO:
-// - Implement a way to select a list
-// - Implement a way to add a new list
-// - Implement a way to remove a list
-// - Implement a way to edit a list
-// - Implement a way to reorder lists
 export const Dashboard: FC = () => {
   const selectedListId = useTaskStore((state) => state.selectedListId);
   const setSelectedListId = useTaskStore((state) => state.setSelectedListId);
