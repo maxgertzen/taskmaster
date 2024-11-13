@@ -20,6 +20,11 @@ type ListMutationInput = {
   };
 };
 
+// TODO:
+// - Fix waiting for the backend for responses to render the changes
+// - Use cache to show changes optimistically
+// - Handle errors and rollback changes if needed (show Alert)
+
 const handleReorderList = async (oldIndex: number, newIndex: number) => {
   return reorderLists(oldIndex, newIndex);
 };

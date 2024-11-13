@@ -23,6 +23,11 @@ type TaskMutationInput = {
   };
 };
 
+// TODO:
+// - Fix waiting for the backend for responses to render the changes
+// - Use cache to show changes optimistically
+// - Handle errors and rollback changes if needed (show Alert)
+
 const debouncedReorder = debounce(
   async (listId: string, oldIndex: number, newIndex: number) => {
     return reorderTasks(listId, oldIndex, newIndex);
