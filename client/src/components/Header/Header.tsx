@@ -25,7 +25,7 @@ export const Header: React.FC<HeaderProps> = ({ user }) => {
     <HeaderContainer>
       <LogoContainer>
         <Logo />
-        <Title>TaskManager</Title>
+        <Title>TaskMaster</Title>
       </LogoContainer>
       <UserActionsContainer>
         <DarkModeIcon

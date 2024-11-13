@@ -14,7 +14,7 @@ import { TaskItem } from '../TaskItem/TaskItem';
 import { TaskListContainer } from './TaskList.styled';
 
 interface TaskListProps {
-  selectedListId: string | null;
+  selectedListId: string;
 }
 
 export const TaskList: FC<TaskListProps> = ({ selectedListId }) => {

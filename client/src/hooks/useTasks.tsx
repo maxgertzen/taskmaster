@@ -1,18 +1,13 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 
-import { fetchMockTasks } from '../api/api';
+import { fetchTasks } from '../api/tasks-api';
+import { Task } from '../types/shared';
 
-export const useTasks = (listId: string | null) => {
+export const useTasks = (listId: string) => {
   const { data } = useSuspenseQuery({
     queryKey: ['tasks', listId],
-    queryFn: () => {
-      if (!listId) {
-        return Promise.resolve([]);
-      }
-
-      return fetchMockTasks(listId);
-    },
+    queryFn: fetchTasks(listId),
   });
 
-  return { tasks: data };
+  return { tasks: data as Task[] };
 };

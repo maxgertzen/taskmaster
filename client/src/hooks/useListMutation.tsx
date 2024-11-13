@@ -1,12 +1,11 @@
-// src/hooks/useListsMutation.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
-  mockAddList,
-  mockEditList,
-  mockDeleteList,
-  mockReorderLists,
-} from '../api/api';
+  createList,
+  deleteList,
+  reorderLists,
+  updateList,
+} from '../api/lists-api';
 import { List } from '../types/shared';
 import { reorderArray } from '../utils/reorderArray';
 
@@ -21,29 +20,27 @@ type ListMutationInput = {
   };
 };
 
-// const debouncedReorder = debounce(
-//   async (oldIndex: number, newIndex: number) => {
-//     return mockReorderLists(oldIndex, newIndex);
-//   },
-//   1500
-// );
+const handleReorderList = async (oldIndex: number, newIndex: number) => {
+  return reorderLists(oldIndex, newIndex);
+};
 
 const handleAddList = async (name: string) => {
-  return mockAddList(name);
+  return createList(name);
 };
 
 const handleEditList = async (listId: string, name: string) => {
-  return mockEditList(listId, name);
+  return updateList(listId, name);
 };
 
 const handleDeleteList = async (listId: string) => {
-  return mockDeleteList(listId);
+  return deleteList(listId);
 };
 
 const mutationFunctions = {
   add: handleAddList,
   edit: handleEditList,
   delete: handleDeleteList,
+  reorder: handleReorderList,
 };
 
 const updateListsOptimistically = (
@@ -92,7 +89,7 @@ export const useListsMutation = (operation: ListOperation) => {
       reorderingObject?.newIndex !== undefined &&
       reorderingObject?.oldIndex !== undefined
     ) {
-      return mockReorderLists(
+      return mutationFunctions[operation](
         reorderingObject.oldIndex,
         reorderingObject.newIndex
       );
