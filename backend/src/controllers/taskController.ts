@@ -7,11 +7,11 @@ import {
   DeleteTaskRequest,
   ReorderTasksRequest,
 } from "../types/requests";
-import { Task } from "../models/taskModel";
+import { ClientTask, Task } from "../models/taskModel";
 
 export const createTask = async (
   req: CreateTaskRequest,
-  res: Response<Task>,
+  res: Response<ClientTask>,
   next: NextFunction
 ): Promise<void> => {
   try {
@@ -29,11 +29,11 @@ export const createTask = async (
 
 export const getTasks = async (
   req: GetTasksRequest,
-  res: Response<Task[]>,
+  res: Response<ClientTask[]>,
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { listId } = req.body;
+    const { listId } = req.params;
     const tasks = await taskService.getTasks(listId);
     res.status(200).json(tasks);
   } catch (error) {
@@ -43,7 +43,7 @@ export const getTasks = async (
 
 export const updateTask = async (
   req: UpdateTaskRequest,
-  res: Response<Task["id"]>,
+  res: Response<ClientTask["id"]>,
   next: NextFunction
 ): Promise<void> => {
   try {
@@ -57,7 +57,7 @@ export const updateTask = async (
 
 export const deleteTask = async (
   req: DeleteTaskRequest,
-  res: Response<Task["id"]>,
+  res: Response<ClientTask["id"]>,
   next: NextFunction
 ): Promise<void> => {
   try {
@@ -71,7 +71,7 @@ export const deleteTask = async (
 
 export const reorderTasks = async (
   req: ReorderTasksRequest,
-  res: Response<Task[]>,
+  res: Response<ClientTask[]>,
   next: NextFunction
 ): Promise<void> => {
   try {

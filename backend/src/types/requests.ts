@@ -43,12 +43,12 @@ export interface CreateTaskRequest extends Request {
   body: CreateTaskRequestBody;
 }
 
-export type GetTasksRequestBody = {
+export type GetTasksRequestParams = {
   listId: string;
 };
 
 export interface GetTasksRequest extends Request {
-  body: GetTasksRequestBody;
+  params: GetTasksRequestParams;
 }
 
 export type UpdateTaskRequestBody = {

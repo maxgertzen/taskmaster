@@ -1,26 +1,31 @@
+import { generateUniqueId } from "../utils/nanoid";
 import { redisClient } from "../config";
-import { Task } from "../models/taskModel";
+import { ClientTask, Task } from "../models/taskModel";
 import { reorderArray } from "../utils/reorderArray";
 
 export const createTask = async (
   listId: string,
   text: string
-): Promise<Task> => {
-  const taskId = `task:${Date.now()}`;
-  const task: Task = { id: taskId, listId, text, completed: "false" };
+): Promise<ClientTask> => {
+  const id = await generateUniqueId();
+  const taskKey = `task:${id}`;
+  const task: Task = { id: taskKey, listId, text, completed: "false" };
 
   const redisTask = {
     ...task,
-    completed: task.completed.toString(),
+    completed: task.completed,
   };
-  await redisClient.hSet(taskId, redisTask);
+  await redisClient.hSet(taskKey, redisTask);
 
-  await redisClient.rPush(`tasks:${listId}`, taskId);
+  await redisClient.rPush(`tasks:${listId}`, taskKey);
 
-  return task;
+  return {
+    ...task,
+    completed: task.completed === "true",
+  };
 };
 
-export const getTasks = async (listId: string): Promise<Task[]> => {
+export const getTasks = async (listId: string): Promise<ClientTask[]> => {
   const taskIds = await redisClient.lRange(`tasks:${listId}`, 0, -1);
 
   const tasks = await Promise.all(
@@ -31,14 +36,14 @@ export const getTasks = async (listId: string): Promise<Task[]> => {
     id: task.id,
     listId: task.listId,
     text: task.text,
-    completed: task.completed,
-  })) as Task[];
+    completed: task.completed === "true",
+  })) as ClientTask[];
 };
 
 export const updateTask = async (
   taskId: string,
   updates: Partial<Task>
-): Promise<Task["id"]> => {
+): Promise<ClientTask["id"]> => {
   const existingTask = await redisClient.hGetAll(taskId);
   if (!existingTask.id) throw new Error(`Task with ID ${taskId} not found`);
 
@@ -65,7 +70,7 @@ export const reorderTasks = async (
   listId: string,
   oldIndex: number,
   newIndex: number
-): Promise<Task[]> => {
+): Promise<ClientTask[]> => {
   const taskIds = await redisClient.lRange(`tasks:${listId}`, 0, -1);
   const reorderedTaskIds = reorderArray(taskIds, oldIndex, newIndex);
 

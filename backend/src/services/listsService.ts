@@ -1,19 +1,23 @@
+import { generateUniqueId } from "../utils/nanoid";
 import { redisClient } from "../config";
 import { List } from "../models/listModel";
 import { reorderArray } from "../utils/reorderArray";
 
 export const createList = async (name: string) => {
-  const listId = `list:${Date.now()}`;
+  const id = await generateUniqueId();
+  const listKey = `list:${id}`;
 
-  await redisClient.hSet(listId, { id: listId, name });
+  await redisClient.hSet(listKey, { id: listKey, name });
 
-  await redisClient.zAdd("lists", { score: Date.now(), value: listId });
+  await redisClient.zAdd("lists", { score: Date.now(), value: listKey });
 
-  return { id: listId, name };
+  return { id: listKey, name };
 };
 
 export const getLists = async (): Promise<List[]> => {
   const listIds = await redisClient.zRange("lists", 0, -1);
+
+  if (!listIds.length) return [];
 
   const lists = await Promise.all(
     listIds.map(async (listId) => {
