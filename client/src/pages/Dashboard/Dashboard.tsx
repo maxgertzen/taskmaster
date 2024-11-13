@@ -12,6 +12,13 @@ import {
   TaskContainer,
 } from './Dashboard.styled';
 
+// TODO:
+// - Make the sidebar collapsible, responsive and adjustable
+// - Add a search bar to search for tasks
+// - Add a filter to filter tasks by completed or not
+// - Add a button to mark all tasks as completed
+// - Add a button to delete all tasks
+// - Add a button to delete completed tasks
 export const Dashboard: FC = () => {
   const selectedListId = useTaskStore((state) => state.selectedListId);
   const setSelectedListId = useTaskStore((state) => state.setSelectedListId);

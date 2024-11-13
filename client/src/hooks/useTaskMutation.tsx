@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
-  mockAddTask,
-  mockEditTask,
-  mockDeleteTask,
-  mockReorderTasks,
-} from '../api/api';
+  createTask,
+  deleteTask,
+  reorderTasks,
+  updateTask,
+} from '../api/tasks-api';
 import { Task } from '../types/shared';
 import { debounce } from '../utils/debounce';
 import { reorderArray } from '../utils/reorderArray';
@@ -23,27 +23,28 @@ type TaskMutationInput = {
   };
 };
 
+// TODO:
+// - Fix waiting for the backend for responses to render the changes
+// - Use cache to show changes optimistically
+// - Handle errors and rollback changes if needed (show Alert)
+
 const debouncedReorder = debounce(
   async (listId: string, oldIndex: number, newIndex: number) => {
-    return mockReorderTasks(listId, oldIndex, newIndex);
+    return reorderTasks(listId, oldIndex, newIndex);
   },
-  1500
+  500
 );
 
 const handleAddTask = async (listId: string, text: string) => {
-  return mockAddTask(listId, text);
+  return createTask(listId, text);
 };
 
-const handleEditTask = async (
-  taskId: string,
-  listId: string | null,
-  updates: Partial<Task>
-) => {
-  return mockEditTask(taskId, listId, updates);
+const handleEditTask = async (taskId: string, updates: Partial<Task>) => {
+  return updateTask(taskId, updates);
 };
 
 const handleDeleteTask = async (taskId: string, listId: string) => {
-  return mockDeleteTask(taskId, listId);
+  return deleteTask(taskId, listId);
 };
 
 const mutationFunctions = {
@@ -114,7 +115,7 @@ export const useTasksMutation = (operation: TaskOperation) => {
     if (operation === 'add' && listId && text)
       return mutationFunctions[operation](listId, text);
     if (operation === 'edit' && taskId && text)
-      return mutationFunctions[operation](taskId, listId, { text, completed });
+      return mutationFunctions[operation](taskId, { text, completed });
     if (operation === 'delete' && taskId)
       return mutationFunctions[operation](taskId, listId || '');
   };

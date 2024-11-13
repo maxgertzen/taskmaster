@@ -1,12 +1,13 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 
-import { fetchMockLists } from '../api/api';
+import { fetchLists } from '../api';
+import { List } from '../types/shared';
 
 export const useLists = () => {
   const { data, isError } = useSuspenseQuery({
     queryKey: ['lists'],
-    queryFn: fetchMockLists,
+    queryFn: fetchLists,
   });
 
-  return { lists: data, isError };
+  return { lists: data as List[], isError };
 };
