@@ -2,8 +2,8 @@ import express from "express";
 import cors from "cors";
 import { listRoutes } from "./routes/listRoutes";
 import { taskRoutes } from "./routes/taskRoutes";
-// import { authRoutes } from './routes/authRoutes';
 import { errorHandler } from "./middlewares/errorHandler";
+import { checkJwt, attachUserId } from "./middlewares/authorisation";
 
 const app = express();
 
@@ -16,9 +16,8 @@ app.use(
 app.use(express.json());
 
 // Route setup
-// app.use("/api/auth", authRoutes);
-app.use("/api/lists", listRoutes);
-app.use("/api/tasks", taskRoutes);
+app.use("/api/lists", checkJwt, attachUserId, listRoutes);
+app.use("/api/tasks", checkJwt, attachUserId, taskRoutes);
 
 // Error handling middleware
 app.use(errorHandler);

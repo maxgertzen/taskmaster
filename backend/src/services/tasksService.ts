@@ -4,11 +4,12 @@ import { ClientTask, Task } from "../models/taskModel";
 import { reorderArray } from "../utils/reorderArray";
 
 export const createTask = async (
+  userId: string,
   listId: string,
   text: string
 ): Promise<ClientTask> => {
   const id = await generateUniqueId();
-  const taskKey = `task:${id}`;
+  const taskKey = `user:${userId}:task:${id}`;
   const task: Task = { id: taskKey, listId, text, completed: "false" };
 
   const redisTask = {
@@ -17,7 +18,7 @@ export const createTask = async (
   };
   await redisClient.hSet(taskKey, redisTask);
 
-  await redisClient.rPush(`tasks:${listId}`, taskKey);
+  await redisClient.rPush(`user:${userId}:tasks:${listId}`, taskKey);
 
   return {
     ...task,
@@ -25,8 +26,15 @@ export const createTask = async (
   };
 };
 
-export const getTasks = async (listId: string): Promise<ClientTask[]> => {
-  const taskIds = await redisClient.lRange(`tasks:${listId}`, 0, -1);
+export const getTasks = async (
+  userId: string,
+  listId: string
+): Promise<ClientTask[]> => {
+  const taskIds = await redisClient.lRange(
+    `user:${userId}:tasks:${listId}`,
+    0,
+    -1
+  );
 
   const tasks = await Promise.all(
     taskIds.map((taskId) => redisClient.hGetAll(taskId))
@@ -59,23 +67,29 @@ export const updateTask = async (
 };
 
 export const deleteTask = async (
+  userId: string,
   taskId: string,
   listId: string
 ): Promise<void> => {
   await redisClient.del(taskId);
-  await redisClient.lRem(`tasks:${listId}`, 0, taskId);
+  await redisClient.lRem(`user:${userId}:tasks:${listId}`, 0, taskId);
 };
 
 export const reorderTasks = async (
+  userId: string,
   listId: string,
   oldIndex: number,
   newIndex: number
 ): Promise<ClientTask[]> => {
-  const taskIds = await redisClient.lRange(`tasks:${listId}`, 0, -1);
+  const taskIds = await redisClient.lRange(
+    `user:${userId}:tasks:${listId}`,
+    0,
+    -1
+  );
   const reorderedTaskIds = reorderArray(taskIds, oldIndex, newIndex);
 
-  await redisClient.del(`tasks:${listId}`);
-  await redisClient.rPush(`tasks:${listId}`, reorderedTaskIds);
+  await redisClient.del(`user:${userId}:tasks:${listId}`);
+  await redisClient.rPush(`user:${userId}:tasks:${listId}`, reorderedTaskIds);
 
-  return await getTasks(listId);
+  return await getTasks(userId, listId);
 };

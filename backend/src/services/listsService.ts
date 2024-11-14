@@ -3,19 +3,22 @@ import { redisClient } from "../config";
 import { List } from "../models/listModel";
 import { reorderArray } from "../utils/reorderArray";
 
-export const createList = async (name: string) => {
+export const createList = async (userId: string, name: string) => {
   const id = await generateUniqueId();
-  const listKey = `list:${id}`;
+  const listKey = `user:${userId}:list:${id}`;
 
   await redisClient.hSet(listKey, { id: listKey, name });
 
-  await redisClient.zAdd("lists", { score: Date.now(), value: listKey });
+  await redisClient.zAdd(`user:${userId}:lists`, {
+    score: Date.now(),
+    value: listKey,
+  });
 
   return { id: listKey, name };
 };
 
-export const getLists = async (): Promise<List[]> => {
-  const listIds = await redisClient.zRange("lists", 0, -1);
+export const getLists = async (userId: string): Promise<List[]> => {
+  const listIds = await redisClient.zRange(`user:${userId}:lists`, 0, -1);
 
   if (!listIds.length) return [];
 
@@ -37,8 +40,8 @@ export const getLists = async (): Promise<List[]> => {
   return lists as List[];
 };
 
-export const updateList = async (id: string, name: string) => {
-  const listKey = `list:${id}`;
+export const updateList = async (userId: string, id: string, name: string) => {
+  const listKey = `user:${userId}:list:${id}`;
 
   const exists = await redisClient.exists(listKey);
   if (!exists) throw new Error(`List with ID ${id} does not exist`);
@@ -48,26 +51,34 @@ export const updateList = async (id: string, name: string) => {
   return { id, name };
 };
 
-export const deleteList = async (id: string) => {
-  const listKey = `list:${id}`;
+export const deleteList = async (userId: string, id: string) => {
+  const listKey = `user:${userId}list:${id}`;
 
   await redisClient.del(listKey);
-  await redisClient.zRem("lists", listKey);
+  await redisClient.zRem(`user:${userId}:lists`, listKey);
 
   return { id };
 };
 
 export const reorderLists = async (
+  userId: string,
   oldIndex: number,
   newIndex: number
 ): Promise<List[]> => {
-  const listsWithScores = await redisClient.zRangeWithScores("lists", 0, -1);
+  const listsWithScores = await redisClient.zRangeWithScores(
+    `user:${userId}:lists`,
+    0,
+    -1
+  );
 
   const reorderedLists = reorderArray(listsWithScores, oldIndex, newIndex);
 
   await Promise.all(
     reorderedLists.map(({ value: listId }, index) => {
-      return redisClient.zAdd("lists", { score: index, value: listId });
+      return redisClient.zAdd(`user:${userId}:lists`, {
+        score: index,
+        value: listId,
+      });
     })
   );
 
