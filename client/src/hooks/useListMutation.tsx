@@ -6,6 +6,7 @@ import {
   reorderLists,
   updateList,
 } from '../api/lists-api';
+import { useAuthStore } from '../store/authStore';
 import { List } from '../types/shared';
 import { reorderArray } from '../utils/reorderArray';
 
@@ -25,20 +26,29 @@ type ListMutationInput = {
 // - Use cache to show changes optimistically
 // - Handle errors and rollback changes if needed (show Alert)
 
-const handleReorderList = async (oldIndex: number, newIndex: number) => {
-  return reorderLists(oldIndex, newIndex);
+const handleReorderList =
+  (token: string | null) => async (oldIndex: number, newIndex: number) => {
+    const fn = reorderLists(token);
+
+    return fn(oldIndex, newIndex);
+  };
+
+const handleAddList = (token: string | null) => async (name: string) => {
+  const fn = createList(token);
+  return fn(name);
 };
 
-const handleAddList = async (name: string) => {
-  return createList(name);
-};
+const handleEditList =
+  (token: string | null) => async (listId: string, name: string) => {
+    const fn = updateList(token);
 
-const handleEditList = async (listId: string, name: string) => {
-  return updateList(listId, name);
-};
+    return fn(listId, name);
+  };
 
-const handleDeleteList = async (listId: string) => {
-  return deleteList(listId);
+const handleDeleteList = (token: string | null) => async (listId: string) => {
+  const fn = deleteList(token);
+
+  return fn(listId);
 };
 
 const mutationFunctions = {
@@ -87,6 +97,8 @@ const updateListsOptimistically = (
 export const useListsMutation = (operation: ListOperation) => {
   const queryClient = useQueryClient();
 
+  const token = useAuthStore((state) => state.token);
+
   const mutationFn = async (input: ListMutationInput) => {
     const { listId, name, reorderingObject } = input;
     if (
@@ -94,19 +106,19 @@ export const useListsMutation = (operation: ListOperation) => {
       reorderingObject?.newIndex !== undefined &&
       reorderingObject?.oldIndex !== undefined
     ) {
-      return mutationFunctions[operation](
+      return mutationFunctions[operation](token)(
         reorderingObject.oldIndex,
         reorderingObject.newIndex
       );
     }
     if (operation === 'add' && name) {
-      return mutationFunctions[operation](name);
+      return mutationFunctions[operation](token)(name);
     }
     if (operation === 'edit' && listId && name) {
-      return mutationFunctions[operation](listId, name);
+      return mutationFunctions[operation](token)(listId, name);
     }
     if (operation === 'delete' && listId) {
-      return mutationFunctions[operation](listId);
+      return mutationFunctions[operation](token)(listId);
     }
   };
 

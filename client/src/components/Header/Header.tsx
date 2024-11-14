@@ -1,13 +1,10 @@
-/// <reference types="vite-plugin-svgr/client" />
-import Logo from '../../assets/taskmaster-logo.svg?react';
 import { useThemeStore } from '../../store/themeStore';
 import { User } from '../../types/shared';
 import { FaIcon } from '../FontAwesomeIcon/FontAwesomeIcon';
+import { Logo } from '../Logo/Logo';
 
 import {
   HeaderContainer,
-  LogoContainer,
-  Title,
   UserActionsContainer,
   DarkModeIcon,
   VerticalDivider,
@@ -23,10 +20,7 @@ export const Header: React.FC<HeaderProps> = ({ user }) => {
 
   return (
     <HeaderContainer>
-      <LogoContainer>
-        <Logo />
-        <Title>TaskMaster</Title>
-      </LogoContainer>
+      <Logo withTitle />
       <UserActionsContainer>
         <DarkModeIcon
           icon={['far', activeTheme === 'light' ? 'moon' : 'sun']}
