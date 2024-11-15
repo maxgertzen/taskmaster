@@ -14,6 +14,21 @@ interface HeaderProps {
   user: User;
 }
 
+const UserName: React.FC<HeaderProps> = ({ user: { name } }) => {
+  return (
+    <span>
+      Hi
+      {name ? (
+        <>
+          , <b>{name}</b>
+        </>
+      ) : (
+        '!'
+      )}
+    </span>
+  );
+};
+
 export const Header: React.FC<HeaderProps> = ({ user }) => {
   const activeTheme = useThemeStore((state) => state.theme);
   const toggleTheme = useThemeStore((state) => state.toggleTheme);
@@ -28,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({ user }) => {
           onClick={toggleTheme}
         />
         <VerticalDivider />
-        <span>{`Hi${user.name ? `, ${(<b>{user.name}</b>)}` : '!'}`}</span>
+        <UserName user={user} />
         <FaIcon
           icon={[activeTheme === 'light' ? 'fas' : 'far', 'user-circle']}
           size='lg'

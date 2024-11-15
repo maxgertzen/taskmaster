@@ -30,6 +30,9 @@ export const ActionsContainer = styled.div({
 export const DragIconWrapper = styled.div(({ theme }) => ({
   cursor: 'grab',
   marginRight: theme.spacing(2),
+  flex: 1,
+  flexShrink: 0,
+  flexBasis: 'auto',
   svg: {
     cursor: 'grab',
   },
@@ -39,4 +42,5 @@ export const Container = styled.div(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1),
+  fontSize: theme.typography.body.fontSize,
 }));
