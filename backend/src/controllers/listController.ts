@@ -60,7 +60,7 @@ export const updateList = async (
       id,
       name
     );
-    res.status(200).json(updatedList);
+    res.status(200).json(updatedList as List);
   } catch (error) {
     next(error);
   }

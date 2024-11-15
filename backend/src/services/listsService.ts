@@ -6,15 +6,16 @@ import { reorderArray } from "../utils/reorderArray";
 export const createList = async (userId: string, name: string) => {
   const id = await generateUniqueId();
   const listKey = `user:${userId}:list:${id}`;
+  const creationDate = Date.now();
 
-  await redisClient.hSet(listKey, { id: listKey, name });
+  await redisClient.hSet(listKey, { id: listKey, name, creationDate });
 
   await redisClient.zAdd(`user:${userId}:lists`, {
-    score: Date.now(),
+    score: creationDate,
     value: listKey,
   });
 
-  return { id: listKey, name };
+  return { id: listKey, name, creationDate };
 };
 
 export const getLists = async (userId: string): Promise<List[]> => {
@@ -33,6 +34,7 @@ export const getLists = async (userId: string): Promise<List[]> => {
       return {
         id: listData.id,
         name: listData.name,
+        creationDate: listData.creationDate,
       } as List;
     })
   );
@@ -52,7 +54,7 @@ export const updateList = async (userId: string, id: string, name: string) => {
 };
 
 export const deleteList = async (userId: string, id: string) => {
-  const listKey = `user:${userId}list:${id}`;
+  const listKey = `user:${userId}:list:${id}`;
 
   await redisClient.del(listKey);
   await redisClient.zRem(`user:${userId}:lists`, listKey);
@@ -71,16 +73,18 @@ export const reorderLists = async (
     -1
   );
 
+  const multiExecution = redisClient.multi();
+
   const reorderedLists = reorderArray(listsWithScores, oldIndex, newIndex);
 
-  await Promise.all(
-    reorderedLists.map(({ value: listId }, index) => {
-      return redisClient.zAdd(`user:${userId}:lists`, {
-        score: index,
-        value: listId,
-      });
-    })
-  );
+  reorderedLists.map(({ value: listId }, index) => {
+    return multiExecution.zAdd(`user:${userId}:lists`, {
+      score: index,
+      value: listId,
+    });
+  });
+
+  await multiExecution.exec();
 
   const reorderedListDetails = await Promise.all(
     reorderedLists.map(async ({ value: listId }) => {
@@ -93,6 +97,7 @@ export const reorderLists = async (
       return {
         id: listData.id,
         name: listData.name,
+        creationDate: listData.creationDate,
       } as List;
     })
   );

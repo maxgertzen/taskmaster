@@ -10,7 +10,14 @@ export const createTask = async (
 ): Promise<ClientTask> => {
   const id = await generateUniqueId();
   const taskKey = `user:${userId}:task:${id}`;
-  const task: Task = { id: taskKey, listId, text, completed: "false" };
+  const creationDate = Date.now();
+  const task: Task = {
+    id: taskKey,
+    listId,
+    text,
+    completed: "false",
+    creationDate,
+  };
 
   const redisTask = {
     ...task,
@@ -45,6 +52,7 @@ export const getTasks = async (
     listId: task.listId,
     text: task.text,
     completed: task.completed === "true",
+    creationDate: task.creationDate,
   })) as ClientTask[];
 };
 
