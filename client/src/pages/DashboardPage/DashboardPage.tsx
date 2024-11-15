@@ -1,7 +1,14 @@
 import { withAuthenticationRequired } from '@auth0/auth0-react';
-import { FC, Suspense } from 'react';
+import { FC, Suspense, useEffect, useState } from 'react';
 
-import { ListSidebar, TaskList, AddTaskInput, Header } from '../../components';
+import {
+  ListSidebar,
+  TaskList,
+  AddTaskInput,
+  Header,
+  FaIcon,
+  ResizableHandle,
+} from '../../components';
 import { LogoutButton } from '../../components/LogoutButton/LogoutButton';
 import { useLists } from '../../hooks/useLists';
 import { useTasksMutation } from '../../hooks/useTaskMutation';
@@ -12,11 +19,11 @@ import {
   DashboardContainer,
   MainLayout,
   SidebarContainer,
+  StyledCollapsibleButton,
   TaskContainer,
 } from './DashboardPage.styled';
 
 // TODO:
-// - Make the sidebar collapsible, responsive and adjustable
 // - Add a search bar to search for tasks
 // - Add a filter to filter tasks by completed or not
 // - Add a button to mark all tasks as completed
@@ -26,6 +33,10 @@ const Dashboard: FC = () => {
   const token = useAuthStore((state) => state.token);
   const selectedListId = useTaskStore((state) => state.selectedListId);
   const setSelectedListId = useTaskStore((state) => state.setSelectedListId);
+
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(250);
 
   const userDetails = useUserStore((state) => state.user);
 
@@ -46,20 +57,45 @@ const Dashboard: FC = () => {
     setSelectedListId(null);
   };
 
+  const handleToggleSidebar = () => {
+    setIsCollapsed((prev) => !prev);
+  };
+
+  useEffect(() => {
+    if (isResizing) {
+      document.body.style.cursor = 'col-resize';
+    } else {
+      document.body.style.cursor = 'default';
+    }
+  }, [isResizing]);
+
   return token && lists ? (
     <DashboardContainer>
       <Header user={userDetails} />
       <MainLayout>
-        <SidebarContainer>
+        <SidebarContainer isCollapsed={isCollapsed} width={sidebarWidth}>
+          <StyledCollapsibleButton
+            isCollapsed={isCollapsed}
+            onClick={handleToggleSidebar}
+          >
+            <FaIcon icon={['far', 'square-caret-left']} size='lg' />
+          </StyledCollapsibleButton>
           <Suspense fallback={<div>Loading lists...</div>}>
-            <ListSidebar
-              lists={lists}
-              selectedList={selectedListId}
-              onSelectList={handleSelectList}
-              onDeleteList={handleDeleteList}
-            />
+            {!isCollapsed && (
+              <ListSidebar
+                lists={lists}
+                selectedList={selectedListId}
+                onSelectList={handleSelectList}
+                onDeleteList={handleDeleteList}
+              />
+            )}
           </Suspense>
-          <LogoutButton />
+          {!isCollapsed && <LogoutButton />}
+          <ResizableHandle
+            initialWidth={sidebarWidth}
+            setWidth={setSidebarWidth}
+            onResize={(isResizing) => setIsResizing(isResizing)}
+          />
         </SidebarContainer>
         <TaskContainer>
           <Suspense fallback={<div>Loading tasks...</div>}>

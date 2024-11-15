@@ -9,3 +9,4 @@ export { ListsActions } from './ListsActions/ListsActions';
 export { Logo } from './Logo/Logo';
 export { Title } from './Title/Title';
 export { Button } from './Button/Button';
+export { ResizableHandle } from './ResizableHandle/ResizableHandle';

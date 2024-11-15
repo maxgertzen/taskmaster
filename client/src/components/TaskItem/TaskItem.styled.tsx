@@ -32,6 +32,7 @@ export const Container = styled.div<{ gap?: number; isCompleted?: boolean }>(
 
 export const DragIconWrapper = styled.div(({ theme }) => ({
   cursor: 'grab',
+  flex: 1,
   marginRight: theme.spacing(2),
   svg: {
     cursor: 'grab',
