@@ -2,10 +2,13 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { useEffect } from 'react';
 
 import { useAuthStore } from '../store/authStore';
+import { useUserStore } from '../store/store';
 
 export const useInitializeToken = () => {
-  const { getAccessTokenSilently, isAuthenticated, isLoading } = useAuth0();
+  const { getAccessTokenSilently, isAuthenticated, isLoading, user } =
+    useAuth0();
   const setToken = useAuthStore((state) => state.setToken);
+  const setUser = useUserStore((state) => state.setUser);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -25,4 +28,12 @@ export const useInitializeToken = () => {
 
     fetchToken();
   }, [getAccessTokenSilently, isAuthenticated, isLoading, setToken]);
+
+  useEffect(() => {
+    if (user?.name) {
+      setUser({
+        name: user.name,
+      });
+    }
+  }, [user, setUser]);
 };
