@@ -28,9 +28,7 @@ export const Header: React.FC<HeaderProps> = ({ user }) => {
           onClick={toggleTheme}
         />
         <VerticalDivider />
-        <span>
-          Hi, <b>{user.name}</b>
-        </span>
+        <span>{`Hi${user.name ? `, ${(<b>{user.name}</b>)}` : '!'}`}</span>
         <FaIcon
           icon={[activeTheme === 'light' ? 'fas' : 'far', 'user-circle']}
           size='lg'
