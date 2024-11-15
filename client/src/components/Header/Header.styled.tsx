@@ -10,25 +10,6 @@ export const HeaderContainer = styled.header(({ theme }) => ({
   backgroundColor: theme.colors.surface,
 }));
 
-export const LogoContainer = styled.div(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  svg: {
-    width: theme.spacing(4),
-    height: theme.spacing(4),
-    marginRight: theme.spacing(1),
-  },
-  path: {
-    fill: theme.colors.primary,
-  },
-}));
-
-export const Title = styled.h1(({ theme }) => ({
-  fontSize: theme.typography.h4.fontSize,
-  fontWeight: theme.typography.h1.fontWeight,
-  color: theme.colors.text,
-}));
-
 export const UserActionsContainer = styled.div(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',

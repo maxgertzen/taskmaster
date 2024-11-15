@@ -4,6 +4,7 @@ export type FetcherConfig<K> = {
   body?: K;
   timeout?: number;
   headers?: HeadersInit;
+  token?: string | null;
   urlSearchParams?: string;
 };
 
@@ -17,6 +18,7 @@ export const fetcher = async <T, K = undefined>(
       headers = {},
       timeout = 5000,
       urlSearchParams,
+      token,
     } = config;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -26,6 +28,7 @@ export const fetcher = async <T, K = undefined>(
       headers: {
         'Content-Type': 'application/json',
         ...headers,
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       ...(method !== 'GET' && { body: JSON.stringify(body) }),
       signal: controller.signal,

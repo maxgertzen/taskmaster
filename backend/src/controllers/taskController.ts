@@ -15,12 +15,13 @@ export const createTask = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    const { userId } = req;
     const { listId, text } = req.body;
     if (!listId || !text) {
       throw new Error("List ID and text are required");
     }
 
-    const task = await taskService.createTask(listId, text);
+    const task = await taskService.createTask(userId as string, listId, text);
     res.status(201).json(task);
   } catch (error) {
     next(error);
@@ -33,8 +34,9 @@ export const getTasks = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    const { userId } = req;
     const { listId } = req.params;
-    const tasks = await taskService.getTasks(listId);
+    const tasks = await taskService.getTasks(userId as string, listId);
     res.status(200).json(tasks);
   } catch (error) {
     next(error);
@@ -61,8 +63,9 @@ export const deleteTask = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    const { userId } = req;
     const { taskId, listId } = req.body;
-    await taskService.deleteTask(taskId, listId);
+    await taskService.deleteTask(userId as string, taskId, listId);
     res.status(200).json(taskId);
   } catch (error) {
     next(error);
@@ -75,9 +78,11 @@ export const reorderTasks = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    const { userId } = req;
     const { listId, oldIndex, newIndex } = req.body;
 
     const reorderedTasks = await taskService.reorderTasks(
+      userId as string,
       listId,
       oldIndex,
       newIndex

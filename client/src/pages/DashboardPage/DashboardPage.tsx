@@ -1,8 +1,11 @@
+import { withAuthenticationRequired } from '@auth0/auth0-react';
 import { FC, Suspense } from 'react';
 
 import { ListSidebar, TaskList, AddTaskInput, Header } from '../../components';
+import { LogoutButton } from '../../components/LogoutButton/LogoutButton';
 import { useLists } from '../../hooks/useLists';
 import { useTasksMutation } from '../../hooks/useTaskMutation';
+import { useAuthStore } from '../../store/authStore';
 import { useTaskStore, useUserStore } from '../../store/store';
 
 import {
@@ -10,7 +13,7 @@ import {
   MainLayout,
   SidebarContainer,
   TaskContainer,
-} from './Dashboard.styled';
+} from './DashboardPage.styled';
 
 // TODO:
 // - Make the sidebar collapsible, responsive and adjustable
@@ -19,7 +22,8 @@ import {
 // - Add a button to mark all tasks as completed
 // - Add a button to delete all tasks
 // - Add a button to delete completed tasks
-export const Dashboard: FC = () => {
+const Dashboard: FC = () => {
+  const token = useAuthStore((state) => state.token);
   const selectedListId = useTaskStore((state) => state.selectedListId);
   const setSelectedListId = useTaskStore((state) => state.setSelectedListId);
 
@@ -42,7 +46,7 @@ export const Dashboard: FC = () => {
     setSelectedListId(null);
   };
 
-  return (
+  return token && lists ? (
     <DashboardContainer>
       <Header user={userDetails} />
       <MainLayout>
@@ -55,6 +59,7 @@ export const Dashboard: FC = () => {
               onDeleteList={handleDeleteList}
             />
           </Suspense>
+          <LogoutButton />
         </SidebarContainer>
         <TaskContainer>
           <Suspense fallback={<div>Loading tasks...</div>}>
@@ -73,5 +78,12 @@ export const Dashboard: FC = () => {
         </TaskContainer>
       </MainLayout>
     </DashboardContainer>
+  ) : (
+    <div>Loading...</div>
   );
 };
+
+export const DashboardPage = withAuthenticationRequired(Dashboard, {
+  onRedirecting: () => <div>Loading...</div>,
+  returnTo: '/',
+});

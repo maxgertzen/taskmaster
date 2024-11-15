@@ -15,6 +15,9 @@ export const SidebarContainer = styled.div(({ theme }) => ({
   width: '25%',
   padding: theme.spacing(2),
   backgroundColor: theme.colors.surface,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
 }));
 
 export const TaskContainer = styled.div(({ theme }) => ({

@@ -6,6 +6,7 @@ import {
   reorderTasks,
   updateTask,
 } from '../api/tasks-api';
+import { useAuthStore } from '../store/authStore';
 import { Task } from '../types/shared';
 import { debounce } from '../utils/debounce';
 import { reorderArray } from '../utils/reorderArray';
@@ -28,24 +29,31 @@ type TaskMutationInput = {
 // - Use cache to show changes optimistically
 // - Handle errors and rollback changes if needed (show Alert)
 
-const debouncedReorder = debounce(
-  async (listId: string, oldIndex: number, newIndex: number) => {
-    return reorderTasks(listId, oldIndex, newIndex);
-  },
-  500
-);
+const debouncedReorder = (token: string | null) =>
+  debounce(async (listId: string, oldIndex: number, newIndex: number) => {
+    const fn = reorderTasks(token);
 
-const handleAddTask = async (listId: string, text: string) => {
-  return createTask(listId, text);
-};
+    return fn(listId, oldIndex, newIndex);
+  }, 500);
 
-const handleEditTask = async (taskId: string, updates: Partial<Task>) => {
-  return updateTask(taskId, updates);
-};
+const handleAddTask =
+  (token: string | null) => async (listId: string, text: string) => {
+    const fn = createTask(token);
 
-const handleDeleteTask = async (taskId: string, listId: string) => {
-  return deleteTask(taskId, listId);
-};
+    return fn(listId, text);
+  };
+
+const handleEditTask =
+  (token: string | null) => async (taskId: string, updates: Partial<Task>) => {
+    const fn = updateTask(token);
+    return fn(taskId, updates);
+  };
+
+const handleDeleteTask =
+  (token: string | null) => async (taskId: string, listId: string) => {
+    const fn = deleteTask(token);
+    return fn(taskId, listId);
+  };
 
 const mutationFunctions = {
   add: handleAddTask,
@@ -95,6 +103,7 @@ const updateTasksOptimistically = (
 
 export const useTasksMutation = (operation: TaskOperation) => {
   const queryClient = useQueryClient();
+  const token = useAuthStore((state) => state.token);
 
   const mutationFn = async (input: TaskMutationInput) => {
     const { listId, taskId, text, completed, reorderingObject } = input;
@@ -105,7 +114,7 @@ export const useTasksMutation = (operation: TaskOperation) => {
       reorderingObject?.newIndex !== undefined &&
       reorderingObject?.oldIndex !== undefined
     ) {
-      return debouncedReorder(
+      return debouncedReorder(token)(
         listId,
         reorderingObject.oldIndex,
         reorderingObject.newIndex
@@ -113,11 +122,11 @@ export const useTasksMutation = (operation: TaskOperation) => {
     }
 
     if (operation === 'add' && listId && text)
-      return mutationFunctions[operation](listId, text);
+      return mutationFunctions[operation](token)(listId, text);
     if (operation === 'edit' && taskId && text)
-      return mutationFunctions[operation](taskId, { text, completed });
+      return mutationFunctions[operation](token)(taskId, { text, completed });
     if (operation === 'delete' && taskId)
-      return mutationFunctions[operation](taskId, listId || '');
+      return mutationFunctions[operation](token)(taskId, listId || '');
   };
 
   return useMutation({

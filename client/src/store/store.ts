@@ -10,15 +10,12 @@ export const useTaskStore = create<TaskStore>((set) => ({
   setSelectedListId: (id) => set({ selectedListId: id }),
 }));
 
-// TODO:
-// - This should be null by default
-// - if the user is not logged in
 interface UserStore {
   user: { name: string };
   setUser: (user: { name: string }) => void;
 }
 
 export const useUserStore = create<UserStore>((set) => ({
-  user: { name: 'John Doe' },
+  user: { name: '' },
   setUser: (user) => set({ user }),
 }));
