@@ -1,8 +1,7 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { FC } from 'react';
 
-import { Button, Logo } from '../../components';
-import { Title } from '../../components/Title/Title';
+import { Title, Button, Logo } from '../../components';
 
 import { ContentContainer, HomePageContainer } from './HomePage.styled';
 

@@ -4,9 +4,8 @@ import {
   Draggable,
   DropResult,
 } from '@hello-pangea/dnd';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 
-import { useListsMutation } from '../../hooks/useListMutation';
 import { List } from '../../types/shared';
 import { ListInput } from '../ListInput/ListInput';
 import { ListItem } from '../ListItem/ListItem';
@@ -20,55 +19,33 @@ import {
 
 interface ListSidebarProps {
   lists: List[];
-  selectedList: string | null;
-  onSelectList: (listId: string) => () => void;
-  onDeleteList: () => void;
+  isAdding: boolean;
+  selectedListId: string | null;
+  isLoading: boolean;
+  setIsAdding: (isAdding: boolean) => void;
+  onAddList: (name: string) => void;
+  onDeleteList: (listId: string) => void;
+  onEditList: (listId: string, name: string) => void;
+  onDragEnd: (result: DropResult) => void;
+  onSelectList: (listId: string) => void;
 }
 
 export const ListSidebar: FC<ListSidebarProps> = ({
   lists,
-  selectedList,
-  onSelectList,
+  isAdding,
+  selectedListId,
+  isLoading,
+  setIsAdding,
+  onAddList,
   onDeleteList,
+  onEditList,
+  onDragEnd,
+  onSelectList,
 }) => {
-  const [isAdding, setIsAdding] = useState(false);
-
-  const addList = useListsMutation('add');
-  const editList = useListsMutation('edit');
-  const deleteList = useListsMutation('delete');
-  const reorderLists = useListsMutation('reorder');
-
-  const handleAddList = async (name: string) => {
-    await addList.mutateAsync({ name });
-    setIsAdding(false);
-  };
-
-  const handleDeleteList = (listId: string) => async () => {
-    await deleteList.mutateAsync({ listId });
-    if (selectedList === listId) {
-      onDeleteList();
-    }
-  };
-
-  const handleEditList = (listId: string) => async (newName: string) => {
-    await editList.mutateAsync({ listId, name: newName });
-  };
-
-  const handleOnDragEnd = async (result: DropResult) => {
-    if (!result.destination) {
-      return;
-    }
-
-    await reorderLists.mutateAsync({
-      reorderingObject: {
-        oldIndex: result.source.index,
-        newIndex: result.destination.index,
-      },
-    });
-  };
+  if (isLoading) return <div>Loading lists...</div>;
 
   return (
-    <DragDropContext onDragEnd={handleOnDragEnd}>
+    <DragDropContext onDragEnd={onDragEnd}>
       <ListSidebarContainer>
         <ListsActions addList={() => setIsAdding(true)} />
         <Droppable droppableId='list-sidebar'>
@@ -89,10 +66,10 @@ export const ListSidebar: FC<ListSidebarProps> = ({
                       isDragging={snapshot.isDragging}
                       key={id}
                       name={name}
-                      isActive={selectedList === id}
-                      handleDeleteList={handleDeleteList(id)}
-                      handleSelectList={onSelectList(id)}
-                      onEdit={handleEditList(id)}
+                      isActive={selectedListId === id}
+                      handleDeleteList={() => onDeleteList(id)}
+                      handleSelectList={() => onSelectList(id)}
+                      onEdit={() => onEditList(id, name)}
                     />
                   )}
                 </Draggable>
@@ -101,7 +78,7 @@ export const ListSidebar: FC<ListSidebarProps> = ({
                 <ListItemContainer>
                   <ListInput
                     placeholder='Enter new list name'
-                    onSubmit={handleAddList}
+                    onSubmit={onAddList}
                     onCancel={() => setIsAdding(false)}
                   />
                 </ListItemContainer>
