@@ -1,20 +1,17 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
 
-import {
-  createTask,
-  deleteTask,
-  reorderTasks,
-  updateTask,
-} from '../api/tasks-api';
+import { createTask } from '../api';
 import { useAuthStore } from '../store/authStore';
+import { MutationOperation } from '../types/mutations';
 import { Task } from '../types/shared';
-import { debounce } from '../utils/debounce';
-import { reorderArray } from '../utils/reorderArray';
-
-type TaskOperation = 'add' | 'edit' | 'delete' | 'reorder';
+import {
+  updateOptimistically,
+  OptimisticUpdateInput,
+} from '../utils/updateOptimistically';
 
 type TaskMutationInput = {
-  listId: string | null;
+  listId?: string | null;
   taskId?: string;
   text?: string;
   completed?: boolean;
@@ -24,116 +21,33 @@ type TaskMutationInput = {
   };
 };
 
-// TODO:
-// - Fix waiting for the backend for responses to render the changes
-// - Use cache to show changes optimistically
-// - Handle errors and rollback changes if needed (show Alert)
-
-const debouncedReorder = (token: string | null) =>
-  debounce(async (listId: string, oldIndex: number, newIndex: number) => {
-    const fn = reorderTasks(token);
-
-    return fn(listId, oldIndex, newIndex);
-  }, 500);
-
-const handleAddTask =
-  (token: string | null) => async (listId: string, text: string) => {
-    const fn = createTask(token);
-
-    return fn(listId, text);
-  };
-
-const handleEditTask =
-  (token: string | null) => async (taskId: string, updates: Partial<Task>) => {
-    const fn = updateTask(token);
-    return fn(taskId, updates);
-  };
-
-const handleDeleteTask =
-  (token: string | null) => async (taskId: string, listId: string) => {
-    const fn = deleteTask(token);
-    return fn(taskId, listId);
-  };
-
-const mutationFunctions = {
-  add: handleAddTask,
-  edit: handleEditTask,
-  delete: handleDeleteTask,
-};
-
-const updateTasksOptimistically = (
-  operation: TaskOperation,
-  input: TaskMutationInput,
-  oldTasks: Task[] = []
-) => {
-  switch (operation) {
-    case 'add':
-      return [
-        ...oldTasks,
-        { id: Date.now().toString(), text: input.text || '', completed: false },
-      ];
-    case 'edit':
-      return oldTasks.map((t) =>
-        t.id === input.taskId
-          ? {
-              ...t,
-              text: input.text || t.text,
-              completed: input.completed ?? t.completed,
-            }
-          : t
-      );
-    case 'delete':
-      return oldTasks.filter((t) => t.id !== input.taskId);
-    case 'reorder':
-      if (
-        input.reorderingObject?.oldIndex !== undefined &&
-        input.reorderingObject?.newIndex !== undefined
-      ) {
-        return reorderArray(
-          oldTasks,
-          input.reorderingObject.oldIndex,
-          input.reorderingObject.newIndex
-        );
-      }
-      return oldTasks;
-    default:
-      return oldTasks;
-  }
-};
-
-export const useTasksMutation = (operation: TaskOperation) => {
+export const useTasksMutation = () => {
   const queryClient = useQueryClient();
   const token = useAuthStore((state) => state.token);
 
-  const mutationFn = async (input: TaskMutationInput) => {
-    const { listId, taskId, text, completed, reorderingObject } = input;
+  // Optimistic update helper
+  const updateTasksOptimistically = useCallback(
+    (
+      operation: MutationOperation,
+      input: OptimisticUpdateInput<Task>,
+      oldTasks: Task[] = []
+    ) =>
+      updateOptimistically(operation, input, oldTasks, {
+        text: input.text || '',
+        completed: input.completed || false,
+      }),
+    []
+  );
 
-    if (
-      operation === 'reorder' &&
-      listId &&
-      reorderingObject?.newIndex !== undefined &&
-      reorderingObject?.oldIndex !== undefined
-    ) {
-      return debouncedReorder(token)(
-        listId,
-        reorderingObject.oldIndex,
-        reorderingObject.newIndex
-      );
-    }
+  // Shared handlers
+  const handleOnMutate = useCallback(
+    async (
+      operation: MutationOperation,
+      input: OptimisticUpdateInput<Task>
+    ) => {
+      const listId = input.listId || input.id;
 
-    if (operation === 'add' && listId && text)
-      return mutationFunctions[operation](token)(listId, text);
-    if (operation === 'edit' && taskId && text)
-      return mutationFunctions[operation](token)(taskId, { text, completed });
-    if (operation === 'delete' && taskId)
-      return mutationFunctions[operation](token)(taskId, listId || '');
-  };
-
-  return useMutation({
-    mutationFn,
-    onMutate: async (input) => {
-      const listId = input.listId || input.taskId;
-      if (!listId && operation !== 'delete') return;
+      if (!listId) return;
 
       const queryKey = ['tasks', listId];
       await queryClient.cancelQueries({ queryKey });
@@ -146,16 +60,105 @@ export const useTasksMutation = (operation: TaskOperation) => {
 
       return { previousTasks };
     },
-    onError: (_error, _input, context) => {
-      const listId = (context?.previousTasks?.[0] as Task)?.id;
+    [queryClient, updateTasksOptimistically]
+  );
+
+  const handleOnError = useCallback(
+    (
+      _err: Error,
+      _input: TaskMutationInput,
+      context:
+        | {
+            previousTasks: Task[] | undefined;
+          }
+        | undefined
+    ) => {
+      const listId = context?.previousTasks?.[0]?.listId;
       if (context?.previousTasks && listId) {
         queryClient.setQueryData(['tasks', listId], context.previousTasks);
       }
     },
-    onSettled: (_data, _error, input) => {
+    [queryClient]
+  );
+
+  const handleOnSettled = useCallback(
+    (
+      _data: Task | undefined,
+      _error: Error | null,
+      input: TaskMutationInput
+    ) => {
       const listId = input.listId || input.taskId;
-      if (listId && operation !== 'reorder')
+      if (listId) {
         queryClient.invalidateQueries({ queryKey: ['tasks', listId] });
+      }
     },
+    [queryClient]
+  );
+
+  const addTask = useMutation({
+    mutationFn: async (input: TaskMutationInput) => {
+      if (input.text && input.listId) {
+        return createTask(token)(input.listId, input.text);
+      }
+
+      return {} as Task;
+    },
+    onMutate: async (input) => {
+      return handleOnMutate('add', input);
+    },
+    onError: handleOnError,
+    onSettled: handleOnSettled,
   });
+
+  const editTask = useMutation({
+    mutationFn: async (input: TaskMutationInput) => {
+      if (input.taskId && input.listId) {
+        return createTask(token)(input.listId, input.text || '');
+      }
+
+      return {} as Task;
+    },
+    onMutate: async (input) => {
+      return handleOnMutate('edit', input);
+    },
+    onError: handleOnError,
+    onSettled: handleOnSettled,
+  });
+
+  const deleteTaskMutation = useMutation({
+    mutationFn: async (input: TaskMutationInput) => {
+      if (input.taskId && input.listId) {
+        return createTask(token)(input.listId, input.text || '');
+      }
+
+      return {} as Task;
+    },
+    onMutate: async (input) => {
+      return handleOnMutate('delete', input);
+    },
+    onError: handleOnError,
+    onSettled: handleOnSettled,
+  });
+
+  const reorderTask = useMutation({
+    mutationFn: async (input: TaskMutationInput) => {
+      if (input.listId) {
+        return createTask(token)(input.listId, input.text || '');
+      }
+
+      return {} as Task;
+    },
+    onMutate: async (input) => {
+      return handleOnMutate('reorder', input);
+    },
+    onError: handleOnError,
+    onSettled: handleOnSettled,
+  });
+
+  return {
+    addTask,
+    editTask,
+    deleteTask: deleteTaskMutation,
+    reorderTask,
+  };
 };

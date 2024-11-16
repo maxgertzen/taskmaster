@@ -2,6 +2,7 @@ export type Task = {
   id: string;
   text: string;
   completed: boolean;
+  listId: string | null;
 };
 
 export type List = {
