@@ -49,8 +49,13 @@ export const updateTask = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    const { userId } = req;
     const { id, ...task } = req.body;
-    const updatedTask = await taskService.updateTask(id, task as Partial<Task>);
+    const updatedTask = await taskService.updateTask(
+      userId as string,
+      id,
+      task as Partial<Task>
+    );
     res.status(200).json(updatedTask);
   } catch (error) {
     next(error);

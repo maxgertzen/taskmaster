@@ -8,14 +8,14 @@ export const createList = async (userId: string, name: string) => {
   const listKey = `user:${userId}:list:${id}`;
   const creationDate = Date.now();
 
-  await redisClient.hSet(listKey, { id: listKey, name, creationDate });
+  await redisClient.hSet(listKey, { id, name, creationDate });
 
   await redisClient.zAdd(`user:${userId}:lists`, {
     score: creationDate,
     value: listKey,
   });
 
-  return { id: listKey, name, creationDate };
+  return { id, name, creationDate };
 };
 
 export const getLists = async (userId: string): Promise<List[]> => {
@@ -46,7 +46,7 @@ export const updateList = async (userId: string, id: string, name: string) => {
   const listKey = `user:${userId}:list:${id}`;
 
   const exists = await redisClient.exists(listKey);
-  if (!exists) throw new Error(`List with ID ${id} does not exist`);
+  if (!exists) throw new Error(`List with ID ${listKey} does not exist`);
 
   await redisClient.hSet(listKey, { name });
 
