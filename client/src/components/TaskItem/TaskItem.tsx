@@ -17,19 +17,12 @@ interface TaskProps {
   dragHandleProps: DraggableProvidedDragHandleProps | null;
   isDragging?: boolean;
   onDeleteTask: () => void;
-  onCompletedTask: (updates: Partial<Task>) => void;
+  onUpdateTask: (updates: Partial<Task>) => Promise<void>;
 }
 
 export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
   (
-    {
-      task,
-      onDeleteTask,
-      onCompletedTask,
-      isDragging,
-      dragHandleProps,
-      ...rest
-    },
+    { task, onDeleteTask, onUpdateTask, isDragging, dragHandleProps, ...rest },
     ref
   ) => {
     const [isCheckboxChecked, setIsCheckboxChecked] = useState(task.completed);
@@ -37,13 +30,13 @@ export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
 
     const handleToggleComplete = (e: React.ChangeEvent<HTMLInputElement>) => {
       setIsCheckboxChecked(e.target.checked);
-      onCompletedTask({ completed: e.target.checked });
+      onUpdateTask({ completed: e.target.checked });
     };
 
-    const handleEditSubmit = (newText: string) => {
+    const handleEditSubmit = async (newText: string) => {
       setIsEditing(false);
       if (newText === task.text) return;
-      onCompletedTask({ text: newText });
+      await onUpdateTask({ text: newText });
     };
 
     const onEditClick = () => {
@@ -52,6 +45,10 @@ export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
 
     const handleCancelEdit = () => {
       setIsEditing(false);
+    };
+
+    const handleDeleteTask = async () => {
+      onDeleteTask();
     };
 
     return (
@@ -82,7 +79,11 @@ export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
             onClick={onEditClick}
             isActive={isEditing}
           />
-          <FaIcon icon={['fas', 'trash']} size='sm' onClick={onDeleteTask} />
+          <FaIcon
+            icon={['fas', 'trash']}
+            size='sm'
+            onClick={handleDeleteTask}
+          />
         </Container>
       </TaskItemContainer>
     );

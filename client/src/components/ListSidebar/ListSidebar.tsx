@@ -21,7 +21,6 @@ interface ListSidebarProps {
   lists: List[];
   isAdding: boolean;
   selectedListId: string | null;
-  isLoading: boolean;
   setIsAdding: (isAdding: boolean) => void;
   onAddList: (name: string) => void;
   onDeleteList: (listId: string) => void;
@@ -34,7 +33,6 @@ export const ListSidebar: FC<ListSidebarProps> = ({
   lists,
   isAdding,
   selectedListId,
-  isLoading,
   setIsAdding,
   onAddList,
   onDeleteList,
@@ -42,52 +40,54 @@ export const ListSidebar: FC<ListSidebarProps> = ({
   onDragEnd,
   onSelectList,
 }) => {
-  if (isLoading) return <div>Loading lists...</div>;
-
-  return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <ListSidebarContainer>
-        <ListsActions addList={() => setIsAdding(true)} />
-        <Droppable droppableId='list-sidebar'>
-          {(provided, snapshot) => (
-            <ListSidebarUnorderedList
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-              isDraggingOver={snapshot.isDraggingOver}
-            >
-              {lists.map(({ id, name }, index) => (
-                <Draggable key={id} index={index} draggableId={id}>
-                  {(provided, snapshot) => (
-                    <ListItem
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.draggableProps.style}
-                      dragHandleProps={provided.dragHandleProps}
-                      isDragging={snapshot.isDragging}
-                      key={id}
-                      name={name}
-                      isActive={selectedListId === id}
-                      handleDeleteList={() => onDeleteList(id)}
-                      handleSelectList={() => onSelectList(id)}
-                      onEdit={() => onEditList(id, name)}
+  if (lists) {
+    return (
+      <DragDropContext onDragEnd={onDragEnd}>
+        <ListSidebarContainer>
+          <ListsActions addList={() => setIsAdding(true)} />
+          <Droppable droppableId='list-sidebar'>
+            {(provided, snapshot) => (
+              <ListSidebarUnorderedList
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                isDraggingOver={snapshot.isDraggingOver}
+              >
+                {lists.map(({ id, name }, index) => (
+                  <Draggable key={id} index={index} draggableId={id}>
+                    {(provided, snapshot) => (
+                      <ListItem
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.draggableProps.style}
+                        dragHandleProps={provided.dragHandleProps}
+                        isDragging={snapshot.isDragging}
+                        key={id}
+                        name={name}
+                        isActive={selectedListId === id}
+                        handleDeleteList={() => onDeleteList(id)}
+                        handleSelectList={() => onSelectList(id)}
+                        onEdit={(text) => onEditList(id, text)}
+                      />
+                    )}
+                  </Draggable>
+                ))}
+                {isAdding && (
+                  <ListItemContainer>
+                    <ListInput
+                      placeholder='Enter new list name'
+                      onSubmit={onAddList}
+                      onCancel={() => setIsAdding(false)}
                     />
-                  )}
-                </Draggable>
-              ))}
-              {isAdding && (
-                <ListItemContainer>
-                  <ListInput
-                    placeholder='Enter new list name'
-                    onSubmit={onAddList}
-                    onCancel={() => setIsAdding(false)}
-                  />
-                </ListItemContainer>
-              )}
-              {provided.placeholder}
-            </ListSidebarUnorderedList>
-          )}
-        </Droppable>
-      </ListSidebarContainer>
-    </DragDropContext>
-  );
+                  </ListItemContainer>
+                )}
+                {provided.placeholder}
+              </ListSidebarUnorderedList>
+            )}
+          </Droppable>
+        </ListSidebarContainer>
+      </DragDropContext>
+    );
+  }
+
+  return <div>Loading lists...</div>;
 };

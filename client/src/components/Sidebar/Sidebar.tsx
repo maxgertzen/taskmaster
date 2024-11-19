@@ -17,7 +17,7 @@ export interface SidebarProps {
 
 export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
   const [isAdding, setIsAdding] = useState(false);
-  const { lists, isLoading } = useLists();
+  const { lists } = useLists();
   const { addList, editList, deleteList, reorderList } = useListsMutation();
 
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -29,23 +29,23 @@ export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
   };
 
   const handleAddList = async (name: string) => {
-    await addList.mutateAsync({ name });
+    addList.mutate({ name });
     setIsAdding(false);
   };
 
   const handleDeleteList = async (listId: string) => {
-    await deleteList.mutateAsync({ listId });
+    deleteList.mutate({ listId });
     if (selectedListId === listId) {
       onSelectList(null);
     }
   };
 
   const handleEditList = async (listId: string, name: string) => {
-    await editList.mutateAsync({ listId, name });
+    editList.mutate({ listId, name });
   };
 
   const onReorderLists = async (oldIndex: number, newIndex: number) => {
-    await reorderList.mutateAsync({
+    reorderList.mutate({
       reorderingObject: { oldIndex, newIndex },
     });
   };
@@ -76,7 +76,6 @@ export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
           lists={lists}
           selectedListId={selectedListId}
           isAdding={isAdding}
-          isLoading={isLoading}
           setIsAdding={setIsAdding}
           onSelectList={onSelectList}
           onDeleteList={handleDeleteList}

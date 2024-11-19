@@ -1,11 +1,13 @@
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 
 import { useDragAndDropHandler } from '../../hooks/useDragAndDropHandler';
+import { useLists } from '../../hooks/useLists';
 import { useTasksMutation } from '../../hooks/useTaskMutation';
 import { useTasks } from '../../hooks/useTasks';
 import { Task } from '../../types/shared';
 import { AddTaskInput } from '../AddTaskInput/AddTaskInput';
 import { TaskList } from '../TaskList/TaskList';
+import { Title } from '../Title/Title';
 
 import { TaskContainer } from './TaskPanel.styled';
 
@@ -14,16 +16,17 @@ interface TaskPanelProps {
 }
 
 export const TaskPanel: FC<TaskPanelProps> = ({ selectedListId }) => {
-  const { tasks, isLoading } = useTasks(selectedListId);
+  const { tasks } = useTasks(selectedListId);
+  const { lists } = useLists();
 
   const { addTask, editTask, deleteTask, reorderTask } = useTasksMutation();
 
-  const handleDeleteTask = (taskId: string) => async () => {
-    await deleteTask.mutateAsync({ taskId, listId: selectedListId });
+  const handleDeleteTask = async (taskId: string) => {
+    deleteTask.mutate({ taskId, listId: selectedListId });
   };
 
   const handleEditTask = (taskId: string) => async (updates: Partial<Task>) => {
-    await editTask.mutateAsync({
+    editTask.mutate({
       taskId,
       listId: selectedListId,
       ...updates,
@@ -31,11 +34,11 @@ export const TaskPanel: FC<TaskPanelProps> = ({ selectedListId }) => {
   };
 
   const handleAddTask = async (text: string) => {
-    await addTask.mutateAsync({ listId: selectedListId, text });
+    addTask.mutate({ listId: selectedListId, text });
   };
 
   const onReorderTasks = async (oldIndex: number, newIndex: number) => {
-    await reorderTask.mutateAsync({
+    return reorderTask.mutate({
       listId: selectedListId,
       reorderingObject: { oldIndex, newIndex },
     });
@@ -45,14 +48,19 @@ export const TaskPanel: FC<TaskPanelProps> = ({ selectedListId }) => {
     onReorder: onReorderTasks,
   });
 
+  const listName = useMemo(
+    () => lists?.find((list) => list.id === selectedListId)?.name || '',
+    [lists, selectedListId]
+  );
+
   return (
     <TaskContainer>
       {selectedListId ? (
         <>
+          {listName && <Title variant='h3'>{listName}</Title>}
           <AddTaskInput onAddTask={handleAddTask} />
           <TaskList
             tasks={tasks}
-            isLoading={isLoading}
             onEditTask={handleEditTask}
             onDeleteTask={handleDeleteTask}
             onDragEnd={handleOnDragEnd}

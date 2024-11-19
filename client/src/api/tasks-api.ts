@@ -30,8 +30,8 @@ export const createTask =
 
 export const updateTask =
   (token: string | null) =>
-  async (id: string, updates: Partial<Task>): Promise<void> => {
-    return await fetcher<void, UpdateTaskRequest>({
+  async (id: string, updates: Partial<Task>): Promise<Task> => {
+    return await fetcher<Task, UpdateTaskRequest>({
       url: TASKS_API_URL,
       method: 'PUT',
       body: {
@@ -44,8 +44,8 @@ export const updateTask =
 
 export const deleteTask =
   (token: string | null) =>
-  async (taskId: string, listId: string): Promise<string> => {
-    return await fetcher<Task['id'], DeleteTaskRequest>({
+  async (taskId: string, listId: string): Promise<Task> => {
+    return await fetcher<Task, DeleteTaskRequest>({
       url: TASKS_API_URL,
       method: 'DELETE',
       body: { taskId, listId },
