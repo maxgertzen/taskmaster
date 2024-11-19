@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
-import { createTask } from '../api';
+import { createTask, deleteTask, reorderTasks, updateTask } from '../api';
 import { useAuthStore } from '../store/authStore';
 import { MutationOperation } from '../types/mutations';
 import { Task } from '../types/shared';
@@ -25,7 +25,6 @@ export const useTasksMutation = () => {
   const queryClient = useQueryClient();
   const token = useAuthStore((state) => state.token);
 
-  // Optimistic update helper
   const updateTasksOptimistically = useCallback(
     (
       operation: MutationOperation,
@@ -33,13 +32,14 @@ export const useTasksMutation = () => {
       oldTasks: Task[] = []
     ) =>
       updateOptimistically(operation, input, oldTasks, {
+        id: input.id || '',
+        listId: input.listId || '',
         text: input.text || '',
         completed: input.completed || false,
       }),
     []
   );
 
-  // Shared handlers
   const handleOnMutate = useCallback(
     async (
       operation: MutationOperation,
@@ -82,15 +82,13 @@ export const useTasksMutation = () => {
   );
 
   const handleOnSettled = useCallback(
-    (
+    async (
       _data: Task | undefined,
       _error: Error | null,
       input: TaskMutationInput
     ) => {
       const listId = input.listId || input.taskId;
-      if (listId) {
-        queryClient.invalidateQueries({ queryKey: ['tasks', listId] });
-      }
+      await queryClient.invalidateQueries({ queryKey: ['tasks', listId] });
     },
     [queryClient]
   );
@@ -113,13 +111,23 @@ export const useTasksMutation = () => {
   const editTask = useMutation({
     mutationFn: async (input: TaskMutationInput) => {
       if (input.taskId && input.listId) {
-        return createTask(token)(input.listId, input.text || '');
+        return updateTask(token)(input.taskId, {
+          id: input.taskId,
+          listId: input.listId,
+          text: input.text,
+          completed: input.completed,
+        });
       }
 
       return {} as Task;
     },
-    onMutate: async (input) => {
-      return handleOnMutate('edit', input);
+    onMutate: async ({ taskId, listId, text, completed }) => {
+      return handleOnMutate('edit', {
+        id: taskId,
+        listId: listId,
+        ...(text ? { text: text } : {}),
+        ...(completed !== undefined ? { completed: completed } : {}),
+      });
     },
     onError: handleOnError,
     onSettled: handleOnSettled,
@@ -128,13 +136,16 @@ export const useTasksMutation = () => {
   const deleteTaskMutation = useMutation({
     mutationFn: async (input: TaskMutationInput) => {
       if (input.taskId && input.listId) {
-        return createTask(token)(input.listId, input.text || '');
+        return deleteTask(token)(input.taskId, input.listId);
       }
 
       return {} as Task;
     },
     onMutate: async (input) => {
-      return handleOnMutate('delete', input);
+      return handleOnMutate('delete', {
+        id: input.taskId,
+        listId: input.listId,
+      });
     },
     onError: handleOnError,
     onSettled: handleOnSettled,
@@ -142,17 +153,28 @@ export const useTasksMutation = () => {
 
   const reorderTask = useMutation({
     mutationFn: async (input: TaskMutationInput) => {
-      if (input.listId) {
-        return createTask(token)(input.listId, input.text || '');
+      if (input.listId && input.reorderingObject) {
+        const { oldIndex, newIndex } = input.reorderingObject;
+        return (await reorderTasks(token)(
+          input.listId,
+          oldIndex,
+          newIndex
+        )) as unknown as Task[];
       }
 
-      return {} as Task;
+      return {} as Task[];
     },
     onMutate: async (input) => {
-      return handleOnMutate('reorder', input);
+      return await handleOnMutate('reorder', input);
     },
     onError: handleOnError,
-    onSettled: handleOnSettled,
+    // onSettled: handleOnSettled,
+    onSuccess: (data, input) => {
+      const listId = input.listId;
+      const queryKey = ['tasks', listId];
+
+      queryClient.setQueryData(queryKey, () => data);
+    },
   });
 
   return {

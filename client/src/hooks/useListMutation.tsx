@@ -34,11 +34,13 @@ export const useListsMutation = () => {
   const updateListsOptimistically = useCallback(
     (
       operation: MutationOperation,
-      input: OptimisticUpdateInput<List>,
+      input: OptimisticUpdateInput<List | ListMutationInput>,
       oldLists: List[] = []
     ) =>
       updateOptimistically(operation, input, oldLists, {
         name: input.name || '',
+        id: input.id || input.listId || '',
+        ...input,
       }),
     []
   );
@@ -77,8 +79,8 @@ export const useListsMutation = () => {
     [queryClient]
   );
 
-  const handleOnSettled = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ['lists'] });
+  const handleOnSettled = useCallback(async () => {
+    await queryClient.refetchQueries({ queryKey: ['lists'] });
   }, [queryClient]);
 
   const addList = useMutation({
@@ -136,7 +138,7 @@ export const useListsMutation = () => {
       return handleOnMutate('reorder', input);
     },
     onError: handleOnError,
-    onSettled: handleOnSettled,
+    onSuccess: handleOnSettled,
   });
 
   return {

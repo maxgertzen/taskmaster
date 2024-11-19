@@ -8,12 +8,12 @@ import { Task } from '../types/shared';
 export const useTasks = (listId: string | null) => {
   const token = useAuthStore((state) => state.token);
 
-  const { data, isLoading } = useQuery({
+  const tasksQuery = useQuery({
     queryFn: fetchTasks(token, listId as string),
     queryKey: ['tasks', listId],
     enabled: !!token && !!listId,
     staleTime: STALE_TIME,
   });
 
-  return { tasks: data as Task[], isLoading };
+  return { tasks: tasksQuery.data as Task[], isError: tasksQuery.isError };
 };
