@@ -87,3 +87,12 @@ export type BulkCompleteRequestBody = {
 export interface BulkCompleteRequest extends Request {
   body: BulkCompleteRequestBody;
 }
+
+export type BulkDeleteRequestBody = {
+  listId: string;
+  mode?: "all" | "completed";
+};
+
+export interface BulkDeleteRequest extends Request {
+  body: BulkDeleteRequestBody;
+}

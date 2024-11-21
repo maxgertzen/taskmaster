@@ -2,6 +2,7 @@ import { generateUniqueId } from "../utils/nanoid";
 import { redisClient } from "../config";
 import { ClientTask, Task } from "../models/taskModel";
 import { reorderArray } from "../utils/reorderArray";
+import { REDIS_KEYS } from "../utils/redisKeys";
 
 export const createTask = async (
   userId: string,
@@ -9,7 +10,7 @@ export const createTask = async (
   text: string
 ): Promise<ClientTask> => {
   const id = await generateUniqueId();
-  const taskKey = `user:${userId}:task:${id}`;
+  const taskKey = REDIS_KEYS.TASK(userId, id);
   const creationDate = Date.now();
   const task: Task = {
     id,
@@ -25,7 +26,7 @@ export const createTask = async (
   };
   await redisClient.hSet(taskKey, redisTask);
 
-  await redisClient.rPush(`user:${userId}:tasks:${listId}`, taskKey);
+  await redisClient.rPush(REDIS_KEYS.TASK_LIST(userId, listId), taskKey);
 
   return {
     ...task,
@@ -38,7 +39,7 @@ export const getTasks = async (
   listId: string
 ): Promise<ClientTask[]> => {
   const taskIds = await redisClient.lRange(
-    `user:${userId}:tasks:${listId}`,
+    REDIS_KEYS.TASK_LIST(userId, listId),
     0,
     -1
   );
@@ -58,7 +59,7 @@ export const updateTask = async (
   taskId: string,
   updates: Partial<Task>
 ): Promise<ClientTask["id"]> => {
-  const taskKey = `user:${userId}:task:${taskId}`;
+  const taskKey = REDIS_KEYS.TASK(userId, taskId);
   const existingTask = await redisClient.hGetAll(taskKey);
   if (!existingTask.id) throw new Error(`Task with ID ${taskKey} not found`);
 
@@ -79,7 +80,7 @@ export const deleteTask = async (
   listId: string
 ): Promise<ClientTask["id"]> => {
   await redisClient.del(taskId);
-  await redisClient.lRem(`user:${userId}:tasks:${listId}`, 0, taskId);
+  await redisClient.lRem(REDIS_KEYS.TASK_LIST(userId, listId), 0, taskId);
 
   return taskId;
 };
@@ -90,15 +91,12 @@ export const reorderTasks = async (
   oldIndex: number,
   newIndex: number
 ): Promise<ClientTask[]> => {
-  const taskIds = await redisClient.lRange(
-    `user:${userId}:tasks:${listId}`,
-    0,
-    -1
-  );
+  const taskListKey = REDIS_KEYS.TASK_LIST(userId, listId);
+  const taskIds = await redisClient.lRange(taskListKey, 0, -1);
   const reorderedTaskIds = reorderArray(taskIds, oldIndex, newIndex);
 
-  await redisClient.del(`user:${userId}:tasks:${listId}`);
-  await redisClient.rPush(`user:${userId}:tasks:${listId}`, reorderedTaskIds);
+  await redisClient.del(taskListKey);
+  await redisClient.rPush(taskListKey, reorderedTaskIds);
 
   return await getTasks(userId, listId);
 };
@@ -109,7 +107,7 @@ export const toggleCompleteAll = async (
   newCompletedState: boolean
 ): Promise<ClientTask[]> => {
   const taskIds = await redisClient.lRange(
-    `user:${userId}:tasks:${listId}`,
+    REDIS_KEYS.TASK_LIST(userId, listId),
     0,
     -1
   );
@@ -127,18 +125,39 @@ export const toggleCompleteAll = async (
   return await getTasks(userId, listId);
 };
 
-export const deleteAll = async (
+export const bulkDelete = async (
   userId: string,
-  listId: string
+  listId: string,
+  mode: "all" | "completed"
 ): Promise<void> => {
-  const taskIds = await redisClient.lRange(
-    `user:${userId}:tasks:${listId}`,
-    0,
-    -1
-  );
+  const taskListKey = REDIS_KEYS.TASK_LIST(userId, listId);
+  const taskIds = await redisClient.lRange(taskListKey, 0, -1);
 
-  const deletePromises = taskIds.map((taskId) => redisClient.del(taskId));
-  await Promise.all(deletePromises);
+  if (taskIds.length === 0) return;
 
-  await redisClient.del(`user:${userId}:tasks:${listId}`);
+  const multi = redisClient.multi();
+
+  if (mode === "completed") {
+    const completedTasks = await Promise.all(
+      taskIds.map(async (taskId) => {
+        const task = await redisClient.hGetAll(taskId);
+        return task;
+      })
+    );
+
+    const completedTaskIds = completedTasks
+      .filter((task) => task.completed === "true")
+      .map((task) => task.id);
+
+    completedTaskIds.forEach((taskId) => {
+      multi.lRem(taskListKey, 0, REDIS_KEYS.TASK(userId, taskId));
+      multi.del(taskId);
+    });
+  } else {
+    taskIds.forEach((taskId) => multi.del(taskId));
+  }
+
+  await multi.exec();
+
+  return;
 };

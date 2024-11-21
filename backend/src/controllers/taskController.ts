@@ -7,6 +7,7 @@ import {
   DeleteTaskRequest,
   ReorderTasksRequest,
   BulkCompleteRequest,
+  BulkDeleteRequest,
 } from "../types/requests";
 import { ClientTask, Task } from "../models/taskModel";
 
@@ -119,16 +120,16 @@ export const toggleCompleteAll = async (
   }
 };
 
-export const deleteAll = async (
-  req: GetTasksRequest,
+export const bulkDelete = async (
+  req: BulkDeleteRequest,
   res: Response<void>,
   next: NextFunction
 ): Promise<void> => {
   try {
     const { userId } = req;
-    const { listId } = req.params;
+    const { listId, mode = "completed" } = req.body;
 
-    await taskService.deleteAll(userId as string, listId);
+    await taskService.bulkDelete(userId as string, listId, mode);
     res.status(204).end();
   } catch (error) {
     next(error);

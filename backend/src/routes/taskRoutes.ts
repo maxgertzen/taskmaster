@@ -14,6 +14,6 @@ router.post(
 router.post("/toggle-complete", taskController.toggleCompleteAll);
 router.put("/", transformCompletedToString, taskController.updateTask);
 router.delete("/", taskController.deleteTask);
-router.delete("/delete-all", taskController.deleteAll);
+router.delete("/bulk-delete", taskController.bulkDelete);
 
 export { router as taskRoutes };
