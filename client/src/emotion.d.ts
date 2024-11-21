@@ -12,6 +12,7 @@ declare module '@emotion/react' {
       accent: string;
       grey: string;
       outline: string;
+      danger: string;
     };
     typography: Typography;
     spacing: (...values: number[]) => string;

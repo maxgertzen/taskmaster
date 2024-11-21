@@ -1,7 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
-import { createTask, deleteTask, reorderTasks, updateTask } from '../api';
+import {
+  createTask,
+  deleteTask,
+  reorderTasks,
+  toggleCompleteAll,
+  updateTask,
+} from '../api';
 import { useAuthStore } from '../store/authStore';
 import { MutationOperation } from '../types/mutations';
 import { Task } from '../types/shared';
@@ -35,7 +41,7 @@ export const useTasksMutation = () => {
         id: input.id || '',
         listId: input.listId || '',
         text: input.text || '',
-        completed: input.completed || false,
+        completed: input.completed,
       }),
     []
   );
@@ -83,7 +89,7 @@ export const useTasksMutation = () => {
 
   const handleOnSettled = useCallback(
     async (
-      _data: Task | undefined,
+      _data: Task | Task[] | undefined,
       _error: Error | null,
       input: TaskMutationInput
     ) => {
@@ -177,10 +183,71 @@ export const useTasksMutation = () => {
     },
   });
 
+  const toggleComplete = useMutation({
+    mutationFn: async (input: TaskMutationInput) => {
+      if (input.listId) {
+        return toggleCompleteAll(token)(input.listId, input.completed || false);
+      }
+    },
+    onMutate: async (input) => {
+      const listId = input.listId;
+
+      if (!listId) return;
+
+      const queryKey = ['tasks', listId];
+      await queryClient.cancelQueries({ queryKey });
+
+      const previousTasks = queryClient.getQueryData<Task[]>(queryKey);
+
+      queryClient.setQueryData(queryKey, (oldTasks: Task[] = []) => {
+        return oldTasks.map((task) => ({
+          ...task,
+          completed: input.completed,
+        }));
+      });
+
+      return { previousTasks };
+    },
+    onError: handleOnError,
+    onSuccess: (data, input) => {
+      const listId = input.listId;
+      const queryKey = ['tasks', listId];
+
+      queryClient.setQueryData(queryKey, () => data);
+    },
+  });
+
+  const deleteAll = useMutation({
+    mutationFn: async (input: TaskMutationInput) => {
+      if (input.listId) {
+        return toggleCompleteAll(token)(
+          input.listId,
+          input.completed || false
+        ) as unknown as Task[];
+      }
+
+      return {} as Task[];
+    },
+    onMutate: async (input) => {
+      return handleOnMutate('delete-all', {
+        listId: input.listId,
+      });
+    },
+    onError: handleOnError,
+    onSuccess: (data, input) => {
+      const listId = input.listId;
+      const queryKey = ['tasks', listId];
+
+      queryClient.setQueryData(queryKey, () => data);
+    },
+  });
+
   return {
     addTask,
     editTask,
     deleteTask: deleteTaskMutation,
     reorderTask,
+    toggleComplete,
+    deleteAll,
   };
 };

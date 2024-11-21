@@ -1,5 +1,5 @@
 import { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
-import React, { useState, forwardRef } from 'react';
+import React, { useState, forwardRef, useEffect } from 'react';
 
 import { Task } from '../../types/shared';
 import { FaIcon } from '../FontAwesomeIcon/FontAwesomeIcon';
@@ -50,6 +50,10 @@ export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
     const handleDeleteTask = async () => {
       onDeleteTask();
     };
+
+    useEffect(() => {
+      setIsCheckboxChecked(task.completed);
+    }, [task.completed]);
 
     return (
       <TaskItemContainer ref={ref} {...rest} isDragging={isDragging}>

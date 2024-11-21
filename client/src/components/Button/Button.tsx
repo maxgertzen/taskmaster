@@ -6,7 +6,7 @@ interface ButtonProps {
   children: string;
   onClick?: () => void;
   type?: 'button' | 'submit' | 'reset';
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger';
 }
 
 export const Button: FC<ButtonProps> = ({

@@ -5,7 +5,7 @@ export type FetcherConfig<K> = {
   timeout?: number;
   headers?: HeadersInit;
   token?: string | null;
-  urlSearchParams?: string;
+  urlSearchParams?: string | Record<string, string>;
 };
 
 export const fetcher = async <T, K = undefined>(
@@ -35,7 +35,12 @@ export const fetcher = async <T, K = undefined>(
     };
 
     if (urlSearchParams) {
-      config.url += `?${urlSearchParams}`;
+      if (typeof urlSearchParams === 'string') {
+        config.url += `?${urlSearchParams}`;
+      } else {
+        const searchParams = new URLSearchParams(urlSearchParams);
+        config.url += `?${searchParams}`;
+      }
     }
 
     const response = await fetch(config.url, options);

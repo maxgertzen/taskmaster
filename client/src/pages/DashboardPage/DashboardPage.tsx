@@ -27,7 +27,7 @@ const Dashboard: FC = () => {
           selectedListId={selectedListId}
           onSelectList={setSelectedListId}
         />
-        <TaskPanel selectedListId={selectedListId} />
+        <TaskPanel listId={selectedListId} />
       </MainLayout>
     </DashboardContainer>
   ) : (

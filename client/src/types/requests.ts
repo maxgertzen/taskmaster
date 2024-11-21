@@ -41,3 +41,12 @@ export type ReorderTasksRequest = {
   oldIndex: number;
   newIndex: number;
 };
+
+export type CompleteAllRequest = {
+  listId: string;
+  newCompletedState: boolean;
+};
+
+export type DeleteAllRequest = {
+  listId: string;
+};

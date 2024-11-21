@@ -1,3 +1,5 @@
+import { MutationOperation } from '../types/mutations';
+
 import { reorderArray } from './reorderArray';
 
 type ReorderInput = {
@@ -13,7 +15,7 @@ export type OptimisticUpdateInput<T> = Partial<T> & {
 } & Partial<ReorderInput>;
 
 export const updateOptimistically = <T extends { id: string }>(
-  operation: 'add' | 'edit' | 'delete' | 'reorder',
+  operation: MutationOperation,
   input: OptimisticUpdateInput<T>,
   oldItems: T[] = [],
   newItemDefaults?: Partial<T>
@@ -47,6 +49,22 @@ export const updateOptimistically = <T extends { id: string }>(
       if (oldIndex !== undefined && newIndex !== undefined)
         return reorderArray(oldItems, oldIndex, newIndex);
       return oldItems;
+    }
+    case 'toggle-complete': {
+      return oldItems.map((item) => {
+        if (
+          'completed' in item &&
+          'listId' in item &&
+          input.listId &&
+          item.listId === input.listId
+        ) {
+          return { ...item, completed: !item.completed } as T;
+        }
+        return item;
+      });
+    }
+    case 'delete-all': {
+      return [];
     }
     default:
       return oldItems;

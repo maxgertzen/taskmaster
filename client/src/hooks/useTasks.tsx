@@ -1,16 +1,24 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { QUERY_KEYS } from '../api/query-keys';
 import { fetchTasks } from '../api/tasks-api';
 import { STALE_TIME } from '../constants/staleTime';
 import { useAuthStore } from '../store/authStore';
+import { Filters, Sort } from '../types/mutations';
 import { Task } from '../types/shared';
 
-export const useTasks = (listId: string | null) => {
+type UseTasksInput = {
+  listId: string | null;
+  filter?: Filters;
+  sort?: Sort;
+};
+
+export const useTasks = ({ listId, filter, sort }: UseTasksInput) => {
   const token = useAuthStore((state) => state.token);
 
   const tasksQuery = useQuery({
     queryFn: fetchTasks(token, listId as string),
-    queryKey: ['tasks', listId],
+    queryKey: QUERY_KEYS.tasks({ listId, filter, sort }),
     enabled: !!token && !!listId,
     staleTime: STALE_TIME,
   });

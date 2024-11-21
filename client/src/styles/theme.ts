@@ -38,6 +38,7 @@ export const lightTheme = {
     accent: '#9a89b4',
     grey: '#afa8ba',
     outline: 'transparent',
+    danger: '#ff0000',
   },
   borders: {
     ...baseTheme.borders,
@@ -57,6 +58,7 @@ export const darkTheme = {
     accent: '#1400ff',
     grey: '#fef6ff',
     outline: 'transparent',
+    danger: '#ff0000',
   },
   borders: {
     ...baseTheme.borders,

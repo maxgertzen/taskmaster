@@ -1,5 +1,7 @@
 import {
+  CompleteAllRequest,
   CreateTaskRequest,
+  DeleteAllRequest,
   DeleteTaskRequest,
   ReorderTasksRequest,
   UpdateTaskRequest,
@@ -64,6 +66,28 @@ export const reorderTasks =
       url: `${TASKS_API_URL}/reorder`,
       method: 'POST',
       body: { listId, oldIndex, newIndex },
+      token,
+    });
+  };
+
+export const toggleCompleteAll =
+  (token: string | null) =>
+  async (listId: string, newCompletedState: boolean): Promise<Task[]> => {
+    return await fetcher<Task[], CompleteAllRequest>({
+      url: `${TASKS_API_URL}/toggle-complete`,
+      method: 'POST',
+      body: { listId, newCompletedState },
+      token,
+    });
+  };
+
+export const deleteAllTasks =
+  (token: string | null) =>
+  async (listId: string): Promise<Task[]> => {
+    return await fetcher<Task[], DeleteAllRequest>({
+      url: `${TASKS_API_URL}/delete-all`,
+      method: 'POST',
+      body: { listId },
       token,
     });
   };

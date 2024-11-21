@@ -4,6 +4,7 @@ export const AddTaskInputContainer = styled.div(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   position: 'relative',
+  flex: 14,
   svg: {
     position: 'absolute',
     right: theme.spacing(2),
