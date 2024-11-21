@@ -27,13 +27,18 @@ export const TaskPanel: FC<TaskPanelProps> = ({ listId }) => {
     [tasks]
   );
 
+  const isAnyCompleted = useMemo(
+    () => tasks?.some((task) => task.completed) ?? false,
+    [tasks]
+  );
+
   const {
     addTask,
     editTask,
     deleteTask,
     reorderTask,
     toggleComplete,
-    deleteAll,
+    bulkDelete,
   } = useTasksMutation();
 
   const handleDeleteTask = async (taskId: string) => {
@@ -67,8 +72,9 @@ export const TaskPanel: FC<TaskPanelProps> = ({ listId }) => {
     toggleComplete.mutate({ listId, completed: !isAllCompleted });
   };
 
-  const handleDeleteAll = async () => {
-    deleteAll.mutate({ listId });
+  const handleBulkDelete = (mode?: 'completed') => async () => {
+    if (mode === 'completed' && !tasks?.some((task) => task.completed)) return;
+    bulkDelete.mutate({ listId, deleteMode: mode });
   };
 
   const listName = useMemo(
@@ -83,8 +89,9 @@ export const TaskPanel: FC<TaskPanelProps> = ({ listId }) => {
           {listName && <Title variant='h3'>{listName}</Title>}
           <TaskActions
             isAllCompleted={isAllCompleted}
+            isAnyCompleted={isAnyCompleted}
             onAdd={handleAddTask}
-            onDeleteAll={handleDeleteAll}
+            onDeleteAll={handleBulkDelete}
             onToggleCompleteAll={handleCompleteAll}
           />
           <TaskList

@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
 import {
+  bulkDelete,
   createTask,
   deleteTask,
   reorderTasks,
@@ -25,6 +26,7 @@ type TaskMutationInput = {
     oldIndex: number;
     newIndex: number;
   };
+  deleteMode?: 'completed' | 'all';
 };
 
 export const useTasksMutation = () => {
@@ -88,13 +90,15 @@ export const useTasksMutation = () => {
   );
 
   const handleOnSettled = useCallback(
-    async (
+    (
       _data: Task | Task[] | undefined,
       _error: Error | null,
       input: TaskMutationInput
     ) => {
       const listId = input.listId || input.taskId;
-      await queryClient.invalidateQueries({ queryKey: ['tasks', listId] });
+      queryClient.invalidateQueries({
+        queryKey: ['tasks', listId],
+      });
     },
     [queryClient]
   );
@@ -217,28 +221,40 @@ export const useTasksMutation = () => {
     },
   });
 
-  const deleteAll = useMutation({
+  const bulkDeleteMutation = useMutation({
     mutationFn: async (input: TaskMutationInput) => {
       if (input.listId) {
-        return toggleCompleteAll(token)(
-          input.listId,
-          input.completed || false
-        ) as unknown as Task[];
+        return bulkDelete(token)(input.listId, input.deleteMode);
       }
 
-      return {} as Task[];
+      return [] as Task[];
     },
     onMutate: async (input) => {
-      return handleOnMutate('delete-all', {
-        listId: input.listId,
+      const listId = input.listId;
+
+      if (!listId) return;
+
+      const queryKey = ['tasks', listId];
+      await queryClient.cancelQueries({ queryKey });
+
+      const previousTasks = queryClient.getQueryData<Task[]>(queryKey);
+
+      queryClient.setQueryData(queryKey, (oldTasks: Task[] = []) => {
+        if (input.deleteMode === 'completed') {
+          return oldTasks.filter((task) => !task.completed);
+        }
+
+        return [];
       });
+
+      return { previousTasks };
     },
     onError: handleOnError,
-    onSuccess: (data, input) => {
+    onSettled: (_data, _err, input) => {
       const listId = input.listId;
       const queryKey = ['tasks', listId];
 
-      queryClient.setQueryData(queryKey, () => data);
+      queryClient.invalidateQueries({ queryKey });
     },
   });
 
@@ -248,6 +264,6 @@ export const useTasksMutation = () => {
     deleteTask: deleteTaskMutation,
     reorderTask,
     toggleComplete,
-    deleteAll,
+    bulkDelete: bulkDeleteMutation,
   };
 };

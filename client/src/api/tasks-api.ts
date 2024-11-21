@@ -81,13 +81,13 @@ export const toggleCompleteAll =
     });
   };
 
-export const deleteAllTasks =
+export const bulkDelete =
   (token: string | null) =>
-  async (listId: string): Promise<Task[]> => {
+  async (listId: string, mode?: 'all' | 'completed'): Promise<Task[]> => {
     return await fetcher<Task[], DeleteAllRequest>({
-      url: `${TASKS_API_URL}/delete-all`,
-      method: 'POST',
-      body: { listId },
+      url: `${TASKS_API_URL}/bulk-delete`,
+      method: 'DELETE',
+      body: { listId, mode },
       token,
     });
   };

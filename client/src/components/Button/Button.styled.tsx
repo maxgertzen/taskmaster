@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 
 export const StyledButton = styled.button<{
   variant: 'primary' | 'secondary' | 'outline' | 'danger';
-}>(({ theme, variant }) => ({
+}>(({ theme, variant, disabled }) => ({
   padding: theme.spacing(1, 2),
   backgroundColor: theme.colors[variant === 'danger' ? 'outline' : variant],
   color:
@@ -29,5 +29,14 @@ export const StyledButton = styled.button<{
     border: theme.borders.main(
       variant === 'danger' ? theme.colors.danger : theme.colors.text
     ),
+  }),
+  ...(disabled && {
+    backgroundColor: theme.colors.grey,
+    color: theme.colors.text,
+    border: theme.borders.main(theme.colors.text),
+    cursor: 'not-allowed',
+    '&:hover': {
+      backgroundColor: theme.colors.grey,
+    },
   }),
 }));

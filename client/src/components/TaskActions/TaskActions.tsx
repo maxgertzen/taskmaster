@@ -7,13 +7,15 @@ import { IconContainer, TaskActionsContainer } from './TaskActions.styled';
 
 interface TaskActionsProps {
   isAllCompleted: boolean;
+  isAnyCompleted: boolean;
   onAdd: (text: string) => void;
   onToggleCompleteAll: () => void;
-  onDeleteAll: () => void;
+  onDeleteAll: (mode?: 'completed') => () => void;
 }
 
 export const TaskActions: FC<TaskActionsProps> = ({
   isAllCompleted,
+  isAnyCompleted,
   onAdd,
   onToggleCompleteAll,
   onDeleteAll,
@@ -25,7 +27,14 @@ export const TaskActions: FC<TaskActionsProps> = ({
         <Button variant='outline' onClick={() => onToggleCompleteAll()}>
           {`${isAllCompleted ? 'Uncheck' : 'Check'} All`}
         </Button>
-        <Button variant='danger' onClick={() => onDeleteAll()}>
+        <Button
+          disabled={!isAnyCompleted}
+          variant='danger'
+          onClick={onDeleteAll('completed')}
+        >
+          Delete Completed
+        </Button>
+        <Button variant='danger' onClick={onDeleteAll()}>
           Delete All
         </Button>
       </IconContainer>

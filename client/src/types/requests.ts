@@ -49,4 +49,5 @@ export type CompleteAllRequest = {
 
 export type DeleteAllRequest = {
   listId: string;
+  mode?: 'all' | 'completed';
 };
