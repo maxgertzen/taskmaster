@@ -102,3 +102,43 @@ export const reorderTasks = async (
 
   return await getTasks(userId, listId);
 };
+
+export const toggleCompleteAll = async (
+  userId: string,
+  listId: string,
+  newCompletedState: boolean
+): Promise<ClientTask[]> => {
+  const taskIds = await redisClient.lRange(
+    `user:${userId}:tasks:${listId}`,
+    0,
+    -1
+  );
+
+  if (taskIds.length === 0) return [];
+
+  const multi = redisClient.multi();
+
+  taskIds.forEach((taskId) => {
+    multi.hSet(taskId, { completed: newCompletedState.toString() });
+  });
+
+  await multi.exec();
+
+  return await getTasks(userId, listId);
+};
+
+export const deleteAll = async (
+  userId: string,
+  listId: string
+): Promise<void> => {
+  const taskIds = await redisClient.lRange(
+    `user:${userId}:tasks:${listId}`,
+    0,
+    -1
+  );
+
+  const deletePromises = taskIds.map((taskId) => redisClient.del(taskId));
+  await Promise.all(deletePromises);
+
+  await redisClient.del(`user:${userId}:tasks:${listId}`);
+};

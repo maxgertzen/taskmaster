@@ -79,3 +79,11 @@ export type ReorderTasksRequestBody = {
 export interface ReorderTasksRequest extends Request {
   body: ReorderTasksRequestBody;
 }
+
+export type BulkCompleteRequestBody = {
+  listId: string;
+  newCompletedState: boolean;
+};
+export interface BulkCompleteRequest extends Request {
+  body: BulkCompleteRequestBody;
+}

@@ -6,6 +6,7 @@ import {
   GetTasksRequest,
   DeleteTaskRequest,
   ReorderTasksRequest,
+  BulkCompleteRequest,
 } from "../types/requests";
 import { ClientTask, Task } from "../models/taskModel";
 
@@ -93,6 +94,42 @@ export const reorderTasks = async (
       newIndex
     );
     res.status(200).json(reorderedTasks);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const toggleCompleteAll = async (
+  req: BulkCompleteRequest,
+  res: Response<ClientTask[]>,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { userId } = req;
+    const { listId, newCompletedState } = req.body;
+
+    const completedTasks = await taskService.toggleCompleteAll(
+      userId as string,
+      listId,
+      newCompletedState
+    );
+    res.status(200).json(completedTasks);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteAll = async (
+  req: GetTasksRequest,
+  res: Response<void>,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { userId } = req;
+    const { listId } = req.params;
+
+    await taskService.deleteAll(userId as string, listId);
+    res.status(204).end();
   } catch (error) {
     next(error);
   }
