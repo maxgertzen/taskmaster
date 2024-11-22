@@ -47,8 +47,14 @@ export type GetTasksRequestParams = {
   listId: string;
 };
 
+export type GetTasksRequestQuery = {
+  filter?: "complete" | "incomplete";
+  sort?: "asc" | "desc";
+};
+
 export interface GetTasksRequest extends Request {
   params: GetTasksRequestParams;
+  query: GetTasksRequestQuery;
 }
 
 export type UpdateTaskRequestBody = {

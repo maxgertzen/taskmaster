@@ -3,6 +3,7 @@ import { redisClient } from "../config";
 import { ClientTask, Task } from "../models/taskModel";
 import { reorderArray } from "../utils/reorderArray";
 import { REDIS_KEYS } from "../utils/redisKeys";
+import { GetTasksRequestQuery } from "../types/requests";
 
 export const createTask = async (
   userId: string,
@@ -36,7 +37,8 @@ export const createTask = async (
 
 export const getTasks = async (
   userId: string,
-  listId: string
+  listId: string,
+  options?: GetTasksRequestQuery
 ): Promise<ClientTask[]> => {
   const taskIds = await redisClient.lRange(
     REDIS_KEYS.TASK_LIST(userId, listId),
@@ -48,10 +50,26 @@ export const getTasks = async (
     taskIds.map((taskId) => redisClient.hGetAll(taskId))
   );
 
-  return tasks.map((task) => ({
+  let clientTransformedTasks = tasks.map((task) => ({
     ...task,
     completed: task.completed === "true",
   })) as ClientTask[];
+
+  if (options?.filter) {
+    clientTransformedTasks = clientTransformedTasks.filter((task) =>
+      options.filter === "complete" ? task.completed : !task.completed
+    );
+  }
+
+  if (options?.sort) {
+    clientTransformedTasks.sort((a, b) =>
+      options.sort === "asc"
+        ? a.text.localeCompare(b.text)
+        : b.text.localeCompare(a.text)
+    );
+  }
+
+  return clientTransformedTasks;
 };
 
 export const updateTask = async (

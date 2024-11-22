@@ -38,7 +38,11 @@ export const getTasks = async (
   try {
     const { userId } = req;
     const { listId } = req.params;
-    const tasks = await taskService.getTasks(userId as string, listId);
+    const { filter, sort } = req.query;
+
+    const options = !filter && !sort ? {} : { filter, sort };
+
+    const tasks = await taskService.getTasks(userId as string, listId, options);
     res.status(200).json(tasks);
   } catch (error) {
     next(error);
