@@ -250,11 +250,11 @@ export const useTasksMutation = () => {
       return { previousTasks };
     },
     onError: handleOnError,
-    onSettled: (_data, _err, input) => {
+    onSuccess: (data, input) => {
       const listId = input.listId;
       const queryKey = ['tasks', listId];
 
-      queryClient.invalidateQueries({ queryKey });
+      queryClient.setQueryData(queryKey, () => data);
     },
   });
 

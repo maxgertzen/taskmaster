@@ -122,15 +122,19 @@ export const toggleCompleteAll = async (
 
 export const bulkDelete = async (
   req: BulkDeleteRequest,
-  res: Response<void>,
+  res: Response<ClientTask[]>,
   next: NextFunction
 ): Promise<void> => {
   try {
     const { userId } = req;
     const { listId, mode = "completed" } = req.body;
 
-    await taskService.bulkDelete(userId as string, listId, mode);
-    res.status(204).end();
+    const updatedTasks = await taskService.bulkDelete(
+      userId as string,
+      listId,
+      mode
+    );
+    res.status(200).json(updatedTasks);
   } catch (error) {
     next(error);
   }

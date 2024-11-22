@@ -129,11 +129,11 @@ export const bulkDelete = async (
   userId: string,
   listId: string,
   mode: "all" | "completed"
-): Promise<void> => {
+): Promise<ClientTask[]> => {
   const taskListKey = REDIS_KEYS.TASK_LIST(userId, listId);
   const taskIds = await redisClient.lRange(taskListKey, 0, -1);
 
-  if (taskIds.length === 0) return;
+  if (taskIds.length === 0) return [];
 
   const multi = redisClient.multi();
 
@@ -159,5 +159,5 @@ export const bulkDelete = async (
 
   await multi.exec();
 
-  return;
+  return await getTasks(userId, listId);
 };
