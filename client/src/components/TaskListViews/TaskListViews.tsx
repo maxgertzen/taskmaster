@@ -23,7 +23,10 @@ export const TaskListViews: FC<TaskListViewsProps> = ({
     <TaskListViewsContainer>
       <Button
         variant={filter == null ? 'primary' : 'outline'}
-        onClick={() => onFilter(null)}
+        onClick={() => {
+          onFilter(null);
+          onSort(null);
+        }}
       >
         All
       </Button>
