@@ -8,6 +8,7 @@ import { Filters, Sort } from '../../types/mutations';
 import { Task } from '../../types/shared';
 import { TaskActions } from '../TaskActions/TaskActions';
 import { TaskList } from '../TaskList/TaskList';
+import { TaskListViews } from '../TaskListViews/TaskListViews';
 import { Title } from '../Title/Title';
 
 import { TaskContainer } from './TaskPanel.styled';
@@ -77,6 +78,16 @@ export const TaskPanel: FC<TaskPanelProps> = ({ listId }) => {
     bulkDelete.mutate({ listId, deleteMode: mode });
   };
 
+  const handleFilter = (newFilter: Filters) => {
+    if (filter === newFilter) return setFilter(null);
+    setFilter(newFilter);
+  };
+
+  const handleSort = (newSort: Sort) => {
+    if (sort === newSort) return setSort(null);
+    setSort(newSort);
+  };
+
   const listName = useMemo(
     () => lists?.find((list) => list.id === listId)?.name || '',
     [lists, listId]
@@ -93,6 +104,12 @@ export const TaskPanel: FC<TaskPanelProps> = ({ listId }) => {
             onAdd={handleAddTask}
             onDeleteAll={handleBulkDelete}
             onToggleCompleteAll={handleCompleteAll}
+          />
+          <TaskListViews
+            filter={filter}
+            sort={sort}
+            onFilter={handleFilter}
+            onSort={handleSort}
           />
           <TaskList
             tasks={tasks}

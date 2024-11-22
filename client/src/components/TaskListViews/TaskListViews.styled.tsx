@@ -4,6 +4,6 @@ export const TaskListViewsContainer = styled('div')({
   display: 'flex',
   flexWrap: 'nowrap',
   alignItems: 'center',
-  justifyContent: 'center',
+  justifyContent: 'space-around',
   width: '100%',
 });
