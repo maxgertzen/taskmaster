@@ -48,7 +48,7 @@ export type GetTasksRequestParams = {
 };
 
 export type GetTasksRequestQuery = {
-  filter?: "complete" | "incomplete";
+  filter?: "completed" | "incomplete";
   sort?: "asc" | "desc";
 };
 

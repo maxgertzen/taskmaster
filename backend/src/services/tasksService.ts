@@ -57,7 +57,7 @@ export const getTasks = async (
 
   if (options?.filter) {
     clientTransformedTasks = clientTransformedTasks.filter((task) =>
-      options.filter === "complete" ? task.completed : !task.completed
+      options.filter === "completed" ? task.completed : !task.completed
     );
   }
 
