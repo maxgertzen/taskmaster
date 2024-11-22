@@ -6,6 +6,7 @@ export const TaskActionsContainer = styled('div')(({ theme }) => ({
   justifyContent: 'space-around',
   width: '100%',
   gap: theme.spacing(1),
+  flexWrap: 'wrap',
 }));
 
 export const IconContainer = styled('div')(({ theme }) => ({

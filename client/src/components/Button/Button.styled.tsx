@@ -32,7 +32,7 @@ export const StyledButton = styled.button<{
   }),
   ...(disabled && {
     backgroundColor: theme.colors.grey,
-    color: theme.colors.text,
+    color: theme.colors.surface,
     border: theme.borders.main(theme.colors.text),
     cursor: 'not-allowed',
     '&:hover': {
