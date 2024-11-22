@@ -7,6 +7,7 @@ import {
   reorderLists,
   updateList,
 } from '../api/lists-api';
+import { QUERY_KEYS } from '../api/query-keys';
 import { useAuthStore } from '../store/authStore';
 import { MutationOperation } from '../types/mutations';
 import { List } from '../types/shared';
@@ -50,10 +51,11 @@ export const useListsMutation = () => {
       operation: MutationOperation,
       input: OptimisticUpdateInput<List>
     ) => {
-      await queryClient.cancelQueries({ queryKey: ['lists'] });
-      const previousLists = queryClient.getQueryData<List[]>(['lists']);
+      const queryKey = QUERY_KEYS.lists;
+      await queryClient.cancelQueries({ queryKey });
+      const previousLists = queryClient.getQueryData<List[]>(queryKey);
 
-      queryClient.setQueryData(['lists'], (oldLists: List[] = []) =>
+      queryClient.setQueryData(queryKey, (oldLists: List[] = []) =>
         updateListsOptimistically(operation, input, oldLists)
       );
 
@@ -73,14 +75,14 @@ export const useListsMutation = () => {
         | undefined
     ) => {
       if (context?.previousLists) {
-        queryClient.setQueryData(['lists'], context.previousLists);
+        queryClient.setQueryData(QUERY_KEYS.lists, context.previousLists);
       }
     },
     [queryClient]
   );
 
   const handleOnSettled = useCallback(async () => {
-    await queryClient.refetchQueries({ queryKey: ['lists'] });
+    await queryClient.refetchQueries({ queryKey: QUERY_KEYS.lists });
   }, [queryClient]);
 
   const addList = useMutation({

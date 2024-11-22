@@ -9,6 +9,7 @@ import {
   toggleCompleteAll,
   updateTask,
 } from '../api';
+import { QUERY_KEYS } from '../api/query-keys';
 import { useAuthStore } from '../store/authStore';
 import { MutationOperation } from '../types/mutations';
 import { Task } from '../types/shared';
@@ -57,12 +58,12 @@ export const useTasksMutation = () => {
 
       if (!listId) return;
 
-      const queryKey = ['tasks', listId];
+      const queryKey = QUERY_KEYS.tasks({ listId });
       await queryClient.cancelQueries({ queryKey });
 
       const previousTasks = queryClient.getQueryData<Task[]>(queryKey);
 
-      queryClient.setQueryData(queryKey, (oldTasks: Task[] = []) =>
+      queryClient.setQueriesData({ queryKey }, (oldTasks: Task[] = []) =>
         updateTasksOptimistically(operation, input, oldTasks)
       );
 
@@ -83,7 +84,10 @@ export const useTasksMutation = () => {
     ) => {
       const listId = context?.previousTasks?.[0]?.listId;
       if (context?.previousTasks && listId) {
-        queryClient.setQueryData(['tasks', listId], context.previousTasks);
+        queryClient.setQueriesData(
+          { queryKey: QUERY_KEYS.tasks({ listId }) },
+          context.previousTasks
+        );
       }
     },
     [queryClient]
@@ -95,9 +99,10 @@ export const useTasksMutation = () => {
       _error: Error | null,
       input: TaskMutationInput
     ) => {
-      const listId = input.listId || input.taskId;
+      const listId = input.listId || input.taskId || '';
       queryClient.invalidateQueries({
-        queryKey: ['tasks', listId],
+        queryKey: QUERY_KEYS.tasks({ listId }),
+        exact: false,
       });
     },
     [queryClient]
@@ -180,10 +185,10 @@ export const useTasksMutation = () => {
     onError: handleOnError,
     // onSettled: handleOnSettled,
     onSuccess: (data, input) => {
-      const listId = input.listId;
-      const queryKey = ['tasks', listId];
+      const listId = input.listId || '';
+      const queryKey = QUERY_KEYS.tasks({ listId });
 
-      queryClient.setQueryData(queryKey, () => data);
+      queryClient.setQueriesData({ queryKey, exact: false }, () => data);
     },
   });
 
@@ -198,7 +203,7 @@ export const useTasksMutation = () => {
 
       if (!listId) return;
 
-      const queryKey = ['tasks', listId];
+      const queryKey = QUERY_KEYS.tasks({ listId });
       await queryClient.cancelQueries({ queryKey });
 
       const previousTasks = queryClient.getQueryData<Task[]>(queryKey);
@@ -215,9 +220,9 @@ export const useTasksMutation = () => {
     onError: handleOnError,
     onSuccess: (data, input) => {
       const listId = input.listId;
-      const queryKey = ['tasks', listId];
+      const queryKey = QUERY_KEYS.tasks({ listId: listId || '' });
 
-      queryClient.setQueryData(queryKey, () => data);
+      queryClient.setQueriesData({ queryKey, exact: false }, () => data);
     },
   });
 
@@ -234,27 +239,30 @@ export const useTasksMutation = () => {
 
       if (!listId) return;
 
-      const queryKey = ['tasks', listId];
+      const queryKey = QUERY_KEYS.tasks({ listId });
       await queryClient.cancelQueries({ queryKey });
 
       const previousTasks = queryClient.getQueryData<Task[]>(queryKey);
 
-      queryClient.setQueryData(queryKey, (oldTasks: Task[] = []) => {
-        if (input.deleteMode === 'completed') {
-          return oldTasks.filter((task) => !task.completed);
-        }
+      queryClient.setQueriesData(
+        { queryKey, exact: false },
+        (oldTasks: Task[] = []) => {
+          if (input.deleteMode === 'completed') {
+            return oldTasks.filter((task) => !task.completed);
+          }
 
-        return [];
-      });
+          return [];
+        }
+      );
 
       return { previousTasks };
     },
     onError: handleOnError,
     onSuccess: (data, input) => {
       const listId = input.listId;
-      const queryKey = ['tasks', listId];
+      const queryKey = QUERY_KEYS.tasks({ listId: listId || '' });
 
-      queryClient.setQueryData(queryKey, () => data);
+      queryClient.setQueriesData({ queryKey, exact: false }, () => data);
     },
   });
 

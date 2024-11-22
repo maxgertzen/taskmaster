@@ -17,8 +17,8 @@ export const useTasks = ({ listId, filter, sort }: UseTasksInput) => {
   const token = useAuthStore((state) => state.token);
 
   const tasksQuery = useQuery({
-    queryFn: fetchTasks(token, listId as string),
-    queryKey: QUERY_KEYS.tasks({ listId, filter, sort }),
+    queryFn: fetchTasks(token),
+    queryKey: QUERY_KEYS.tasks({ listId: listId as string, filter, sort }),
     enabled: !!token && !!listId,
     staleTime: STALE_TIME,
   });
