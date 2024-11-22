@@ -1,3 +1,5 @@
+import { QueryFunctionContext } from '@tanstack/react-query';
+
 import {
   CompleteAllRequest,
   CreateTaskRequest,
@@ -9,12 +11,23 @@ import {
 import { Task } from '../types/shared';
 import { fetcher } from '../utils/fetcher';
 
+import { QUERY_KEYS } from './query-keys';
+
 const TASKS_API_URL = `${import.meta.env.VITE_API_URL}/tasks`;
 
 export const fetchTasks =
-  (token: string | null, listId: string) => async (): Promise<Task[]> => {
+  (token: string | null) =>
+  async ({
+    queryKey: [{ listId, filter, sort }],
+  }: QueryFunctionContext<ReturnType<typeof QUERY_KEYS.tasks>>): Promise<
+    Task[]
+  > => {
     return await fetcher<Task[]>({
       url: `${TASKS_API_URL}/${listId}`,
+      urlSearchParams: {
+        ...(filter && { filter }),
+        ...(sort && { sort }),
+      },
       token,
     });
   };
