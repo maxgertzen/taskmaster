@@ -7,6 +7,11 @@ import { useTaskStore, useUserStore } from '../../store/store';
 
 import { DashboardContainer, MainLayout } from './DashboardPage.styled';
 
+// TODO
+// 1. Create a loader component - this will be used to show a loading spinner
+// 2. Ensure debounce is working correctly
+// 3. Add due date to the task item
+// 4. Update the styling of the project to use Material UI
 const Dashboard: FC = () => {
   const token = useAuthStore((state) => state.token);
   const { selectedListId, setSelectedListId } = useTaskStore((state) => state);
