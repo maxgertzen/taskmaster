@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 
-export const TaskListContainer = styled.ul<{ isDraggingOver: boolean }>(
+export const StyledTaskListContainer = styled.ul<{ isDraggingOver: boolean }>(
   ({ isDraggingOver, theme }) => ({
     listStyleType: 'none',
     padding: 0,

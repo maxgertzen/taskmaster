@@ -1,5 +1,5 @@
 import { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
-import React, { useState, forwardRef } from 'react';
+import React, { useState, forwardRef, useEffect } from 'react';
 
 import { Task } from '../../types/shared';
 import { FaIcon } from '../FontAwesomeIcon/FontAwesomeIcon';
@@ -8,8 +8,8 @@ import { TaskEditInput } from '../TaskEditInput/TaskEditInput';
 import { Checkbox } from './Checkbox/Checkbox';
 import {
   DragIconWrapper,
-  Container,
-  TaskItemContainer,
+  StyledItemContainer,
+  StyledTaskItemContainer,
 } from './TaskItem.styled';
 
 interface TaskProps {
@@ -17,19 +17,12 @@ interface TaskProps {
   dragHandleProps: DraggableProvidedDragHandleProps | null;
   isDragging?: boolean;
   onDeleteTask: () => void;
-  onCompletedTask: (updates: Partial<Task>) => void;
+  onUpdateTask: (updates: Partial<Task>) => Promise<void>;
 }
 
 export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
   (
-    {
-      task,
-      onDeleteTask,
-      onCompletedTask,
-      isDragging,
-      dragHandleProps,
-      ...rest
-    },
+    { task, onDeleteTask, onUpdateTask, isDragging, dragHandleProps, ...rest },
     ref
   ) => {
     const [isCheckboxChecked, setIsCheckboxChecked] = useState(task.completed);
@@ -37,13 +30,13 @@ export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
 
     const handleToggleComplete = (e: React.ChangeEvent<HTMLInputElement>) => {
       setIsCheckboxChecked(e.target.checked);
-      onCompletedTask({ completed: e.target.checked });
+      onUpdateTask({ completed: e.target.checked });
     };
 
-    const handleEditSubmit = (newText: string) => {
+    const handleEditSubmit = async (newText: string) => {
       setIsEditing(false);
       if (newText === task.text) return;
-      onCompletedTask({ text: newText });
+      await onUpdateTask({ text: newText });
     };
 
     const onEditClick = () => {
@@ -54,9 +47,17 @@ export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
       setIsEditing(false);
     };
 
+    const handleDeleteTask = async () => {
+      onDeleteTask();
+    };
+
+    useEffect(() => {
+      setIsCheckboxChecked(task.completed);
+    }, [task.completed]);
+
     return (
-      <TaskItemContainer ref={ref} {...rest} isDragging={isDragging}>
-        <Container isCompleted={isCheckboxChecked}>
+      <StyledTaskItemContainer ref={ref} {...rest} isDragging={isDragging}>
+        <StyledItemContainer isCompleted={isCheckboxChecked}>
           <DragIconWrapper {...dragHandleProps}>
             <FaIcon icon={['fas', 'grip-vertical']} size='sm' />
           </DragIconWrapper>
@@ -74,17 +75,21 @@ export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
           ) : (
             <span>{task.text}</span>
           )}
-        </Container>
-        <Container gap={2}>
+        </StyledItemContainer>
+        <StyledItemContainer gap={2}>
           <FaIcon
             icon={['fas', 'edit']}
             size='sm'
             onClick={onEditClick}
             isActive={isEditing}
           />
-          <FaIcon icon={['fas', 'trash']} size='sm' onClick={onDeleteTask} />
-        </Container>
-      </TaskItemContainer>
+          <FaIcon
+            icon={['fas', 'trash']}
+            size='sm'
+            onClick={handleDeleteTask}
+          />
+        </StyledItemContainer>
+      </StyledTaskItemContainer>
     );
   }
 );

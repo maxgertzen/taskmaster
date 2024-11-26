@@ -47,8 +47,22 @@ export type GetTasksRequestParams = {
   listId: string;
 };
 
+export type GetTasksRequestQuery = {
+  filter?: "completed" | "incomplete";
+  sort?: "asc" | "desc";
+};
+
 export interface GetTasksRequest extends Request {
   params: GetTasksRequestParams;
+  query: GetTasksRequestQuery;
+}
+
+export type GetTasksSearchResultsQuery = {
+  search: string;
+};
+
+export interface GetTasksSearchResultsRequest extends Request {
+  query: GetTasksSearchResultsQuery;
 }
 
 export type UpdateTaskRequestBody = {
@@ -78,4 +92,21 @@ export type ReorderTasksRequestBody = {
 
 export interface ReorderTasksRequest extends Request {
   body: ReorderTasksRequestBody;
+}
+
+export type BulkCompleteRequestBody = {
+  listId: string;
+  newCompletedState: boolean;
+};
+export interface BulkCompleteRequest extends Request {
+  body: BulkCompleteRequestBody;
+}
+
+export type BulkDeleteRequestBody = {
+  listId: string;
+  mode?: "all" | "completed";
+};
+
+export interface BulkDeleteRequest extends Request {
+  body: BulkDeleteRequestBody;
 }

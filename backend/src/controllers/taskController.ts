@@ -6,8 +6,11 @@ import {
   GetTasksRequest,
   DeleteTaskRequest,
   ReorderTasksRequest,
+  BulkCompleteRequest,
+  BulkDeleteRequest,
+  GetTasksSearchResultsRequest,
 } from "../types/requests";
-import { ClientTask, Task } from "../models/taskModel";
+import { ClientTask, SearchResults, Task } from "../models/taskModel";
 
 export const createTask = async (
   req: CreateTaskRequest,
@@ -36,7 +39,31 @@ export const getTasks = async (
   try {
     const { userId } = req;
     const { listId } = req.params;
-    const tasks = await taskService.getTasks(userId as string, listId);
+    const { filter, sort } = req.query;
+
+    const options = !filter && !sort ? {} : { filter, sort };
+
+    const tasks = await taskService.getTasks(userId as string, listId, options);
+    res.status(200).json(tasks);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getTasksSearchResults = async (
+  req: GetTasksSearchResultsRequest,
+  res: Response<SearchResults>,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { userId } = req;
+    const { search } = req.query;
+
+    const tasks = await taskService.getTasksSearchResults(
+      userId as string,
+      search
+    );
+
     res.status(200).json(tasks);
   } catch (error) {
     next(error);
@@ -49,8 +76,13 @@ export const updateTask = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    const { userId } = req;
     const { id, ...task } = req.body;
-    const updatedTask = await taskService.updateTask(id, task as Partial<Task>);
+    const updatedTask = await taskService.updateTask(
+      userId as string,
+      id,
+      task as Partial<Task>
+    );
     res.status(200).json(updatedTask);
   } catch (error) {
     next(error);
@@ -88,6 +120,46 @@ export const reorderTasks = async (
       newIndex
     );
     res.status(200).json(reorderedTasks);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const toggleCompleteAll = async (
+  req: BulkCompleteRequest,
+  res: Response<ClientTask[]>,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { userId } = req;
+    const { listId, newCompletedState } = req.body;
+
+    const completedTasks = await taskService.toggleCompleteAll(
+      userId as string,
+      listId,
+      newCompletedState
+    );
+    res.status(200).json(completedTasks);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const bulkDelete = async (
+  req: BulkDeleteRequest,
+  res: Response<ClientTask[]>,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { userId } = req;
+    const { listId, mode = "completed" } = req.body;
+
+    const updatedTasks = await taskService.bulkDelete(
+      userId as string,
+      listId,
+      mode
+    );
+    res.status(200).json(updatedTasks);
   } catch (error) {
     next(error);
   }

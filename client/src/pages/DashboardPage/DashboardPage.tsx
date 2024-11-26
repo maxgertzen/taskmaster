@@ -1,117 +1,40 @@
 import { withAuthenticationRequired } from '@auth0/auth0-react';
-import { FC, Suspense, useEffect, useState } from 'react';
+import { FC } from 'react';
 
-import {
-  ListSidebar,
-  TaskList,
-  AddTaskInput,
-  Header,
-  FaIcon,
-  ResizableHandle,
-} from '../../components';
-import { LogoutButton } from '../../components/LogoutButton/LogoutButton';
-import { useLists } from '../../hooks/useLists';
-import { useTasksMutation } from '../../hooks/useTaskMutation';
+import { Header, Sidebar, TaskPanel } from '../../components';
 import { useAuthStore } from '../../store/authStore';
 import { useTaskStore, useUserStore } from '../../store/store';
 
-import {
-  DashboardContainer,
-  MainLayout,
-  SidebarContainer,
-  StyledCollapsibleButton,
-  TaskContainer,
-} from './DashboardPage.styled';
+import { DashboardContainer, MainLayout } from './DashboardPage.styled';
 
-// TODO:
-// - Add a search bar to search for tasks
-// - Add a filter to filter tasks by completed or not
-// - Add a button to mark all tasks as completed
-// - Add a button to delete all tasks
-// - Add a button to delete completed tasks
+// TODO
+// 1. Create a loader component - this will be used to show a loading spinner
+// 2. Ensure debounce is working correctly
+// 3. Add due date to the task item
+// 4. Update the styling of the project to use Material UI
 const Dashboard: FC = () => {
   const token = useAuthStore((state) => state.token);
-  const selectedListId = useTaskStore((state) => state.selectedListId);
-  const setSelectedListId = useTaskStore((state) => state.setSelectedListId);
-
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isResizing, setIsResizing] = useState(false);
-  const [sidebarWidth, setSidebarWidth] = useState(250);
+  const { selectedListId, setSelectedListId } = useTaskStore((state) => state);
+  const setSearchTerm = useTaskStore((state) => state.setSearchTerm);
 
   const userDetails = useUserStore((state) => state.user);
 
-  const { lists } = useLists();
-
-  const addTask = useTasksMutation('add');
-
-  const handleAddTask = async (task: string) => {
-    await addTask.mutateAsync({ listId: selectedListId, text: task });
-  };
-
-  const handleSelectList = (listId: string) => () => {
-    if (selectedListId !== listId) setSelectedListId(listId);
-    else setSelectedListId(null);
-  };
-
-  const handleDeleteList = () => {
-    setSelectedListId(null);
-  };
-
-  const handleToggleSidebar = () => {
-    setIsCollapsed((prev) => !prev);
-  };
-
-  useEffect(() => {
-    if (isResizing) {
-      document.body.style.cursor = 'col-resize';
-    } else {
-      document.body.style.cursor = 'default';
+  const handleOnSelectList = (listId: string | null) => {
+    setSelectedListId(listId);
+    if (listId) {
+      setSearchTerm('');
     }
-  }, [isResizing]);
+  };
 
-  return token && lists ? (
+  return token ? (
     <DashboardContainer>
       <Header user={userDetails} />
       <MainLayout>
-        <SidebarContainer isCollapsed={isCollapsed} width={sidebarWidth}>
-          <StyledCollapsibleButton
-            isCollapsed={isCollapsed}
-            onClick={handleToggleSidebar}
-          >
-            <FaIcon icon={['far', 'square-caret-left']} size='lg' />
-          </StyledCollapsibleButton>
-          <Suspense fallback={<div>Loading lists...</div>}>
-            {!isCollapsed && (
-              <ListSidebar
-                lists={lists}
-                selectedList={selectedListId}
-                onSelectList={handleSelectList}
-                onDeleteList={handleDeleteList}
-              />
-            )}
-          </Suspense>
-          {!isCollapsed && <LogoutButton />}
-          <ResizableHandle
-            initialWidth={sidebarWidth}
-            setWidth={setSidebarWidth}
-            onResize={(isResizing) => setIsResizing(isResizing)}
-          />
-        </SidebarContainer>
-        <TaskContainer>
-          <Suspense fallback={<div>Loading tasks...</div>}>
-            {selectedListId ? (
-              <>
-                <h4>
-                  {lists.find((list) => list.id === selectedListId)?.name}
-                </h4>
-                <AddTaskInput onAddTask={handleAddTask} />
-                <TaskList selectedListId={selectedListId} />
-              </>
-            ) : (
-              <h4>Select a list to view tasks</h4>
-            )}
-          </Suspense>
-        </TaskContainer>
+        <Sidebar
+          selectedListId={selectedListId}
+          onSelectList={handleOnSelectList}
+        />
+        <TaskPanel listId={selectedListId} />
       </MainLayout>
     </DashboardContainer>
   ) : (

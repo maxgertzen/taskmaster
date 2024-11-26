@@ -5,7 +5,7 @@ export type FetcherConfig<K> = {
   timeout?: number;
   headers?: HeadersInit;
   token?: string | null;
-  urlSearchParams?: string;
+  urlSearchParams?: string | Record<string, string>;
 };
 
 export const fetcher = async <T, K = undefined>(
@@ -34,11 +34,21 @@ export const fetcher = async <T, K = undefined>(
       signal: controller.signal,
     };
 
+    let url = config.url;
     if (urlSearchParams) {
-      config.url += `?${urlSearchParams}`;
+      const searchParams = new URLSearchParams();
+      Object.entries(urlSearchParams).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, value);
+        }
+      });
+      const queryString = searchParams.toString();
+      if (queryString) {
+        url += `?${queryString}`;
+      }
     }
 
-    const response = await fetch(config.url, options);
+    const response = await fetch(url, options);
     clearTimeout(timeoutId);
 
     if (!response.ok) {

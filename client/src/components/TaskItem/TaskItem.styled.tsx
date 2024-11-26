@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { DraggableStyle } from '@hello-pangea/dnd';
 
-export const TaskItemContainer = styled.li<{
+export const StyledTaskItemContainer = styled.li<{
   style?: DraggableStyle;
   isDragging?: boolean;
 }>(({ theme, style, isDragging }) => ({
@@ -17,18 +17,19 @@ export const TaskItemContainer = styled.li<{
   backgroundColor: isDragging ? theme.colors.accent : theme.colors.background,
 }));
 
-export const Container = styled.div<{ gap?: number; isCompleted?: boolean }>(
-  ({ theme, gap = 0, isCompleted = false }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    gap: theme.spacing(gap),
-    span: {
-      textDecoration: isCompleted ? 'line-through' : 'none',
-      color: isCompleted ? theme.colors.secondary : theme.colors.text,
-    },
-    cursor: 'default',
-  })
-);
+export const StyledItemContainer = styled.div<{
+  gap?: number;
+  isCompleted?: boolean;
+}>(({ theme, gap = 0, isCompleted = false }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(gap),
+  span: {
+    textDecoration: isCompleted ? 'line-through' : 'none',
+    color: isCompleted ? theme.colors.secondary : theme.colors.text,
+  },
+  cursor: 'default',
+}));
 
 export const DragIconWrapper = styled.div(({ theme }) => ({
   cursor: 'grab',
