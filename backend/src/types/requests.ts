@@ -57,6 +57,14 @@ export interface GetTasksRequest extends Request {
   query: GetTasksRequestQuery;
 }
 
+export type GetTasksSearchResultsQuery = {
+  search: string;
+};
+
+export interface GetTasksSearchResultsRequest extends Request {
+  query: GetTasksSearchResultsQuery;
+}
+
 export type UpdateTaskRequestBody = {
   id: string;
   text?: string;

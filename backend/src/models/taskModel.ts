@@ -7,3 +7,5 @@ export interface Task {
 }
 
 export type ClientTask = Omit<Task, "completed"> & { completed: boolean };
+
+export type SearchResults = { listName: string; tasks: ClientTask[] }[];

@@ -8,8 +8,9 @@ import {
   ReorderTasksRequest,
   BulkCompleteRequest,
   BulkDeleteRequest,
+  GetTasksSearchResultsRequest,
 } from "../types/requests";
-import { ClientTask, Task } from "../models/taskModel";
+import { ClientTask, SearchResults, Task } from "../models/taskModel";
 
 export const createTask = async (
   req: CreateTaskRequest,
@@ -43,6 +44,26 @@ export const getTasks = async (
     const options = !filter && !sort ? {} : { filter, sort };
 
     const tasks = await taskService.getTasks(userId as string, listId, options);
+    res.status(200).json(tasks);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getTasksSearchResults = async (
+  req: GetTasksSearchResultsRequest,
+  res: Response<SearchResults>,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { userId } = req;
+    const { search } = req.query;
+
+    const tasks = await taskService.getTasksSearchResults(
+      userId as string,
+      search
+    );
+
     res.status(200).json(tasks);
   } catch (error) {
     next(error);

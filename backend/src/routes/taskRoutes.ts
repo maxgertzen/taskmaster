@@ -4,6 +4,7 @@ import { transformCompletedToString } from "../middlewares/transformTask";
 
 const router = express.Router();
 
+router.get("/search", taskController.getTasksSearchResults);
 router.get("/:listId", taskController.getTasks);
 router.post("/create", taskController.createTask);
 router.post(
