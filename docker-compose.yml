@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+      - "8001:8001"
+    volumes:
+      - redis-data:/data
+    command: redis-server --save 60 1 --loglevel warning
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env.public
+    environment:
+      - USE_MOCK=true
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: sh -c "node dist/mocks/populateRedis.js && yarn dev"
+
+  client:
+    build:
+      context: ./client
+    container_name: client
+    ports:
+      - "3001:4173"
+    env_file:
+      - ./client/.env.public
+    environment:
+      - VITE_USE_MOCK=true
+    depends_on:
+      - backend
+
+volumes:
+  redis-data:

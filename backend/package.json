@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon --exec ts-node --files src/index.ts",
-    "debug": "nodemon --inspect --exec 'node -r ts-node/register/transpile-only' src/index.ts"
+    "debug": "nodemon --inspect --exec 'node -r ts-node/register/transpile-only' src/index.ts",
+    "build": "tsc"
   },
   "dependencies": {
     "cors": "^2.8.5",
