@@ -8,8 +8,8 @@ import { TaskEditInput } from '../TaskEditInput/TaskEditInput';
 import { Checkbox } from './Checkbox/Checkbox';
 import {
   DragIconWrapper,
-  Container,
-  TaskItemContainer,
+  StyledItemContainer,
+  StyledTaskItemContainer,
 } from './TaskItem.styled';
 
 interface TaskProps {
@@ -56,8 +56,8 @@ export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
     }, [task.completed]);
 
     return (
-      <TaskItemContainer ref={ref} {...rest} isDragging={isDragging}>
-        <Container isCompleted={isCheckboxChecked}>
+      <StyledTaskItemContainer ref={ref} {...rest} isDragging={isDragging}>
+        <StyledItemContainer isCompleted={isCheckboxChecked}>
           <DragIconWrapper {...dragHandleProps}>
             <FaIcon icon={['fas', 'grip-vertical']} size='sm' />
           </DragIconWrapper>
@@ -75,8 +75,8 @@ export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
           ) : (
             <span>{task.text}</span>
           )}
-        </Container>
-        <Container gap={2}>
+        </StyledItemContainer>
+        <StyledItemContainer gap={2}>
           <FaIcon
             icon={['fas', 'edit']}
             size='sm'
@@ -88,8 +88,8 @@ export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
             size='sm'
             onClick={handleDeleteTask}
           />
-        </Container>
-      </TaskItemContainer>
+        </StyledItemContainer>
+      </StyledTaskItemContainer>
     );
   }
 );

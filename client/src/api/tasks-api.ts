@@ -8,7 +8,7 @@ import {
   ReorderTasksRequest,
   UpdateTaskRequest,
 } from '../types/requests';
-import { Task } from '../types/shared';
+import { SearchResults, Task } from '../types/shared';
 import { fetcher } from '../utils/fetcher';
 
 import { QUERY_KEYS } from './query-keys';
@@ -18,7 +18,7 @@ const TASKS_API_URL = `${import.meta.env.VITE_API_URL}/tasks`;
 export const fetchTasks =
   (token: string | null) =>
   async ({
-    queryKey: [{ listId, filter, sort }],
+    queryKey: [{ listId, filter, sort, search }],
   }: QueryFunctionContext<ReturnType<typeof QUERY_KEYS.tasks>>): Promise<
     Task[]
   > => {
@@ -27,6 +27,25 @@ export const fetchTasks =
       urlSearchParams: {
         ...(filter && { filter }),
         ...(sort && { sort }),
+        ...(search && { search }),
+      },
+      token,
+    });
+  };
+
+export const fetchSearchResults =
+  (token: string | null) =>
+  async ({
+    queryKey: [{ search }],
+  }: QueryFunctionContext<
+    ReturnType<typeof QUERY_KEYS.tasks>
+  >): Promise<SearchResults> => {
+    if (!search) return [];
+
+    return await fetcher<SearchResults>({
+      url: `${TASKS_API_URL}/search`,
+      urlSearchParams: {
+        search,
       },
       token,
     });

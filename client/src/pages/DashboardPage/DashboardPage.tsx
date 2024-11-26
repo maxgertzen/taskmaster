@@ -7,17 +7,19 @@ import { useTaskStore, useUserStore } from '../../store/store';
 
 import { DashboardContainer, MainLayout } from './DashboardPage.styled';
 
-// TODO:
-// - Add a search bar to search for tasks
-// - Add a filter to filter tasks by completed or not
-// - Add a button to mark all tasks as completed
-// - Add a button to delete all tasks
-// - Add a button to delete completed tasks
 const Dashboard: FC = () => {
   const token = useAuthStore((state) => state.token);
   const { selectedListId, setSelectedListId } = useTaskStore((state) => state);
+  const setSearchTerm = useTaskStore((state) => state.setSearchTerm);
 
   const userDetails = useUserStore((state) => state.user);
+
+  const handleOnSelectList = (listId: string | null) => {
+    setSelectedListId(listId);
+    if (listId) {
+      setSearchTerm('');
+    }
+  };
 
   return token ? (
     <DashboardContainer>
@@ -25,7 +27,7 @@ const Dashboard: FC = () => {
       <MainLayout>
         <Sidebar
           selectedListId={selectedListId}
-          onSelectList={setSelectedListId}
+          onSelectList={handleOnSelectList}
         />
         <TaskPanel listId={selectedListId} />
       </MainLayout>

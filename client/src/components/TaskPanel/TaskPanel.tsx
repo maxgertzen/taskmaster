@@ -9,6 +9,7 @@ import { Task } from '../../types/shared';
 import { TaskActions } from '../TaskActions/TaskActions';
 import { TaskList } from '../TaskList/TaskList';
 import { TaskListViews } from '../TaskListViews/TaskListViews';
+import { TaskSearchResults } from '../TaskSearchResults/TaskSearchResults';
 import { Title } from '../Title/Title';
 
 import { TaskContainer } from './TaskPanel.styled';
@@ -119,7 +120,7 @@ export const TaskPanel: FC<TaskPanelProps> = ({ listId }) => {
           />
         </>
       ) : (
-        <h4>Select a list to view tasks</h4>
+        <TaskSearchResults />
       )}
     </TaskContainer>
   );

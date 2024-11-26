@@ -1,7 +1,7 @@
 import { FC } from 'react';
 
-import { AddTaskInput } from '../AddTaskInput/AddTaskInput';
 import { Button } from '../Button/Button';
+import { TaskInput } from '../TaskInput/TaskInput';
 
 import { IconContainer, TaskActionsContainer } from './TaskActions.styled';
 
@@ -22,7 +22,7 @@ export const TaskActions: FC<TaskActionsProps> = ({
 }) => {
   return (
     <TaskActionsContainer>
-      <AddTaskInput onAddTask={onAdd} />
+      <TaskInput onSubmit={onAdd} />
       <IconContainer>
         <Button variant='outline' onClick={() => onToggleCompleteAll()}>
           {`${isAllCompleted ? 'Uncheck' : 'Check'} All`}

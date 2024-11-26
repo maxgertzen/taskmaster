@@ -18,7 +18,11 @@ export const useTasks = ({ listId, filter, sort }: UseTasksInput) => {
 
   const tasksQuery = useQuery({
     queryFn: fetchTasks(token),
-    queryKey: QUERY_KEYS.tasks({ listId: listId as string, filter, sort }),
+    queryKey: QUERY_KEYS.tasks({
+      listId: listId as string,
+      filter,
+      sort,
+    }),
     enabled: !!token && !!listId,
     staleTime: STALE_TIME,
   });

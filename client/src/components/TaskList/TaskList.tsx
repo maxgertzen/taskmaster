@@ -9,7 +9,7 @@ import { FC } from 'react';
 import { Task } from '../../types/shared';
 import { TaskItem } from '../TaskItem/TaskItem';
 
-import { TaskListContainer } from './TaskList.styled';
+import { StyledTaskListContainer } from './TaskList.styled';
 
 interface TaskListProps {
   tasks: Task[];
@@ -29,7 +29,7 @@ export const TaskList: FC<TaskListProps> = ({
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId='task-list'>
           {(provided, snapshot) => (
-            <TaskListContainer
+            <StyledTaskListContainer
               ref={provided.innerRef}
               {...provided.droppableProps}
               isDraggingOver={snapshot.isDraggingOver}
@@ -53,7 +53,7 @@ export const TaskList: FC<TaskListProps> = ({
                 </Draggable>
               ))}
               {provided.placeholder}
-            </TaskListContainer>
+            </StyledTaskListContainer>
           )}
         </Droppable>
       </DragDropContext>

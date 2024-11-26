@@ -6,10 +6,12 @@ export const QUERY_KEYS = {
     listId,
     filter,
     sort,
+    search,
   }: {
     listId: string;
     filter?: Filters;
     sort?: Sort;
+    search?: string;
   }) =>
     [
       {
@@ -17,6 +19,7 @@ export const QUERY_KEYS = {
         listId,
         ...(filter && { filter }),
         ...(sort && { sort }),
+        ...(search && { search }),
       },
     ] as const,
 };
