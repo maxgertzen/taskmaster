@@ -5,21 +5,23 @@ import { taskRoutes } from "./routes/taskRoutes";
 import { errorHandler } from "./middlewares/errorHandler";
 import { checkJwt, attachUserId } from "./middlewares/authorisation";
 
-const app = express();
+const createApp = async () => {
+  const app = express();
 
-app.use(
-  cors({
-    origin: process.env.LOCAL_DEV_CLIENT_URL,
-    credentials: true,
-  })
-);
-app.use(express.json());
+  app.use(
+    cors({
+      origin: process.env.LOCAL_DEV_CLIENT_URL,
+      credentials: true,
+    })
+  );
+  app.use(express.json());
 
-// Route setup
-app.use("/api/lists", checkJwt, attachUserId, listRoutes);
-app.use("/api/tasks", checkJwt, attachUserId, taskRoutes);
+  app.use("/api/lists", checkJwt, attachUserId, listRoutes);
+  app.use("/api/tasks", checkJwt, attachUserId, taskRoutes);
 
-// Error handling middleware
-app.use(errorHandler);
+  app.use(errorHandler);
 
-export default app;
+  return app;
+};
+
+export default createApp;

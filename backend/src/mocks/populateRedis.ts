@@ -1,17 +1,27 @@
 import { Task } from "../models/taskModel";
-import { redisClient } from "../config";
+import { getDatabaseClient, initializeDatabase } from "../config/database";
 import { REDIS_KEYS } from "../utils/redisKeys";
 import { MOCK_USER_ID } from "./constants";
 import { List } from "@src/models/listModel";
+import { RedisClientType } from "redis";
 
-// FIX ME: This script is not working as expected
+let redisClient: RedisClientType | null = null;
+
 const populateRedis = async () => {
+  if (process.env.DB_TYPE !== "redis") {
+    console.log("Skipping Redis population: DB_TYPE is not 'redis'.");
+    process.exit(0);
+  }
+
   if (process.env.USE_MOCK !== "true") {
     console.log("Skipping mock data population (USE_MOCK is not true).");
     return;
   }
 
   try {
+    await initializeDatabase();
+    redisClient = getDatabaseClient();
+
     if (!redisClient.isOpen) {
       await redisClient.connect();
     }
@@ -82,7 +92,7 @@ const populateRedis = async () => {
   } catch (err) {
     console.error("Error populating Redis:", err);
   } finally {
-    if (redisClient.isOpen) {
+    if (redisClient?.isOpen) {
       await redisClient.quit();
     }
     process.exit(0);

@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import * as listService from "../services/listsService";
 import {
   CreateListRequest,
   DeleteListRequest,
@@ -7,6 +6,7 @@ import {
   UpdateListRequest,
 } from "../types/requests";
 import { List } from "../models/listModel";
+import { getListService } from "../services";
 
 export const getLists = async (
   req: Request,
@@ -15,7 +15,7 @@ export const getLists = async (
 ): Promise<void> => {
   try {
     const { userId } = req;
-    const lists = await listService.getLists(userId as string);
+    const lists = await getListService().getLists(userId as string);
     res.status(200).json(lists);
   } catch (error) {
     next(error);
@@ -35,7 +35,7 @@ export const createList = async (
       throw new Error("Name is required");
     }
 
-    const newList = await listService.createList(userId as string, name);
+    const newList = await getListService().createList(userId as string, name);
     res.status(201).json(newList);
   } catch (error) {
     next(error);
@@ -55,7 +55,7 @@ export const updateList = async (
       throw new Error("Name is required");
     }
 
-    const updatedList = await listService.updateList(
+    const updatedList = await getListService().updateList(
       userId as string,
       id,
       name
@@ -79,7 +79,7 @@ export const deleteList = async (
       throw new Error("ID is required");
     }
 
-    const result = await listService.deleteList(userId as string, id);
+    const result = await getListService().deleteList(userId as string, id);
     res.status(204).json(result.id);
   } catch (error) {
     next(error);
@@ -99,7 +99,7 @@ export const reorderLists = async (
       throw new Error("Both oldIndex and newIndex must be numbers");
     }
 
-    const reorderedLists = await listService.reorderLists(
+    const reorderedLists = await getListService().reorderLists(
       userId as string,
       oldIndex,
       newIndex
