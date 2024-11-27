@@ -1,5 +1,4 @@
 import { Response, NextFunction } from "express";
-import * as taskService from "../services/tasksService";
 import {
   CreateTaskRequest,
   UpdateTaskRequest,
@@ -11,6 +10,7 @@ import {
   GetTasksSearchResultsRequest,
 } from "../types/requests";
 import { ClientTask, SearchResults, Task } from "../models/taskModel";
+import { taskService } from "../services";
 
 export const createTask = async (
   req: CreateTaskRequest,

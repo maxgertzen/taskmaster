@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import * as listService from "../services/listsService";
 import {
   CreateListRequest,
   DeleteListRequest,
@@ -7,6 +6,7 @@ import {
   UpdateListRequest,
 } from "../types/requests";
 import { List } from "../models/listModel";
+import { listService } from "../services";
 
 export const getLists = async (
   req: Request,
