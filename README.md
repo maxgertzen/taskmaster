@@ -3,11 +3,20 @@
 
 TaskMaster is a portfolio project by **Max Gertzen**. This is a simple to-do list application that demonstrates the ability to organize tasks within various lists.
 
+## Table of Contents
+- [Features](#features)
+- [Built With](#built-with)
+- [Getting Started](#getting-started)
+   - [Running with Docker](#running-with-docker)
+   - [Running locally](#running-locally)
+
 ## Features
 
-- **Add, Remove, Edit Lists**: Organize tasks into various lists.
-- **Add, Remove, Edit Tasks**: Manage tasks within each list.
-- **Responsive & User-Friendly**: Built with modern web technologies for a smooth experience.
+- **Add, Remove, Edit, Reorder (Drag & Drop) Lists**: Organize tasks into various lists.
+- **Add, Remove, Edit, Reorder (Drag & Drop) Tasks**: Manage tasks within each list.
+- **Search Tasks**: Live search of all your tasks.
+- **Bulk Actions**: Remove all or completed tasks from list; "Complete" all tasks from list;
+- **Task Views**: Filter task view based on "completed", "active" and "all"; Sort alphabetically ("Desc" & "Asc").
 
 ## Built With
 
@@ -78,7 +87,7 @@ To stop the containers and remove all volumes and images:
 docker-compose down --volumes --rmi all
 ```
 
-### Notes
+#### Notes
 
 - The frontend is served on [http://localhost:3001](http://localhost:3001) via `vite preview` inside the Docker container.
 - The Redis database uses the `redis/redis-stack:latest` image, which supports RedisJSON and RedisSearch functionalities.
