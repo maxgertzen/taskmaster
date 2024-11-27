@@ -9,16 +9,16 @@ let mockLists: List[] = [
 
 const tasks: Record<string, Task[]> = {
   '1': [
-    { id: '1', text: 'Task 1', completed: false },
-    { id: '2', text: 'Task 2', completed: false },
+    { id: '1', text: 'Task 1', completed: false, listId: '1' },
+    { id: '2', text: 'Task 2', completed: false, listId: '1' },
   ],
   '2': [
-    { id: '3', text: 'Task A', completed: false },
-    { id: '4', text: 'Task B', completed: false },
+    { id: '3', text: 'Task A', completed: false, listId: '2' },
+    { id: '4', text: 'Task B', completed: false, listId: '2' },
   ],
   '3': [
-    { id: '5', text: 'Buy Milk', completed: false },
-    { id: '6', text: 'Buy Bread', completed: false },
+    { id: '5', text: 'Buy Milk', completed: false, listId: '3' },
+    { id: '6', text: 'Buy Bread', completed: false, listId: '3' },
   ],
 };
 
@@ -34,7 +34,7 @@ export const mockAddTask = async (
   listId: string,
   text: string
 ): Promise<Task> => {
-  const newTask = { id: Date.now().toString(), text, completed: false };
+  const newTask = { id: Date.now().toString(), text, completed: false, listId };
   if (!tasks[listId]) {
     tasks[listId] = [];
   }

@@ -8,5 +8,6 @@ declare namespace NodeJS {
     AUTH0_ISSUER_BASE_URL: string;
     AUTH0_AUDIENCE: string;
     NODE_ENV: "development" | "production" | "test";
+    USE_MOCK: "true" | "false";
   }
 }

@@ -1,12 +1,12 @@
-import { useAuth0 } from '@auth0/auth0-react';
 import { useEffect } from 'react';
 
+import { useAuth } from '../auth/useAuth';
 import { useAuthStore } from '../store/authStore';
 import { useUserStore } from '../store/store';
 
 export const useInitializeToken = () => {
   const { getAccessTokenSilently, isAuthenticated, isLoading, user } =
-    useAuth0();
+    useAuth();
   const setToken = useAuthStore((state) => state.setToken);
   const setUser = useUserStore((state) => state.setUser);
 

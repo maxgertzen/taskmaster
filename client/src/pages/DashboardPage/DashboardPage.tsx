@@ -1,6 +1,6 @@
-import { withAuthenticationRequired } from '@auth0/auth0-react';
 import { FC } from 'react';
 
+import { withAuthenticationRequired } from '../../auth/withAuthenticationRequired';
 import { Header, Sidebar, TaskPanel } from '../../components';
 import { useAuthStore } from '../../store/authStore';
 import { useTaskStore, useUserStore } from '../../store/store';
