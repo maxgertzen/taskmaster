@@ -16,6 +16,8 @@ const populateRedis = async () => {
       await redisClient.connect();
     }
 
+    await redisClient.flushAll();
+
     const userId = MOCK_USER_ID;
 
     const tasks: Task[] = [
@@ -51,21 +53,31 @@ const populateRedis = async () => {
 
     for (const list of lists) {
       const listKey = REDIS_KEYS.LIST(userId, list.id);
+      const listsKey = REDIS_KEYS.LISTS(userId);
 
-      multi.hSet(listKey, { ...list }).zAdd(REDIS_KEYS.LISTS(userId), {
-        score: Number(list.creationDate),
+      multi.hSet(listKey, { ...list, creationDate: String(list.creationDate) });
+
+      multi.zAdd(listsKey, {
+        score: list.creationDate as number,
         value: listKey,
       });
     }
 
     for (const task of tasks) {
       const taskKey = REDIS_KEYS.TASK(userId, task.id);
-      multi
-        .hSet(taskKey, { ...task })
-        .rPush(REDIS_KEYS.TASK_LIST(userId, task.listId), taskKey);
+      const taskListKey = REDIS_KEYS.TASK_LIST(userId, task.listId);
+      multi.hSet(taskKey, {
+        id: task.id,
+        listId: task.listId,
+        text: task.text,
+        completed: task.completed,
+        creationDate: String(task.creationDate),
+      });
+
+      multi.rPush(taskListKey, taskKey);
     }
 
-    const results = await multi.exec(true);
+    const results = await multi.exec();
     console.log("Mock data populated:", results);
   } catch (err) {
     console.error("Error populating Redis:", err);
