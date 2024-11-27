@@ -10,7 +10,7 @@ import {
   GetTasksSearchResultsRequest,
 } from "../types/requests";
 import { ClientTask, SearchResults, Task } from "../models/taskModel";
-import { taskService } from "../services";
+import { getTaskService } from "../services";
 
 export const createTask = async (
   req: CreateTaskRequest,
@@ -24,7 +24,11 @@ export const createTask = async (
       throw new Error("List ID and text are required");
     }
 
-    const task = await taskService.createTask(userId as string, listId, text);
+    const task = await getTaskService().createTask(
+      userId as string,
+      listId,
+      text
+    );
     res.status(201).json(task);
   } catch (error) {
     next(error);
@@ -43,7 +47,11 @@ export const getTasks = async (
 
     const options = !filter && !sort ? {} : { filter, sort };
 
-    const tasks = await taskService.getTasks(userId as string, listId, options);
+    const tasks = await getTaskService().getTasks(
+      userId as string,
+      listId,
+      options
+    );
     res.status(200).json(tasks);
   } catch (error) {
     next(error);
@@ -59,7 +67,7 @@ export const getTasksSearchResults = async (
     const { userId } = req;
     const { search } = req.query;
 
-    const tasks = await taskService.getTasksSearchResults(
+    const tasks = await getTaskService().getTasksSearchResults(
       userId as string,
       search
     );
@@ -78,7 +86,7 @@ export const updateTask = async (
   try {
     const { userId } = req;
     const { id, ...task } = req.body;
-    const updatedTask = await taskService.updateTask(
+    const updatedTask = await getTaskService().updateTask(
       userId as string,
       id,
       task as Partial<Task>
@@ -97,7 +105,7 @@ export const deleteTask = async (
   try {
     const { userId } = req;
     const { taskId, listId } = req.body;
-    await taskService.deleteTask(userId as string, taskId, listId);
+    await getTaskService().deleteTask(userId as string, taskId, listId);
     res.status(200).json(taskId);
   } catch (error) {
     next(error);
@@ -113,7 +121,7 @@ export const reorderTasks = async (
     const { userId } = req;
     const { listId, oldIndex, newIndex } = req.body;
 
-    const reorderedTasks = await taskService.reorderTasks(
+    const reorderedTasks = await getTaskService().reorderTasks(
       userId as string,
       listId,
       oldIndex,
@@ -134,7 +142,7 @@ export const toggleCompleteAll = async (
     const { userId } = req;
     const { listId, newCompletedState } = req.body;
 
-    const completedTasks = await taskService.toggleCompleteAll(
+    const completedTasks = await getTaskService().toggleCompleteAll(
       userId as string,
       listId,
       newCompletedState
@@ -154,7 +162,7 @@ export const bulkDelete = async (
     const { userId } = req;
     const { listId, mode = "completed" } = req.body;
 
-    const updatedTasks = await taskService.bulkDelete(
+    const updatedTasks = await getTaskService().bulkDelete(
       userId as string,
       listId,
       mode
