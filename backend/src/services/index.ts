@@ -2,8 +2,23 @@ import { RepositoryFactory } from "../repositories";
 import { ListService } from "./listsService";
 import { TaskService } from "./tasksService";
 
-const listRepository = RepositoryFactory.createListRepository();
-const taskRepository = RepositoryFactory.createTaskRepository();
+let listServiceInstance: ListService | null = null;
+let taskServiceInstance: TaskService | null = null;
 
-export const listService = new ListService(listRepository);
-export const taskService = new TaskService(taskRepository);
+export const getListService = (): ListService => {
+  if (!listServiceInstance) {
+    listServiceInstance = new ListService(
+      RepositoryFactory.createListRepository()
+    );
+  }
+  return listServiceInstance;
+};
+
+export const getTaskService = (): TaskService => {
+  if (!taskServiceInstance) {
+    taskServiceInstance = new TaskService(
+      RepositoryFactory.createTaskRepository()
+    );
+  }
+  return taskServiceInstance;
+};
