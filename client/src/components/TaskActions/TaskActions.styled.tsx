@@ -9,10 +9,11 @@ export const TaskActionsContainer = styled('div')(({ theme }) => ({
   flexWrap: 'wrap',
 }));
 
-export const IconContainer = styled('div')(({ theme }) => ({
+export const IconContainer = styled('button')(({ theme }) => ({
   flex: 1,
   display: 'flex',
   justifyContent: 'space-around',
   gap: theme.spacing(1),
   alignItems: 'center',
+  textAlign: 'left',
 }));

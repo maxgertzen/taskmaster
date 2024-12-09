@@ -1,6 +1,7 @@
-import { FC } from 'react';
+import { FC, useRef } from 'react';
 
-import { Button } from '../Button/Button';
+import { usePopupMenuState } from '../../hooks/usePopupMenuState';
+import { PopupMenu } from '../PopupMenu/PopupMenu';
 import { TaskInput } from '../TaskInput/TaskInput';
 
 import { IconContainer, TaskActionsContainer } from './TaskActions.styled';
@@ -20,23 +21,35 @@ export const TaskActions: FC<TaskActionsProps> = ({
   onToggleCompleteAll,
   onDeleteAll,
 }) => {
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const { closeMenu, isOpen, toggleMenu } = usePopupMenuState();
   return (
     <TaskActionsContainer>
       <TaskInput onSubmit={onAdd} />
-      <IconContainer>
-        <Button variant='outline' onClick={() => onToggleCompleteAll()}>
-          {`${isAllCompleted ? 'Uncheck' : 'Check'} All`}
-        </Button>
-        <Button
-          disabled={!isAnyCompleted}
-          variant='danger'
-          onClick={onDeleteAll('completed')}
-        >
-          Delete Completed
-        </Button>
-        <Button variant='danger' onClick={onDeleteAll()}>
-          Delete All
-        </Button>
+      <IconContainer
+        ref={triggerRef}
+        aria-haspopup='true'
+        aria-expanded={isOpen}
+        onClick={toggleMenu}
+      >
+        <p>Bulk Actions</p>
+        <PopupMenu
+          options={[
+            { label: 'Delete All', onClick: onDeleteAll() },
+            {
+              label: 'Delete Completed',
+              onClick: onDeleteAll('completed'),
+              disabled: !isAnyCompleted,
+            },
+            {
+              label: `${isAllCompleted ? 'Uncheck' : 'Check'} All`,
+              onClick: onToggleCompleteAll,
+            },
+          ]}
+          onClose={closeMenu}
+          isOpen={isOpen}
+          triggerRef={triggerRef}
+        />
       </IconContainer>
     </TaskActionsContainer>
   );
