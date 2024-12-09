@@ -22,7 +22,7 @@ const UserName: React.FC<HeaderProps> = ({ user: { name } }) => {
       Hi
       {name ? (
         <>
-          , <b>{name}</b>
+          , <b>{name}!</b>
         </>
       ) : (
         '!'
