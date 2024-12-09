@@ -11,7 +11,7 @@ export const StyledButton = styled.button<{
       : variant === 'danger'
         ? theme.colors.danger
         : theme.colors.background,
-  fontWeight: 600,
+  fontSize: theme.typography.body.fontSize,
   textTransform: 'uppercase',
   border: 'none',
   borderRadius: theme.borders.radius,

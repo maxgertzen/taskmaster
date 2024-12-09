@@ -28,3 +28,8 @@ export const StyledTitle = styled(Title)<{
         ? theme.typography.h4.fontSize
         : theme.typography.h1.fontSize,
 }));
+
+export const TaskMasterLogoComponent = styled.img(({ theme }) => ({
+  width: theme.spacing(12),
+  height: theme.spacing(10),
+}));
