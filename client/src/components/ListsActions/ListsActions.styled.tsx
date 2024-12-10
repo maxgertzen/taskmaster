@@ -7,3 +7,9 @@ export const ListsActionsContainer = styled.div(({ theme }) => ({
   gap: theme.spacing(2),
   paddingRight: theme.spacing(0.9),
 }));
+
+export const TitleContainer = styled.div(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1),
+}));

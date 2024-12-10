@@ -2,7 +2,7 @@ import { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
 import React, { useState, forwardRef, useEffect } from 'react';
 
 import { Task } from '../../types/shared';
-import { FaIcon } from '../FontAwesomeIcon/FontAwesomeIcon';
+import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
 import { TaskEditInput } from '../TaskEditInput/TaskEditInput';
 
 import { Checkbox } from './Checkbox/Checkbox';
@@ -59,7 +59,7 @@ export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
       <StyledTaskItemContainer ref={ref} {...rest} isDragging={isDragging}>
         <StyledItemContainer isCompleted={isCheckboxChecked}>
           <DragIconWrapper {...dragHandleProps}>
-            <FaIcon icon={['fas', 'grip-vertical']} size='sm' />
+            <SpriteIcon name='drag' />
           </DragIconWrapper>
           <Checkbox
             checked={isCheckboxChecked}
@@ -77,17 +77,8 @@ export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
           )}
         </StyledItemContainer>
         <StyledItemContainer gap={2}>
-          <FaIcon
-            icon={['fas', 'edit']}
-            size='sm'
-            onClick={onEditClick}
-            isActive={isEditing}
-          />
-          <FaIcon
-            icon={['fas', 'trash']}
-            size='sm'
-            onClick={handleDeleteTask}
-          />
+          {!isEditing && <SpriteIcon name='pencil' onClick={onEditClick} />}
+          <SpriteIcon name='trash' onClick={handleDeleteTask} />
         </StyledItemContainer>
       </StyledTaskItemContainer>
     );

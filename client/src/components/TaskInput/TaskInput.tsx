@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { debounce } from '../../utils/debounce';
-import { FaIcon } from '../FontAwesomeIcon/FontAwesomeIcon';
+import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
 
 import { StyledTaskInputContainer, StyledInput } from './TaskInput.styled';
 
@@ -83,9 +83,9 @@ export const TaskInput: React.FC<TaskInputProps> = ({
         placeholder={isSearch ? 'Search tasks' : 'Add a task'}
         isSearch={isSearch}
       />
-      <FaIcon
-        icon={['fas', isSearch ? 'magnifying-glass' : 'plus']}
-        size={isSearch ? '1x' : '2x'}
+      <SpriteIcon
+        name={isSearch ? 'magnifying' : 'plus'}
+        size={4}
         onClick={handleOnSubmit}
       />
     </StyledTaskInputContainer>

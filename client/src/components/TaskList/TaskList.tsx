@@ -7,6 +7,7 @@ import {
 import { FC } from 'react';
 
 import { Task } from '../../types/shared';
+import { Loader } from '../Loader/Loader';
 import { TaskItem } from '../TaskItem/TaskItem';
 
 import { StyledTaskListContainer } from './TaskList.styled';
@@ -60,5 +61,5 @@ export const TaskList: FC<TaskListProps> = ({
     );
   }
 
-  return <div>Loading tasks...</div>;
+  return <Loader paddingTop={3} />;
 };

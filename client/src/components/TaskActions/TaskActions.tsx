@@ -2,6 +2,7 @@ import { FC, useRef } from 'react';
 
 import { usePopupMenuState } from '../../hooks/usePopupMenuState';
 import { PopupMenu } from '../PopupMenu/PopupMenu';
+import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
 import { TaskInput } from '../TaskInput/TaskInput';
 
 import { IconContainer, TaskActionsContainer } from './TaskActions.styled';
@@ -30,9 +31,10 @@ export const TaskActions: FC<TaskActionsProps> = ({
         ref={triggerRef}
         aria-haspopup='true'
         aria-expanded={isOpen}
+        role='button'
         onClick={toggleMenu}
       >
-        <p>Bulk Actions</p>
+        <SpriteIcon name='three-dots' alt='bulk actions' />
         <PopupMenu
           options={[
             { label: 'Delete All', onClick: onDeleteAll() },

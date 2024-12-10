@@ -1,27 +1,29 @@
 import { FC } from 'react';
 
+import { ButtonType } from '../../types/shared';
+
 import { StyledButton } from './Button.styled';
 
 interface ButtonProps {
   children: string;
   onClick?: () => void;
-  type?: 'button' | 'submit' | 'reset';
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger';
+  variant?: ButtonType;
   disabled?: boolean;
+  isActive?: boolean;
 }
 
 export const Button: FC<ButtonProps> = ({
   children,
   onClick,
   disabled = false,
-  type = 'button',
   variant = 'primary',
+  isActive = false,
 }) => {
   return (
     <StyledButton
-      type={type}
       variant={variant}
       disabled={disabled}
+      isActive={isActive}
       onClick={onClick}
     >
       {children}

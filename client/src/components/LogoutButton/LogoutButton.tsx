@@ -1,7 +1,7 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { FC } from 'react';
 
-import { FaIcon } from '../FontAwesomeIcon/FontAwesomeIcon';
+import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
 
 import { StyledLogoutButton } from './LogoutButton.styled';
 
@@ -16,7 +16,7 @@ export const LogoutButton: FC = () => {
         })
       }
     >
-      <FaIcon icon='sign-out-alt' />
+      <SpriteIcon name='logout' />
       Logout
     </StyledLogoutButton>
   );

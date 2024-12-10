@@ -3,7 +3,11 @@ import { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { MenuContainer, MenuItem } from './PopupMenu.styled';
 
 interface PopupMenuProps {
-  options: Array<{ label: ReactNode; onClick: () => void; disabled?: boolean }>;
+  options: Array<{
+    label: ReactNode;
+    onClick?: () => void;
+    disabled?: boolean;
+  }>;
   onClose: () => void;
   isOpen: boolean;
   triggerRef: React.RefObject<HTMLElement>;
@@ -67,7 +71,7 @@ export const PopupMenu: FC<PopupMenuProps> = ({
           role='menuitem'
           onClick={() => {
             if (!option.disabled) {
-              option.onClick();
+              option?.onClick?.();
               onClose();
             }
           }}

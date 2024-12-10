@@ -5,3 +5,4 @@ export { FaIcon } from './FontAwesomeIcon/FontAwesomeIcon';
 export { Logo } from './Logo/Logo';
 export { Title } from './Title/Title';
 export { Button } from './Button/Button';
+export { Loader } from './Loader/Loader';

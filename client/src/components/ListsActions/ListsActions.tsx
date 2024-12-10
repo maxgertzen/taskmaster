@@ -1,8 +1,9 @@
 import { FC } from 'react';
 
-import { FaIcon } from '../FontAwesomeIcon/FontAwesomeIcon';
+import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
+import { Title } from '../Title/Title';
 
-import { ListsActionsContainer } from './ListsActions.styled';
+import { ListsActionsContainer, TitleContainer } from './ListsActions.styled';
 
 interface ListsActionsProps {
   addList: () => void;
@@ -11,8 +12,11 @@ interface ListsActionsProps {
 export const ListsActions: FC<ListsActionsProps> = ({ addList }) => {
   return (
     <ListsActionsContainer>
-      <h6>Lists</h6>
-      <FaIcon icon={['fas', 'plus']} onClick={addList} />
+      <TitleContainer>
+        <SpriteIcon name='list' />
+        <Title variant='h6'>Lists</Title>
+      </TitleContainer>
+      <SpriteIcon name='plus' onClick={addList} />
     </ListsActionsContainer>
   );
 };

@@ -11,6 +11,7 @@ import { ListInput } from '../ListInput/ListInput';
 import { ListItem } from '../ListItem/ListItem';
 import { ListItemContainer } from '../ListItem/ListItem.styled';
 import { ListsActions } from '../ListsActions/ListsActions';
+import { Loader } from '../Loader/Loader';
 
 import {
   ListSidebarContainer,
@@ -89,5 +90,5 @@ export const ListSidebar: FC<ListSidebarProps> = ({
     );
   }
 
-  return <div>Loading lists...</div>;
+  return <Loader paddingTop={3} />;
 };

@@ -1,7 +1,7 @@
 import { FC } from 'react';
 
 import { withAuthenticationRequired } from '../../auth/withAuthenticationRequired';
-import { Header, Sidebar, TaskPanel } from '../../components';
+import { Header, Sidebar, TaskPanel, Loader } from '../../components';
 import { useAuthStore } from '../../store/authStore';
 import { useTaskStore, useUserStore } from '../../store/store';
 
@@ -38,11 +38,17 @@ const Dashboard: FC = () => {
       </MainLayout>
     </DashboardContainer>
   ) : (
-    <div>Loading...</div>
+    <DashboardContainer isFullPage>
+      <Loader />
+    </DashboardContainer>
   );
 };
 
 export const DashboardPage = withAuthenticationRequired(Dashboard, {
-  onRedirecting: () => <div>Loading...</div>,
+  onRedirecting: () => (
+    <DashboardContainer isFullPage>
+      <Loader />
+    </DashboardContainer>
+  ),
   returnTo: '/',
 });
