@@ -1,4 +1,5 @@
 import '@emotion/react';
+import { breakpoints } from './styles/theme';
 import { Typography } from './types/styled';
 
 declare module '@emotion/react' {
@@ -22,5 +23,6 @@ declare module '@emotion/react' {
       color: string;
       width: string;
     };
+    breakpoints: typeof breakpoints;
   }
 }

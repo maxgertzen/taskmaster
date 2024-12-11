@@ -7,6 +7,14 @@ const createMainBorderFunction =
   (color: string) => (customColor?: string, customWidth?: number) =>
     `${customWidth ? `${customWidth}px` : '1px'} solid ${customColor || color}`;
 
+export const breakpoints = {
+  xs: '480px', // mobile
+  sm: '768px', // tablet
+  md: '1024px', // small desktop
+  lg: '1280px', // large desktop
+  xl: '1440px', // extra large desktop
+} as const;
+
 const baseTheme = {
   typography: {
     fontFamily: '"PixelArial11", monospace',
@@ -26,6 +34,7 @@ const baseTheme = {
     radius: '0.75rem',
     width: '0.0625rem',
   },
+  breakpoints,
 };
 
 export const lightTheme = {

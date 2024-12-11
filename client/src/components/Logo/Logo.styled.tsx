@@ -27,6 +27,9 @@ export const StyledTitle = styled(Title)<{
       : size === 'medium'
         ? theme.typography.h4.fontSize
         : theme.typography.h1.fontSize,
+  [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+    display: 'none',
+  },
 }));
 
 export const TaskMasterLogoComponent = styled.img(({ theme }) => ({

@@ -15,6 +15,11 @@ export const MenuContainer = styled('div')<{
   display: 'flex',
   flexDirection: 'column',
   padding: theme.spacing(1, 0),
+  [`@media (max-width: ${theme.breakpoints.sm})`]: {
+    width: '50%',
+    margin: '0 auto',
+    transform: 'translateX(-50%)',
+  },
 }));
 
 export const MenuItem = styled.span<{ disabled?: boolean }>(
