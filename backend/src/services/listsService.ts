@@ -1,5 +1,5 @@
-import { IListRepository } from "../repositories/interfaces/listRepository";
-import { List } from "../models/listModel";
+import { List } from "../interfaces/entities";
+import { IListRepository } from "../interfaces/listRepository";
 
 export class ListService {
   private repository: IListRepository;

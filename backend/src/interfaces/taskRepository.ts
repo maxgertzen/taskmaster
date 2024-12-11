@@ -1,4 +1,4 @@
-import { Task, ClientTask, SearchResults } from "../../models/taskModel";
+import { Task, ClientTask, SearchResults } from "./entities";
 
 export interface ITaskRepository {
   createTask(userId: string, listId: string, text: string): Promise<ClientTask>;

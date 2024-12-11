@@ -1,5 +1,5 @@
-import { ITaskRepository } from "../repositories/interfaces/taskRepository";
-import { Task, ClientTask, SearchResults } from "../models/taskModel";
+import { ITaskRepository } from "../interfaces/taskRepository";
+import { Task, ClientTask, SearchResults } from "../interfaces/entities";
 import { GetTasksRequestQuery } from "../types/requests";
 
 export class TaskService {

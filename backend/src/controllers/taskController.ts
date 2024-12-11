@@ -9,7 +9,7 @@ import {
   BulkDeleteRequest,
   GetTasksSearchResultsRequest,
 } from "../types/requests";
-import { ClientTask, SearchResults, Task } from "../models/taskModel";
+import { ClientTask, SearchResults, Task } from "../interfaces/entities";
 import { getTaskService } from "../services";
 
 export const createTask = async (

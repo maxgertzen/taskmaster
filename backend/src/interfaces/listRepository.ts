@@ -1,4 +1,4 @@
-import { List } from "../../models/listModel";
+import { List } from "./entities";
 
 export interface IListRepository {
   createList(userId: string, name: string): Promise<List>;
