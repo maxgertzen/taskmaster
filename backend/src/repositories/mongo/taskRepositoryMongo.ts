@@ -159,7 +159,7 @@ export class TaskRepositoryMongo implements ITaskRepository {
       const bulkOperations = reorderedTasks.map((task, index) => ({
         updateOne: {
           filter: { _id: task.id },
-          update: { orderIndex: index },
+          update: { $set: { orderIndex: index } },
         },
       }));
 

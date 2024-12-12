@@ -7,6 +7,7 @@ export interface MongoList
   _id: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
   sharedWith?: mongoose.Types.ObjectId[];
+  orderIndex: number;
 }
 
 const ListSchema = new Schema<MongoList>({
@@ -19,6 +20,7 @@ const ListSchema = new Schema<MongoList>({
     index: true,
   },
   sharedWith: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  orderIndex: { type: Number, required: true, index: true },
 });
 
 ListSchema.index({ userId: 1, name: 1 }, { unique: true });

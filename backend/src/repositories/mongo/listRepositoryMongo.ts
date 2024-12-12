@@ -95,7 +95,7 @@ export class ListRepositoryMongo implements IListRepository {
       const bulkOperations = reorderedLists.map((list, index) => ({
         updateOne: {
           filter: { _id: list.id },
-          update: { orderIndex: index },
+          update: { $set: { orderIndex: index } },
         },
       }));
 
