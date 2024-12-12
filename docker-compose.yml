@@ -9,6 +9,30 @@ services:
       - "8001:8001"
     volumes:
       - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=taskmaster
+    healthcheck:
+      test: mongosh --eval "db.adminCommand('ping')"
+      interval: 10s
+      timeout: 5s
+      retries: 3
     deploy:
       replicas: 1
       restart_policy:
@@ -17,16 +41,42 @@ services:
   backend:
     build:
       context: ./backend
+      args:
+        NODE_ENV: ${NODE_ENV:-development}
+        DB_TYPE: ${DB_TYPE:-mongo}
+        USE_MOCK: ${USE_MOCK:-true}
     container_name: backend
     ports:
       - "3000:3000"
     env_file:
       - ./backend/.env.development
     environment:
-      - USE_MOCK=true
+      - NODE_ENV=${NODE_ENV:-development}
+      - USE_MOCK=${USE_MOCK:-true}
+      - DB_TYPE=${DB_TYPE:-mongo}
+      - MONGODB_URI=mongodb://mongodb:27017/taskmaster
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
-      - redis
-    command: sh -c "node dist/mocks/populateRedis.js && yarn dev"
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "/app/healthcheck.sh"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    command: >
+      sh -c "
+        if [ \"$$DB_TYPE\" = \"mongo\" ]; then
+          node dist/mocks/populateMongo.js
+        else
+          node dist/mocks/populateRedis.js
+        fi
+        exec yarn start
+      "
 
   client:
     build:
@@ -40,10 +90,13 @@ services:
     env_file:
       - ./client/.env.development
     environment:
-      - VITE_MODE=development
-      - VITE_USE_MOCK=true
+      - VITE_MODE=${NODE_ENV:-development}
+      - VITE_USE_MOCK=${USE_MOCK:-true}
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    restart: always
 
 volumes:
   redis-data:
+  mongodb-data:

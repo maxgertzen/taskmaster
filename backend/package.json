@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon --exec ts-node --files src/index.ts",
     "debug": "nodemon --inspect --exec 'node -r ts-node/register/transpile-only' src/index.ts",
+    "start": "node dist/index.js",
     "build": "tsc"
   },
   "dependencies": {
@@ -13,6 +14,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-oauth2-jwt-bearer": "^1.6.0",
+    "mongoose": "^8.8.4",
     "nanoid": "^5.0.8",
     "redis": "^4.7.0"
   },

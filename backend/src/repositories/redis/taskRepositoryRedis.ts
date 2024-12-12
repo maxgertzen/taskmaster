@@ -1,12 +1,12 @@
-import { ITaskRepository } from "../interfaces/taskRepository";
-import { getDatabaseClient } from "../../config/database";
+import { ITaskRepository } from "../../interfaces/taskRepository";
+import { getRedisClient } from "../../config/database";
 import { REDIS_KEYS } from "../../utils/redisKeys";
-import { Task, ClientTask, SearchResults } from "../../models/taskModel";
+import { BaseTask, ClientTask, SearchResults } from "../../interfaces/entities";
 import { reorderArray } from "../../utils/reorderArray";
 import { generateUniqueId } from "../../utils/nanoid";
 
 export class TaskRepositoryRedis implements ITaskRepository {
-  private redisClient = getDatabaseClient();
+  private redisClient = getRedisClient();
 
   async createTask(
     userId: string,
@@ -14,22 +14,29 @@ export class TaskRepositoryRedis implements ITaskRepository {
     text: string
   ): Promise<ClientTask> {
     const id = await generateUniqueId();
-    const creationDate = Date.now();
-    const task: Task = { id, listId, text, completed: "false", creationDate };
+    const creationDate = new Date().toISOString();
+
+    const orderIndex = Date.now();
+
+    const task: BaseTask = {
+      id,
+      text,
+      completed: "false",
+      creationDate,
+      userId,
+      listId,
+      orderIndex,
+    };
 
     const taskKey = REDIS_KEYS.TASK(userId, task.id);
-    const redisTask = { ...task, completed: task.completed };
 
     await this.redisClient
       .multi()
-      .hSet(taskKey, redisTask)
+      .hSet(taskKey, Object.entries(task).flat())
       .rPush(REDIS_KEYS.TASK_LIST(userId, task.listId), taskKey)
       .exec();
 
-    return {
-      ...task,
-      completed: task.completed === "true",
-    };
+    return { ...task, completed: false };
   }
 
   async getTasks(userId: string, listId: string): Promise<ClientTask[]> {
@@ -38,16 +45,24 @@ export class TaskRepositoryRedis implements ITaskRepository {
       0,
       -1
     );
+
     if (!taskKeys.length) return [];
 
     const tasks = await Promise.all(
       taskKeys.map((key) => this.redisClient.hGetAll(key))
     );
-    return tasks.map((task) => ({
-      ...task,
-      completed: task.completed === "true",
-      creationDate: Number(task.creationDate),
-    })) as ClientTask[];
+
+    return tasks
+      .map((task) => ({
+        id: task.id,
+        text: task.text,
+        completed: task.completed === "true",
+        creationDate: new Date(task.creationDate),
+        userId: task.userId,
+        listId: task.listId,
+        orderIndex: Number(task.orderIndex),
+      }))
+      .sort((a, b) => a.orderIndex - b.orderIndex);
   }
 
   async getTasksSearchResults(
@@ -58,57 +73,55 @@ export class TaskRepositoryRedis implements ITaskRepository {
 
     const taskKeys = await this.redisClient.keys(REDIS_KEYS.TASK(userId, "*"));
 
-    const tasks: ClientTask[] = (
-      await Promise.all(
-        taskKeys.map(async (taskKey) => {
-          const task = await this.redisClient.hGetAll(taskKey);
+    const tasks = await Promise.all(
+      taskKeys.map(async (taskKey) => {
+        const task = await this.redisClient.hGetAll(taskKey);
 
-          if (task.text?.toLowerCase().includes(search.toLowerCase())) {
-            return {
-              id: taskKey.split(":").pop() || "",
-              text: task.text || "",
-              listId: task.listId || "",
-              completed: task.completed === "true",
-              creationDate: task.creationDate
-                ? Number(task.creationDate)
-                : Date.now(),
-            } as ClientTask;
-          }
+        if (task.text?.toLowerCase().includes(search.toLowerCase())) {
+          return {
+            id: taskKey.split(":").pop() || "",
+            text: task.text || "",
+            listId: task.listId || "",
+            completed: task.completed === "true",
+            creationDate: task.creationDate
+              ? new Date(task.creationDate)
+              : new Date(),
+            userId: task.userId || "",
+          } as ClientTask;
+        }
 
-          return null;
-        })
-      )
-    ).filter(Boolean) as ClientTask[];
+        return null;
+      })
+    );
+
+    const filteredTasks = tasks.filter(Boolean) as ClientTask[];
 
     const groupedByListId: { [listId: string]: ClientTask[] } = {};
-    tasks.forEach((task) => {
+    filteredTasks.forEach((task) => {
       if (!groupedByListId[task.listId]) {
         groupedByListId[task.listId] = [];
       }
       groupedByListId[task.listId].push(task);
     });
 
-    const listNameCache: { [listId: string]: string } = {};
-    await Promise.all(
-      Object.keys(groupedByListId).map(async (listId) => {
-        const listName = await this.redisClient.hGet(
-          REDIS_KEYS.LIST(userId, listId),
-          "name"
-        );
-        listNameCache[listId] = listName || "Unnamed List";
-      })
+    const results: SearchResults = await Promise.all(
+      Object.entries(groupedByListId).map(async ([listId, tasks]) => ({
+        listName:
+          (await this.redisClient.hGet(
+            REDIS_KEYS.LIST(userId, listId),
+            "name"
+          )) || "Unnamed List",
+        tasks,
+      }))
     );
 
-    return Object.entries(groupedByListId).map(([listId, tasks]) => ({
-      listName: listNameCache[listId],
-      tasks,
-    }));
+    return results;
   }
 
   async updateTask(
     userId: string,
     taskId: string,
-    updates: Partial<Task>
+    updates: Partial<BaseTask>
   ): Promise<string> {
     const taskKey = REDIS_KEYS.TASK(userId, taskId);
     const existingTask = await this.redisClient.hGetAll(taskKey);
@@ -119,9 +132,15 @@ export class TaskRepositoryRedis implements ITaskRepository {
       ...updates,
       completed: updates.completed ?? existingTask.completed,
     };
-    await this.redisClient.hSet(taskKey, updatedTask);
 
-    return updatedTask.id as Task["id"];
+    const hSetObject: Record<string, string> = {};
+    Object.entries(updatedTask).forEach(([key, value]) => {
+      hSetObject[key] = value.toString();
+    });
+
+    await this.redisClient.hSet(taskKey, hSetObject);
+
+    return taskId;
   }
 
   async deleteTask(
@@ -147,16 +166,35 @@ export class TaskRepositoryRedis implements ITaskRepository {
     newIndex: number
   ): Promise<ClientTask[]> {
     const taskListKey = REDIS_KEYS.TASK_LIST(userId, listId);
-    const taskIds = await this.redisClient.lRange(taskListKey, 0, -1);
-    const reorderedTaskIds = reorderArray(taskIds, oldIndex, newIndex);
+    const taskKeys = await this.redisClient.lRange(taskListKey, 0, -1);
+
+    const reorderedTaskKeys = reorderArray(taskKeys, oldIndex, newIndex);
 
     await this.redisClient
       .multi()
       .del(taskListKey)
-      .rPush(taskListKey, reorderedTaskIds)
+      .rPush(taskListKey, reorderedTaskKeys)
       .exec();
 
-    return await this.getTasks(userId, listId);
+    const reorderedTasks = await Promise.all(
+      reorderedTaskKeys.map(async (key, index) => {
+        const task = await this.redisClient.hGetAll(key);
+
+        await this.redisClient.hSet(key, { orderIndex: index });
+
+        return {
+          id: task.id,
+          text: task.text,
+          completed: task.completed === "true",
+          creationDate: new Date(task.creationDate),
+          userId: task.userId,
+          listId: task.listId,
+          orderIndex: index,
+        };
+      })
+    );
+
+    return reorderedTasks.sort((a, b) => a.orderIndex - b.orderIndex);
   }
 
   async toggleCompleteAll(

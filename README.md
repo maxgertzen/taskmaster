@@ -17,6 +17,8 @@ TaskMaster is a portfolio project by **Max Gertzen**. This is a simple to-do lis
 - **Search Tasks**: Live search of all your tasks.
 - **Bulk Actions**: Remove all or completed tasks from list; "Complete" all tasks from list;
 - **Task Views**: Filter task view based on "completed", "active" and "all"; Sort alphabetically ("Desc" & "Asc").
+- **Multiple Database Support**: Switch between Redis and MongoDB databases
+- **Caching Layer**: Redis-based caching for improved performance
 
 ## Built With
 
@@ -34,9 +36,10 @@ TaskMaster is a portfolio project by **Max Gertzen**. This is a simple to-do lis
 ### BE
 - **Node.js**
 - **Express**
-- **Redis**
-- **Auth0 2.0**
 - **TypeScript**
+- **MongoDB**: Document database for persistent storage
+- **Redis**: For both database operations and caching layer
+- **Auth0 2.0**
 
 ## Getting Started
 
@@ -72,8 +75,22 @@ Ensure you have the following installed:
 #### Configuration
 
 - **Environment Variables**:
-  - The Docker Compose setup uses `.env.development` file for configuration.
-  - Ensure `.env.development` exists in both the `client` and `backend` directories for development configuration.
+   - The Docker Compose setup uses `.env.development` file for configuration.
+   - Ensure `.env.development` exists in both the `client` and `backend` directories for development configuration.
+   - Key environment variables for backend:
+      - `DB_TYPE`: Set to either `'redis'` or `'mongo'` to choose your database
+       - `MONGODB_URI`: MongoDB connection string (when using MongoDB)
+
+- **Database Selection**:
+  You can run the application with either Redis or MongoDB:
+  ```
+  # For MongoDB (default)
+  docker-compose up --build
+
+  # For Redis
+  DB_TYPE=redis docker-compose up --build
+
+  Alternatively, update `DB_TYPE` in your `.env.development` file to `redis` or `mongo`.
 
 - **VITE_USE_MOCK**:
   - For security reasons, configuration data for Auth0 was omitted and mocked login was made.

@@ -1,28 +1,34 @@
-import { IListRepository } from "../interfaces/listRepository";
+import { IListRepository } from "../../interfaces/listRepository";
 import { REDIS_KEYS } from "../../utils/redisKeys";
-import { List } from "../../models/listModel";
+import { BaseList } from "../../interfaces/entities";
 import { reorderArray } from "../../utils/reorderArray";
 import { generateUniqueId } from "../../utils/nanoid";
-import { getDatabaseClient } from "../../config/database";
+import { getRedisClient } from "../../config/database";
 
 export class ListRepositoryRedis implements IListRepository {
-  private redisClient = getDatabaseClient();
+  private redisClient = getRedisClient();
 
-  async createList(userId: string, name: string): Promise<List> {
+  async createList(userId: string, name: string): Promise<BaseList> {
     const id = await generateUniqueId();
+    const creationDate = new Date().toISOString();
+    const orderIndex = Date.now();
     const listKey = REDIS_KEYS.LIST(userId, id);
-    const creationDate = Date.now();
 
-    await this.redisClient.hSet(listKey, { id, name, creationDate });
-    await this.redisClient.zAdd(REDIS_KEYS.LISTS(userId), {
-      score: creationDate,
-      value: listKey,
-    });
+    const listData: BaseList = { id, name, creationDate, userId, orderIndex };
 
-    return { id, name, creationDate };
+    await this.redisClient
+      .multi()
+      .hSet(listKey, Object.entries(listData).flat())
+      .zAdd(REDIS_KEYS.LISTS(userId), {
+        score: orderIndex,
+        value: listKey,
+      })
+      .exec();
+
+    return listData;
   }
 
-  async getLists(userId: string): Promise<List[]> {
+  async getLists(userId: string): Promise<BaseList[]> {
     const listIds = await this.redisClient.zRange(
       REDIS_KEYS.LISTS(userId),
       0,
@@ -42,19 +48,21 @@ export class ListRepositoryRedis implements IListRepository {
         return {
           id: listData.id,
           name: listData.name,
-          creationDate: Number(listData.creationDate),
-        } as List;
+          creationDate: listData.creationDate,
+          userId,
+          orderIndex: Number(listData.orderIndex),
+        };
       })
     );
 
-    return lists;
+    return lists.sort((a, b) => a.orderIndex - b.orderIndex);
   }
 
   async updateList(
     userId: string,
     listId: string,
     name: string
-  ): Promise<List> {
+  ): Promise<BaseList> {
     const listKey = REDIS_KEYS.LIST(userId, listId);
 
     const exists = await this.redisClient.exists(listKey);
@@ -62,7 +70,14 @@ export class ListRepositoryRedis implements IListRepository {
 
     await this.redisClient.hSet(listKey, { name });
 
-    return { id: listId, name, creationDate: Date.now() };
+    const listData = await this.redisClient.hGetAll(listKey);
+    return {
+      id: listId,
+      name: listData.name,
+      creationDate: listData.creationDate,
+      userId,
+      orderIndex: Number(listData.orderIndex),
+    };
   }
 
   async deleteList(userId: string, listId: string): Promise<{ id: string }> {
@@ -78,7 +93,7 @@ export class ListRepositoryRedis implements IListRepository {
     userId: string,
     oldIndex: number,
     newIndex: number
-  ): Promise<List[]> {
+  ): Promise<BaseList[]> {
     const listKey = REDIS_KEYS.LISTS(userId);
     const listsWithScores = await this.redisClient.zRangeWithScores(
       listKey,
@@ -90,31 +105,33 @@ export class ListRepositoryRedis implements IListRepository {
 
     const reorderedLists = reorderArray(listsWithScores, oldIndex, newIndex);
 
-    reorderedLists.map(({ value: listId }, index) => {
+    reorderedLists.map(({ value: listKey }, index) => {
       return multi.zAdd(listKey, {
         score: index,
-        value: listId,
+        value: listKey,
       });
     });
 
     await multi.exec();
 
     const reorderedListDetails = await Promise.all(
-      reorderedLists.map(async ({ value: listId }) => {
-        const listData = await this.redisClient.hGetAll(listId);
+      reorderedLists.map(async ({ value: listKey }) => {
+        const listData = await this.redisClient.hGetAll(listKey);
 
         if (!listData.id || !listData.name) {
-          throw new Error(`Missing fields in list with ID: ${listId}`);
+          throw new Error(`Missing fields in list with key: ${listKey}`);
         }
 
         return {
           id: listData.id,
           name: listData.name,
-          creationDate: Number(listData.creationDate),
-        } as List;
+          creationDate: listData.creationDate,
+          userId,
+          orderIndex: Number(listData.orderIndex),
+        } as BaseList;
       })
     );
 
-    return reorderedListDetails;
+    return reorderedListDetails.sort((a, b) => a.orderIndex - b.orderIndex);
   }
 }

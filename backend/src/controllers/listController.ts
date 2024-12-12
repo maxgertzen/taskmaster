@@ -5,7 +5,7 @@ import {
   ReorderListRequest,
   UpdateListRequest,
 } from "../types/requests";
-import { List } from "../models/listModel";
+import { List } from "../interfaces/entities";
 import { getListService } from "../services";
 
 export const getLists = async (
