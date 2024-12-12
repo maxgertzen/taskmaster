@@ -43,4 +43,9 @@ export class RepositoryFactory {
 
     return taskRepositoryInstance;
   }
+
+  static resetInstances(): void {
+    listRepositoryInstance = null;
+    taskRepositoryInstance = null;
+  }
 }

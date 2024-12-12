@@ -9,5 +9,6 @@ declare namespace NodeJS {
     AUTH0_AUDIENCE: string;
     NODE_ENV: "development" | "production" | "test";
     USE_MOCK: "true" | "false";
+    MONGODB_URI: string;
   }
 }
