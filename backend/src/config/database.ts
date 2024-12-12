@@ -43,15 +43,19 @@ const initializeDatabase = async () => {
         console.log("Connected to Redis");
         break;
       case "mongo":
-        await mongoose.connect(process.env.MONGODB_URI, {
-          serverApi: { version: "1", strict: true, deprecationErrors: true },
-        });
+        if (mongoose.connection.readyState === 0) {
+          await mongoose.connect(process.env.MONGODB_URI);
+        }
+
         await mongoose.connection.db?.admin()?.command?.({ ping: 1 });
         console.log(
           "Pinged your deployment. You successfully connected to MongoDB!"
         );
 
-        await createMongoIndexes();
+        if (process.env.NODE_ENV !== "production") {
+          await createMongoIndexes();
+        }
+
         await initializeCache();
         break;
       default:
@@ -86,7 +90,6 @@ const initializeCache = async () => {
         host: process.env.REDIS_HOST,
         port: Number(process.env.REDIS_PORT),
       },
-      database: 1,
     });
 
     cacheClient.on("error", (err) => {

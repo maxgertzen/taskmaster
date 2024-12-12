@@ -1,7 +1,7 @@
-import { getUserService } from "../services";
 import { MOCK_USER_ID } from "../mocks/constants";
 import { Request, Response, NextFunction } from "express";
 import { auth } from "express-oauth2-jwt-bearer";
+import { resolveUserId } from "../utils/resolveUserId";
 
 const isMock = process.env.USE_MOCK === "true";
 
@@ -19,7 +19,8 @@ export const attachUser = async (
 ) => {
   try {
     if (isMock) {
-      req.userId = MOCK_USER_ID;
+      const userId = await resolveUserId(MOCK_USER_ID);
+      req.userId = userId;
       next();
       return;
     }
@@ -35,10 +36,9 @@ export const attachUser = async (
     const email = (auth.email as string) || "";
     const name = (auth.name as string) || "";
 
-    const user = await getUserService().getOrCreateUser(auth0Id, email, name);
+    const userId = await resolveUserId(auth0Id, email, name);
 
-    req.userId = auth0Id;
-    req.user = user;
+    req.userId = userId;
 
     next();
   } catch (error) {

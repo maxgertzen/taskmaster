@@ -3,11 +3,17 @@ import { UserModel } from "../models/user";
 import { ListModel } from "../models/list";
 import { TaskModel } from "../models/task";
 import { MOCK_USER_ID } from "./constants";
+import { createMongoIndexes } from "../config/mongoIndexes";
 
 const populateMongo = async () => {
+  if (process.env.NODE_ENV === "production") {
+    console.error("Error: populateMongo should not be run in production!");
+    return;
+  }
+
   if (process.env.DB_TYPE !== "mongo") {
     console.log("Skipping MongoDB population: DB_TYPE is not 'mongo'.");
-    process.exit(0);
+    return;
   }
 
   if (process.env.USE_MOCK !== "true") {
@@ -16,13 +22,17 @@ const populateMongo = async () => {
   }
 
   try {
-    await mongoose.connect(process.env.MONGODB_URI!);
+    await mongoose.connect(process.env.MONGODB_URI, {
+      autoIndex: true,
+    });
 
     await Promise.all([
       UserModel.deleteMany({}),
       ListModel.deleteMany({}),
       TaskModel.deleteMany({}),
     ]);
+
+    await createMongoIndexes();
 
     const user = await UserModel.create({
       auth0Id: MOCK_USER_ID,
@@ -81,7 +91,7 @@ const populateMongo = async () => {
     console.error("Error populating MongoDB:", err);
   } finally {
     await mongoose.connection.close();
-    process.exit(0);
+    console.log("PopulateScript: MongoDB connection closed");
   }
 };
 

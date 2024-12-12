@@ -5,9 +5,14 @@ import { BaseList, BaseTask } from "../interfaces/entities";
 import { RedisClientType } from "redis";
 
 const populateRedis = async () => {
+  if (process.env.NODE_ENV === "production") {
+    console.error("Error: populateRedis should not be run in production!");
+    return;
+  }
+
   if (process.env.DB_TYPE !== "redis") {
     console.log("Skipping Redis population: DB_TYPE is not 'redis'.");
-    process.exit(0);
+    return;
   }
 
   if (process.env.USE_MOCK !== "true") {
@@ -111,8 +116,8 @@ const populateRedis = async () => {
   } finally {
     if (redisClient?.isOpen) {
       await redisClient.quit();
+      console.log("PopulateScript: Redis connection closed");
     }
-    process.exit(0);
   }
 };
 
