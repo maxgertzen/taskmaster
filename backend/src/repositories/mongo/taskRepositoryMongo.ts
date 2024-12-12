@@ -16,11 +16,7 @@ export class TaskRepositoryMongo implements ITaskRepository {
       listId: string,
       text: string
     ): Promise<ClientTask> => {
-      const orderIndex = await TaskModel.find({ userId, listId })
-        .sort({ orderIndex: -1 })
-        .limit(1)
-        .lean()
-        .then((tasks) => (tasks[0]?.orderIndex ?? -1) + 1);
+      const orderIndex = await TaskModel.countDocuments({ userId, listId });
 
       const task = new TaskModel({
         userId,
@@ -160,11 +156,14 @@ export class TaskRepositoryMongo implements ITaskRepository {
       const tasks = await this.getTasks(userId, listId);
       const reorderedTasks = reorderArray(tasks, oldIndex, newIndex);
 
-      await Promise.all(
-        reorderedTasks.map((task, index) =>
-          TaskModel.updateOne({ _id: task.id }, { orderIndex: index })
-        )
-      );
+      const bulkOperations = reorderedTasks.map((task, index) => ({
+        updateOne: {
+          filter: { _id: task.id },
+          update: { orderIndex: index },
+        },
+      }));
+
+      await TaskModel.bulkWrite(bulkOperations);
 
       return reorderedTasks;
     }

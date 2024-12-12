@@ -19,18 +19,24 @@ const TaskSchema = new Schema<MongoTask>(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "User",
+      index: true,
     },
     listId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "List",
+      index: true,
     },
     orderIndex: {
       type: Number,
       required: true,
+      index: true,
     },
   },
   { strict: true }
 );
+
+TaskSchema.index({ userId: 1, text: 1 }, { background: true });
+TaskSchema.index({ userId: 1, listId: 1, orderIndex: 1 }, { background: true });
 
 export const TaskModel = mongoose.model<MongoTask>("Task", TaskSchema);

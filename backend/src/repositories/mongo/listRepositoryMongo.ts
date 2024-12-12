@@ -11,11 +11,7 @@ import { CACHE_KEYS } from "../../utils/cacheKeys";
 export class ListRepositoryMongo implements IListRepository {
   private readonly createListWithCache = withCacheInvalidation(
     async (userId: string, name: string): Promise<BaseList> => {
-      const orderIndex = await ListModel.find({ userId })
-        .sort({ orderIndex: -1 })
-        .limit(1)
-        .lean()
-        .then((lists) => (lists[0]?.orderIndex ?? -1) + 1);
+      const orderIndex = await ListModel.countDocuments({ userId });
 
       const list = new ListModel({ userId, name, orderIndex });
       await list.save();
@@ -96,11 +92,14 @@ export class ListRepositoryMongo implements IListRepository {
       const lists = await this.getLists(userId);
       const reorderedLists = reorderArray(lists, oldIndex, newIndex);
 
-      await Promise.all(
-        reorderedLists.map((list, index) =>
-          ListModel.updateOne({ _id: list.id }, { orderIndex: index })
-        )
-      );
+      const bulkOperations = reorderedLists.map((list, index) => ({
+        updateOne: {
+          filter: { _id: list.id },
+          update: { orderIndex: index },
+        },
+      }));
+
+      await ListModel.bulkWrite(bulkOperations);
 
       return reorderedLists;
     }
