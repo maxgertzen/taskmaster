@@ -64,10 +64,10 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "/app/healthcheck.sh"]
-      interval: 30s
-      timeout: 10s
+      interval: 5s
+      timeout: 3s
       retries: 3
-      start_period: 15s
+      start_period: 5s
     command: >
       sh -c "
         if [ \"$$DB_TYPE\" = \"mongo\" ]; then

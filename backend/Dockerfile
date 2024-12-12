@@ -24,7 +24,7 @@ ENV NODE_ENV=${NODE_ENV}
 ENV DB_TYPE=${DB_TYPE}
 ENV USE_MOCK=${USE_MOCK}
 
-RUN apk add --no-cache curl mongodb-tools mongodb-shell
+RUN apk add --no-cache curl netcat-openbsd
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
@@ -32,14 +32,28 @@ COPY --from=builder /app/package.json ./package.json
 
 COPY <<'EOF' /app/healthcheck.sh
 #!/bin/sh
-set -e
 if [ "$DB_TYPE" = "mongo" ]; then
-    mongosh "$MONGODB_URI" --eval "db.runCommand('ping')" >/dev/null && \
-    curl -f http://redis:6379 >/dev/null 2>&1
+    # Check MongoDB
+    if ! nc -z mongodb 27017; then
+        echo "MongoDB check failed"
+        exit 1
+    fi
+    
+    # Check Redis
+    if ! nc -z redis 6379; then
+        echo "Redis check failed"
+        exit 1
+    fi
 else
-    curl -f http://redis:6379 >/dev/null 2>&1
+    # Only check Redis
+    if ! nc -z redis 6379; then
+        echo "Redis check failed"
+        exit 1
+    fi
 fi
-curl -f http://redis:6379 >/dev/null 2>&1
+
+echo "All checks passed"
+exit 0
 EOF
 
 RUN chmod +x /app/healthcheck.sh
