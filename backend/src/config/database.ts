@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { createClient, RedisClientType } from "redis";
+import { createMongoIndexes } from "./mongoIndexes";
 
 let dbClient: RedisClientType | null = null;
 let cacheClient: RedisClientType | null = null;
@@ -42,9 +43,15 @@ const initializeDatabase = async () => {
         console.log("Connected to Redis");
         break;
       case "mongo":
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log("Connected to MongoDB");
+        await mongoose.connect(process.env.MONGODB_URI, {
+          serverApi: { version: "1", strict: true, deprecationErrors: true },
+        });
+        await mongoose.connection.db?.admin()?.command?.({ ping: 1 });
+        console.log(
+          "Pinged your deployment. You successfully connected to MongoDB!"
+        );
 
+        await createMongoIndexes();
         await initializeCache();
         break;
       default:
@@ -97,7 +104,7 @@ const initializeCache = async () => {
   }
 };
 
-const getDatabaseClient = () => {
+const getRedisClient = () => {
   if (!dbClient) {
     throw new Error("Database not initialized");
   }
@@ -112,4 +119,4 @@ const getCacheClient = () => {
   return cacheClient;
 };
 
-export { initializeDatabase, getDatabaseClient, getCacheClient };
+export { initializeDatabase, getRedisClient, getCacheClient };

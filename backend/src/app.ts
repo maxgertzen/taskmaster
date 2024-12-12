@@ -3,7 +3,7 @@ import cors from "cors";
 import { listRoutes } from "./routes/listRoutes";
 import { taskRoutes } from "./routes/taskRoutes";
 import { errorHandler } from "./middlewares/errorHandler";
-import { checkJwt, attachUserId } from "./middlewares/authorisation";
+import { checkJwt, attachUser } from "./middlewares/authorisation";
 
 const createApp = async () => {
   const app = express();
@@ -16,8 +16,8 @@ const createApp = async () => {
   );
   app.use(express.json());
 
-  app.use("/api/lists", checkJwt, attachUserId, listRoutes);
-  app.use("/api/tasks", checkJwt, attachUserId, taskRoutes);
+  app.use("/api/lists", checkJwt, attachUser, listRoutes);
+  app.use("/api/tasks", checkJwt, attachUser, taskRoutes);
 
   app.use(errorHandler);
 

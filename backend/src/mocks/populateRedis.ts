@@ -1,11 +1,8 @@
-import { Task } from "../models/taskModel";
-import { getDatabaseClient, initializeDatabase } from "../config/database";
+import { getRedisClient, initializeDatabase } from "../config/database";
 import { REDIS_KEYS } from "../utils/redisKeys";
 import { MOCK_USER_ID } from "./constants";
-import { List } from "@src/models/listModel";
+import { BaseList, BaseTask } from "../interfaces/entities";
 import { RedisClientType } from "redis";
-
-let redisClient: RedisClientType | null = null;
 
 const populateRedis = async () => {
   if (process.env.DB_TYPE !== "redis") {
@@ -18,45 +15,72 @@ const populateRedis = async () => {
     return;
   }
 
+  let redisClient: RedisClientType | null = null;
+
   try {
     await initializeDatabase();
-    redisClient = getDatabaseClient();
-
-    if (!redisClient.isOpen) {
-      await redisClient.connect();
-    }
+    redisClient = getRedisClient();
 
     await redisClient.flushAll();
 
     const userId = MOCK_USER_ID;
 
-    const tasks: Task[] = [
+    const userKey = REDIS_KEYS.USER(userId);
+    await redisClient.hSet(userKey, {
+      auth0Id: userId,
+      email: "mock@example.com",
+      name: "Mock User",
+      preferences: JSON.stringify({
+        theme: "light",
+        notifications: true,
+      }),
+    });
+
+    const tasks: BaseTask[] = [
       {
         id: "1",
         listId: "list-1",
         text: "Mock Task 1",
         completed: "false",
-        creationDate: Date.now(),
+        creationDate: new Date().toISOString(),
+        userId,
+        orderIndex: 0,
       },
       {
         id: "2",
         listId: "list-1",
         text: "Mock Task 2",
         completed: "true",
-        creationDate: Date.now(),
+        creationDate: new Date().toISOString(),
+        userId,
+        orderIndex: 1,
       },
       {
         id: "3",
         listId: "list-2",
         text: "Mock Task 3",
         completed: "false",
-        creationDate: Date.now(),
+        creationDate: new Date().toISOString(),
+        userId,
+        orderIndex: 2,
       },
     ];
 
-    const lists: List[] = [
-      { id: "list-1", name: "Mock List 1", creationDate: Date.now() },
-      { id: "list-2", name: "Mock List 2", creationDate: Date.now() },
+    const lists: BaseList[] = [
+      {
+        id: "list-1",
+        name: "Mock List 1",
+        creationDate: new Date().toISOString(),
+        userId,
+        orderIndex: 0,
+      },
+      {
+        id: "list-2",
+        name: "Mock List 2",
+        creationDate: new Date().toISOString(),
+        userId,
+        orderIndex: 1,
+      },
     ];
 
     const multi = redisClient.multi();
@@ -65,10 +89,9 @@ const populateRedis = async () => {
       const listKey = REDIS_KEYS.LIST(userId, list.id);
       const listsKey = REDIS_KEYS.LISTS(userId);
 
-      multi.hSet(listKey, { ...list, creationDate: String(list.creationDate) });
-
+      multi.hSet(listKey, Object.entries(list).flat());
       multi.zAdd(listsKey, {
-        score: list.creationDate as number,
+        score: list.orderIndex,
         value: listKey,
       });
     }
@@ -76,14 +99,8 @@ const populateRedis = async () => {
     for (const task of tasks) {
       const taskKey = REDIS_KEYS.TASK(userId, task.id);
       const taskListKey = REDIS_KEYS.TASK_LIST(userId, task.listId);
-      multi.hSet(taskKey, {
-        id: task.id,
-        listId: task.listId,
-        text: task.text,
-        completed: task.completed,
-        creationDate: String(task.creationDate),
-      });
 
+      multi.hSet(taskKey, Object.entries(task).flat());
       multi.rPush(taskListKey, taskKey);
     }
 

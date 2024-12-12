@@ -7,6 +7,7 @@ import {
   withCacheInvalidation,
 } from "../../services/cache/cacheWrapper";
 import { CACHE_KEYS } from "../../utils/cacheKeys";
+import { ListModel } from "../../models/list";
 
 export class TaskRepositoryMongo implements ITaskRepository {
   private readonly createTaskWithCache = withCacheInvalidation(
@@ -73,9 +74,12 @@ export class TaskRepositoryMongo implements ITaskRepository {
       }).lean<MongoTask[]>();
 
       const groupedByListId: { [listId: string]: ClientTask[] } = {};
+      const listIds = new Set<string>();
 
       tasks.forEach((task) => {
         const listId = task.listId.toString();
+        listIds.add(listId);
+
         if (!groupedByListId[listId]) {
           groupedByListId[listId] = [];
         }
@@ -90,8 +94,16 @@ export class TaskRepositoryMongo implements ITaskRepository {
         });
       });
 
-      return Object.entries(groupedByListId).map(([_, tasks]) => ({
-        listName: "List Name", // You might want to fetch this from ListModel
+      const lists = await ListModel.find({
+        _id: { $in: Array.from(listIds) },
+      }).lean();
+
+      const listNameMap = new Map(
+        lists.map((list) => [list._id.toString(), list.name])
+      );
+
+      return Object.entries(groupedByListId).map(([listId, tasks]) => ({
+        listName: listNameMap.get(listId) || "Unnamed List",
         tasks,
       }));
     },
