@@ -13,4 +13,8 @@ export const CACHE_CONFIG: Record<string, CacheConfig> = {
     ttl: 300,
     enabled: true,
   },
+  USER: {
+    ttl: 7200,
+    enabled: true,
+  },
 } as const;

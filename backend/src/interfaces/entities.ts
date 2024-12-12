@@ -5,6 +5,13 @@ export interface BaseEntity {
   orderIndex: number;
 }
 
+export interface BaseUser {
+  auth0Id: string;
+  email: string;
+  name: string;
+  preferences: Record<string, unknown>;
+}
+
 export interface BaseList extends BaseEntity {
   name: string;
   sharedWith?: string[];

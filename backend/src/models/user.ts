@@ -1,17 +1,14 @@
 import mongoose, { Schema, Document } from "mongoose";
-
-export interface IUser extends Document {
-  auth0Id: string;
-  email?: string;
-  name?: string;
-  preferences?: Record<string, unknown>;
+import { BaseUser } from "../interfaces/entities";
+export interface MongoUser extends BaseUser, Document {
+  _id: mongoose.Types.ObjectId;
 }
 
-const UserSchema = new Schema<IUser>({
+const UserSchema = new Schema<MongoUser>({
   auth0Id: { type: String, required: true, unique: true },
   email: { type: String, trim: true, lowercase: true },
   name: { type: String },
   preferences: { type: Schema.Types.Mixed },
 });
 
-export const UserModel = mongoose.model<IUser>("User", UserSchema);
+export const UserModel = mongoose.model<MongoUser>("User", UserSchema);

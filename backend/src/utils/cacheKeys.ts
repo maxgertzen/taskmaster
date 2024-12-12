@@ -8,4 +8,5 @@ export const CACHE_KEYS = {
   LISTS: (userId: string) => `cache:user:${userId}:lists` as const,
   SEARCH_RESULTS: (userId: string, query: string) =>
     `cache:user:${userId}:search:${query}` as const,
+  USER: (auth0Id: string) => `cache:user:${auth0Id}` as const,
 } as const;

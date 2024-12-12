@@ -1,3 +1,4 @@
+import { getUserService } from "../services";
 import { MOCK_USER_ID } from "../mocks/constants";
 import { Request, Response, NextFunction } from "express";
 import { auth } from "express-oauth2-jwt-bearer";
@@ -11,22 +12,36 @@ export const checkJwt = isMock
       issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
     });
 
-export const attachUserId = (
+export const attachUser = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  if (isMock) {
-    req.userId = MOCK_USER_ID;
+  try {
+    if (isMock) {
+      req.userId = MOCK_USER_ID;
+      next();
+      return;
+    }
+
+    const auth = req.auth?.payload;
+
+    if (!auth?.sub) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const auth0Id = auth.sub;
+    const email = (auth.email as string) || "";
+    const name = (auth.name as string) || "";
+
+    const user = await getUserService().getOrCreateUser(auth0Id, email, name);
+
+    req.userId = auth0Id;
+    req.user = user;
+
     next();
-    return;
+  } catch (error) {
+    next(error);
   }
-
-  if (!req.auth || !req.auth.payload || !req.auth.payload.sub) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
-  }
-
-  req.userId = req.auth.payload.sub as string;
-  next();
 };

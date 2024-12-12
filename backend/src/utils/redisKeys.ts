@@ -1,4 +1,5 @@
 export const REDIS_KEYS = {
+  USER: (userId: string) => `user:${userId}` as const,
   TASK: (userId: string, taskId: string) =>
     `user:${userId}:task:${taskId}` as const,
   TASK_LIST: (userId: string, listId: string) =>
