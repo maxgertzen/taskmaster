@@ -26,6 +26,7 @@ type ListMutationInput = {
 };
 
 // TODO:
+// - Fix optimistic updates
 // - Handle errors and rollback changes if needed (show Alert)
 export const useListsMutation = () => {
   const queryClient = useQueryClient();

@@ -30,6 +30,8 @@ type TaskMutationInput = {
   deleteMode?: 'completed' | 'all';
 };
 
+// TODO:
+// - Fix optimistic updates
 export const useTasksMutation = () => {
   const queryClient = useQueryClient();
   const token = useAuthStore((state) => state.token);

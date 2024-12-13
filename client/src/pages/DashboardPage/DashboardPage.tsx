@@ -15,9 +15,6 @@ import {
   SwipeContainer,
 } from './DashboardPage.styled';
 
-// TODO
-// 1. Ensure debounce is working correctly
-// 2. Add due date to the task item
 const Dashboard: FC = () => {
   const token = useAuthStore((state) => state.token);
   const { selectedListId, setSelectedListId } = useTaskStore((state) => state);

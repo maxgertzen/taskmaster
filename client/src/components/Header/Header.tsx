@@ -50,12 +50,6 @@ export const Header: React.FC<HeaderProps> = ({ user, onBack }) => {
   return (
     <HeaderContainer>
       {!isMobile && <Logo withTitle />}
-      {
-        // TODO: Add back button
-        // 1. Add back button to the header
-        // 2. on click of the back button, call the onBack function
-        // 3. show the button only if selectedListId is not null
-      }
       {onBack && isMobile && selectedListId ? (
         <BackButtonWrapper
           role='button'
