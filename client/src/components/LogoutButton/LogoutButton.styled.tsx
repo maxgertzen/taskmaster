@@ -5,4 +5,7 @@ export const StyledLogoutButton = styled.button(({ theme }) => ({
   alignItems: 'center',
   color: theme.colors.text,
   gap: theme.spacing(1),
+  ':hover': {
+    filter: 'invert(1)',
+  },
 }));

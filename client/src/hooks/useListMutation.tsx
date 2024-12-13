@@ -82,7 +82,7 @@ export const useListsMutation = () => {
   );
 
   const handleOnSettled = useCallback(async () => {
-    await queryClient.refetchQueries({ queryKey: QUERY_KEYS.lists });
+    await queryClient.refetchQueries({ queryKey: [QUERY_KEYS.lists] });
   }, [queryClient]);
 
   const addList = useMutation({

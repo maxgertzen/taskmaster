@@ -13,6 +13,12 @@ export const SidebarContainer = styled.div<{
   justifyContent: 'start',
   alignItems: isCollapsed ? 'center' : 'start',
   gap: theme.spacing(2),
+  [`@media (max-width: 768px)`]: {
+    width: '50%',
+    height: '100%',
+    padding: theme.spacing(1, 2),
+    alignItems: 'start',
+  },
 }));
 
 export const StyledCollapsibleButton = styled.button(({ theme }) => ({

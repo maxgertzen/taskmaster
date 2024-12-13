@@ -7,6 +7,12 @@ export const TaskActionsContainer = styled('div')(({ theme }) => ({
   width: '100%',
   gap: theme.spacing(1),
   flexWrap: 'wrap',
+  [`@media (max-width: ${theme.breakpoints.sm})`]: {
+    width: '50%',
+    input: {
+      display: 'none',
+    },
+  },
 }));
 
 export const IconContainer = styled('button')(({ theme }) => ({
@@ -16,4 +22,8 @@ export const IconContainer = styled('button')(({ theme }) => ({
   gap: theme.spacing(1),
   alignItems: 'center',
   textAlign: 'left',
+  position: 'relative',
+  [`@media (max-width: ${theme.breakpoints.sm})`]: {
+    justifyContent: 'flex-end',
+  },
 }));

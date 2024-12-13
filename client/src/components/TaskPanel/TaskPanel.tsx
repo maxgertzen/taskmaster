@@ -4,21 +4,24 @@ import { useDragAndDropHandler } from '../../hooks/useDragAndDropHandler';
 import { useLists } from '../../hooks/useLists';
 import { useTasksMutation } from '../../hooks/useTaskMutation';
 import { useTasks } from '../../hooks/useTasks';
+import { useViewportStore } from '../../store/store';
 import { Filters, Sort } from '../../types/mutations';
 import { Task } from '../../types/shared';
 import { TaskActions } from '../TaskActions/TaskActions';
+import { TaskInput } from '../TaskInput/TaskInput';
 import { TaskList } from '../TaskList/TaskList';
 import { TaskListViews } from '../TaskListViews/TaskListViews';
 import { TaskSearchResults } from '../TaskSearchResults/TaskSearchResults';
 import { Title } from '../Title/Title';
 
-import { TaskContainer } from './TaskPanel.styled';
+import { TaskContainer, TaskHeaderContainer } from './TaskPanel.styled';
 
 interface TaskPanelProps {
   listId: string | null;
 }
 
 export const TaskPanel: FC<TaskPanelProps> = ({ listId }) => {
+  const isMobile = useViewportStore((state) => state.isMobile);
   const [filter, setFilter] = useState<Filters>(null);
   const [sort, setSort] = useState<Sort>(null);
   const { tasks } = useTasks({ listId, filter, sort });
@@ -98,14 +101,16 @@ export const TaskPanel: FC<TaskPanelProps> = ({ listId }) => {
     <TaskContainer>
       {listId ? (
         <>
-          {listName && <Title variant='h3'>{listName}</Title>}
-          <TaskActions
-            isAllCompleted={isAllCompleted}
-            isAnyCompleted={isAnyCompleted}
-            onAdd={handleAddTask}
-            onDeleteAll={handleBulkDelete}
-            onToggleCompleteAll={handleCompleteAll}
-          />
+          <TaskHeaderContainer>
+            {listName && <Title variant='h3'>{listName}</Title>}
+            <TaskActions
+              isAllCompleted={isAllCompleted}
+              isAnyCompleted={isAnyCompleted}
+              onAdd={handleAddTask}
+              onDeleteAll={handleBulkDelete}
+              onToggleCompleteAll={handleCompleteAll}
+            />
+          </TaskHeaderContainer>
           <TaskListViews
             filter={filter}
             sort={sort}
@@ -118,6 +123,7 @@ export const TaskPanel: FC<TaskPanelProps> = ({ listId }) => {
             onDeleteTask={handleDeleteTask}
             onDragEnd={handleOnDragEnd}
           />
+          {isMobile && <TaskInput onSubmit={handleAddTask} withToggle />}
         </>
       ) : (
         <TaskSearchResults />

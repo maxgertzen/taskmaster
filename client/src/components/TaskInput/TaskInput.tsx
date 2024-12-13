@@ -10,14 +10,17 @@ interface TaskInputProps {
   onSubmit: (text: string) => void;
   value?: string;
   onReset?: () => void;
+  withToggle?: boolean;
 }
 
 export const TaskInput: React.FC<TaskInputProps> = ({
   onSubmit,
-  isSearch = false,
-  value = '',
   onReset,
+  value = '',
+  withToggle = false,
+  isSearch = false,
 }) => {
+  const [showInput, setShowInput] = useState<boolean>(!withToggle);
   const [text, setText] = useState<string>(value);
 
   const debouncedOnSubmit = useMemo(
@@ -41,6 +44,13 @@ export const TaskInput: React.FC<TaskInputProps> = ({
     if (onReset) {
       onReset();
     }
+  };
+
+  const toggleInput = () => {
+    if (showInput && text) {
+      handleOnSubmit();
+    }
+    setShowInput((prev) => !prev);
   };
 
   const handleKeyDown = ({ key }: React.KeyboardEvent<HTMLInputElement>) => {
@@ -75,18 +85,20 @@ export const TaskInput: React.FC<TaskInputProps> = ({
 
   return (
     <StyledTaskInputContainer isSearch={isSearch}>
-      <StyledInput
-        type='text'
-        value={text}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        placeholder={isSearch ? 'Search tasks' : 'Add a task'}
-        isSearch={isSearch}
-      />
+      {showInput && (
+        <StyledInput
+          type='text'
+          value={text}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          placeholder={isSearch ? 'Search tasks' : 'Add a task'}
+          isSearch={isSearch}
+        />
+      )}
       <SpriteIcon
         name={isSearch ? 'magnifying' : 'plus'}
         size={4}
-        onClick={handleOnSubmit}
+        onClick={withToggle ? toggleInput : handleOnSubmit}
       />
     </StyledTaskInputContainer>
   );

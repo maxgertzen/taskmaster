@@ -1,45 +1,79 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 
 import { withAuthenticationRequired } from '../../auth/withAuthenticationRequired';
 import { Header, Sidebar, TaskPanel, Loader } from '../../components';
 import { useAuthStore } from '../../store/authStore';
-import { useTaskStore, useUserStore } from '../../store/store';
+import {
+  useTaskStore,
+  useUserStore,
+  useViewportStore,
+} from '../../store/store';
 
-import { DashboardContainer, MainLayout } from './DashboardPage.styled';
+import {
+  DashboardContainer,
+  MainLayout,
+  SwipeContainer,
+} from './DashboardPage.styled';
 
 // TODO
-// 1. Create a loader component - this will be used to show a loading spinner
-// 2. Ensure debounce is working correctly
-// 3. Add due date to the task item
-// 4. Update the styling of the project to use Material UI
+// 1. Ensure debounce is working correctly
+// 2. Add due date to the task item
 const Dashboard: FC = () => {
   const token = useAuthStore((state) => state.token);
   const { selectedListId, setSelectedListId } = useTaskStore((state) => state);
-  const setSearchTerm = useTaskStore((state) => state.setSearchTerm);
-
   const userDetails = useUserStore((state) => state.user);
+  const isMobile = useViewportStore((state) => state.isMobile);
+  const [view, setView] = useState<'sidebar' | 'taskPanel'>('sidebar');
+  const setSearchTerm = useTaskStore((state) => state.setSearchTerm);
 
   const handleOnSelectList = (listId: string | null) => {
     setSelectedListId(listId);
     if (listId) {
       setSearchTerm('');
     }
+    if (isMobile && listId) {
+      setView('taskPanel');
+    }
   };
 
-  return token ? (
+  const handleOnBack = () => {
+    if (view === 'taskPanel') {
+      setSelectedListId(null);
+      setView('sidebar');
+    }
+  };
+
+  if (!token) {
+    return (
+      <DashboardContainer isFullPage>
+        <Loader />
+      </DashboardContainer>
+    );
+  }
+
+  return (
     <DashboardContainer>
-      <Header user={userDetails} />
-      <MainLayout>
-        <Sidebar
-          selectedListId={selectedListId}
-          onSelectList={handleOnSelectList}
-        />
-        <TaskPanel listId={selectedListId} />
-      </MainLayout>
-    </DashboardContainer>
-  ) : (
-    <DashboardContainer isFullPage>
-      <Loader />
+      <Header
+        user={userDetails}
+        onBack={view === 'taskPanel' ? handleOnBack : undefined}
+      />
+      {isMobile ? (
+        <SwipeContainer view={view}>
+          <Sidebar
+            selectedListId={selectedListId}
+            onSelectList={handleOnSelectList}
+          />
+          <TaskPanel listId={selectedListId} />
+        </SwipeContainer>
+      ) : (
+        <MainLayout>
+          <Sidebar
+            selectedListId={selectedListId}
+            onSelectList={handleOnSelectList}
+          />
+          <TaskPanel listId={selectedListId} />
+        </MainLayout>
+      )}
     </DashboardContainer>
   );
 };

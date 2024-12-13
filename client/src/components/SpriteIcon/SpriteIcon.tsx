@@ -2,6 +2,7 @@
 import { FC, FunctionComponent, useMemo } from 'react';
 
 import a2z from '../../assets/sprites/icons/a2z.svg?react';
+import arrowButton from '../../assets/sprites/icons/arrow-left.svg?react';
 import closepanel from '../../assets/sprites/icons/closepanel.svg?react';
 import dragDark from '../../assets/sprites/icons/drag-dm.svg?react';
 import drag from '../../assets/sprites/icons/drag.svg?react';
@@ -46,6 +47,7 @@ const iconMap: Record<
   FunctionComponent<React.SVGProps<SVGSVGElement>>
 > = {
   a2z,
+  arrowButton,
   closepanel,
   drag,
   dragDark,

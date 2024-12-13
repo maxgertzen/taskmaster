@@ -4,7 +4,10 @@ import { Filters, Sort } from '../../types/mutations';
 import { Button } from '../Button/Button';
 import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
 
-import { TaskListViewsContainer } from './TaskListViews.styled';
+import {
+  StyledButtonsWrapper,
+  TaskListViewsContainer,
+} from './TaskListViews.styled';
 
 interface TaskListViewsProps {
   filter: Filters;
@@ -21,29 +24,31 @@ export const TaskListViews: FC<TaskListViewsProps> = ({
 }) => {
   return (
     <TaskListViewsContainer>
-      <Button
-        variant='primary'
-        onClick={() => {
-          onFilter(null);
-          onSort(null);
-        }}
-      >
-        All
-      </Button>
-      <Button
-        variant='primary'
-        isActive={filter === 'incomplete'}
-        onClick={() => onFilter('incomplete')}
-      >
-        Active
-      </Button>
-      <Button
-        variant='success'
-        isActive={filter === 'completed'}
-        onClick={() => onFilter('completed')}
-      >
-        Completed
-      </Button>
+      <StyledButtonsWrapper>
+        <Button
+          variant='primary'
+          onClick={() => {
+            onFilter(null);
+            onSort(null);
+          }}
+        >
+          All
+        </Button>
+        <Button
+          variant='primary'
+          isActive={filter === 'incomplete'}
+          onClick={() => onFilter('incomplete')}
+        >
+          Active
+        </Button>
+        <Button
+          variant='success'
+          isActive={filter === 'completed'}
+          onClick={() => onFilter('completed')}
+        >
+          Completed
+        </Button>
+      </StyledButtonsWrapper>
       <SpriteIcon
         name='z2a'
         alt='filter'

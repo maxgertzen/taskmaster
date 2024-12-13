@@ -23,3 +23,13 @@ export const useUserStore = create<UserStore>((set) => ({
   user: { name: '' },
   setUser: (user) => set({ user }),
 }));
+
+interface ViewportStore {
+  isMobile: boolean;
+  setViewport: (width: number) => void;
+}
+
+export const useViewportStore = create<ViewportStore>((set) => ({
+  isMobile: window.innerWidth < 768,
+  setViewport: (width) => set({ isMobile: width < 768 }),
+}));

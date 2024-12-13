@@ -5,10 +5,12 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import { useInitializeToken } from './hooks/useInitializeToken';
 import { DashboardPage, HomePage } from './pages';
+import { useViewportStore } from './store/store';
 
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
+  useViewportStore();
   useInitializeToken();
 
   return (

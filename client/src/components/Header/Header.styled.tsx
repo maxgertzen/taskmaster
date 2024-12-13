@@ -1,7 +1,5 @@
 import styled from '@emotion/styled';
 
-import { fadeIn, fadeOut } from '../../styles/globalStyles';
-
 export const HeaderContainer = styled.header(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-between',
@@ -10,35 +8,30 @@ export const HeaderContainer = styled.header(({ theme }) => ({
   backgroundColor: theme.colors.surface,
   [`@media (max-width: ${theme.breakpoints.sm})`]: {
     padding: theme.spacing(1),
+    height: '10vh',
   },
 }));
 
-export const UserActionsContainer = styled.div<{ isMobileOpen: boolean }>(
-  ({ theme, isMobileOpen }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    span: {
-      marginRight: theme.spacing(1),
-    },
-    [`@media (max-width: ${theme.breakpoints.sm})`]: {
-      display: isMobileOpen ? 'flex' : 'none',
-      flexDirection: 'column-reverse',
-      justifyContent: 'center',
-      alignItems: 'start',
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100%',
-      backgroundColor: theme.colors.surface,
-      zIndex: 1000,
-      gap: theme.spacing(1),
-      padding: theme.spacing(2),
-      animation: isMobileOpen
-        ? `${fadeIn} 0.3s ease-in-out forwards`
-        : `${fadeOut} 0.3s ease-in-out backwards`,
-    },
-  })
-);
+export const UserActionsContainer = styled.div(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  span: {
+    marginRight: theme.spacing(1),
+  },
+  [`@media (max-width: ${theme.breakpoints.sm})`]: {
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
+    alignItems: 'start',
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    backgroundColor: theme.colors.surface,
+    zIndex: 1000,
+    gap: theme.spacing(1),
+    padding: theme.spacing(2),
+  },
+}));
 
 export const HamburgerMenu = styled.div(({ theme }) => ({
   display: 'none',
@@ -55,6 +48,9 @@ export const UserMenuContainer = styled.div(({ theme }) => ({
   alignItems: 'center',
   cursor: 'pointer',
   marginLeft: theme.spacing(1),
+  [`@media (max-width: ${theme.breakpoints.sm})`]: {
+    order: -1,
+  },
 }));
 
 export const VerticalDivider = styled.div(({ theme }) => ({
@@ -68,7 +64,18 @@ export const VerticalDivider = styled.div(({ theme }) => ({
 }));
 
 export const UserNameContainer = styled.span(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  position: 'relative',
   [`@media (max-width: ${theme.breakpoints.sm})`]: {
-    display: 'none',
+    flexDirection: 'row-reverse',
+    gap: theme.spacing(1),
   },
 }));
+
+export const BackButtonWrapper = styled.div({
+  display: 'flex',
+  alignItems: 'center',
+  cursor: 'pointer',
+});

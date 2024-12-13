@@ -1,8 +1,9 @@
 import { FC } from 'react';
 
+import { useThemeStore } from '../../store/themeStore';
 import { ButtonType } from '../../types/shared';
 
-import { StyledButton } from './Button.styled';
+import { ButtonWrapper, StyledButton } from './Button.styled';
 
 interface ButtonProps {
   children: string;
@@ -19,14 +20,16 @@ export const Button: FC<ButtonProps> = ({
   variant = 'primary',
   isActive = false,
 }) => {
+  const theme = useThemeStore((state) => state.theme);
   return (
-    <StyledButton
+    <ButtonWrapper
       variant={variant}
-      disabled={disabled}
       isActive={isActive}
-      onClick={onClick}
+      isDarkTheme={theme === 'dark'}
     >
-      {children}
-    </StyledButton>
+      <StyledButton disabled={disabled} onClick={onClick}>
+        {children}
+      </StyledButton>
+    </ButtonWrapper>
   );
 };

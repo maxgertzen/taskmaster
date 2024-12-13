@@ -54,7 +54,11 @@ export const ListSidebar: FC<ListSidebarProps> = ({
                 isDraggingOver={snapshot.isDraggingOver}
               >
                 {lists.map(({ id, name }, index) => (
-                  <Draggable key={id} index={index} draggableId={id}>
+                  <Draggable
+                    key={`${id}-${name}-${index}`}
+                    index={index}
+                    draggableId={id}
+                  >
                     {(provided, snapshot) => (
                       <ListItem
                         ref={provided.innerRef}

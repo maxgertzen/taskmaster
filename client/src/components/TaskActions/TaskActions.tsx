@@ -1,6 +1,7 @@
 import { FC, useRef } from 'react';
 
 import { usePopupMenuState } from '../../hooks/usePopupMenuState';
+import { useViewportStore } from '../../store/store';
 import { PopupMenu } from '../PopupMenu/PopupMenu';
 import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
 import { TaskInput } from '../TaskInput/TaskInput';
@@ -24,9 +25,11 @@ export const TaskActions: FC<TaskActionsProps> = ({
 }) => {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const { closeMenu, isOpen, toggleMenu } = usePopupMenuState();
+  const isMobile = useViewportStore((state) => state.isMobile);
+
   return (
     <TaskActionsContainer>
-      <TaskInput onSubmit={onAdd} />
+      {!isMobile && <TaskInput onSubmit={onAdd} />}
       <IconContainer
         ref={triggerRef}
         aria-haspopup='true'
@@ -36,6 +39,7 @@ export const TaskActions: FC<TaskActionsProps> = ({
       >
         <SpriteIcon name='three-dots' alt='bulk actions' />
         <PopupMenu
+          orientation='full'
           options={[
             { label: 'Delete All', onClick: onDeleteAll() },
             {

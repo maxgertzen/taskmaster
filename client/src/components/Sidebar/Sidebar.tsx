@@ -3,6 +3,7 @@ import { FC, useEffect, useState } from 'react';
 import { useDragAndDropHandler } from '../../hooks/useDragAndDropHandler';
 import { useListsMutation } from '../../hooks/useListMutation';
 import { useLists } from '../../hooks/useLists';
+import { useViewportStore } from '../../store/store';
 import { ListSidebar } from '../ListSidebar/ListSidebar';
 import { ResizableHandle } from '../ResizableHandle/ResizableHandle';
 import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
@@ -19,6 +20,7 @@ export interface SidebarProps {
 }
 
 export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
+  const isMobile = useViewportStore((state) => state.isMobile);
   const [isAdding, setIsAdding] = useState(false);
   const { lists } = useLists();
   const { addList, editList, deleteList, reorderList } = useListsMutation();
@@ -38,9 +40,7 @@ export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
 
   const handleDeleteList = async (listId: string) => {
     deleteList.mutate({ listId });
-    if (selectedListId === listId) {
-      onSelectList(null);
-    }
+    onSelectList(null);
   };
 
   const handleEditList = async (listId: string, name: string) => {
@@ -67,18 +67,20 @@ export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
 
   return (
     <SidebarContainer isCollapsed={isCollapsed} width={sidebarWidth}>
-      <StyledCollapsibleButton onClick={handleToggleSidebar}>
-        {isCollapsed ? (
-          <SpriteIcon name='openpanel' />
-        ) : (
-          <>
-            <PanelButtonContainer>
-              <SpriteIcon name='closepanel' alt='close panel' />
-              <p>Close Panel</p>
-            </PanelButtonContainer>
-          </>
-        )}
-      </StyledCollapsibleButton>
+      {!isMobile && (
+        <StyledCollapsibleButton onClick={handleToggleSidebar}>
+          {isCollapsed ? (
+            <SpriteIcon name='openpanel' />
+          ) : (
+            <>
+              <PanelButtonContainer>
+                <SpriteIcon name='closepanel' alt='close panel' />
+                <p>Close Panel</p>
+              </PanelButtonContainer>
+            </>
+          )}
+        </StyledCollapsibleButton>
+      )}
 
       {!isCollapsed ? (
         <ListSidebar
@@ -95,11 +97,13 @@ export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
       ) : (
         <SpriteIcon name='list' onClick={() => setIsCollapsed(false)} />
       )}
-      <ResizableHandle
-        initialWidth={sidebarWidth}
-        setWidth={setSidebarWidth}
-        onResize={(isResizing) => setIsResizing(isResizing)}
-      />
+      {!isMobile && (
+        <ResizableHandle
+          initialWidth={sidebarWidth}
+          setWidth={setSidebarWidth}
+          onResize={(isResizing) => setIsResizing(isResizing)}
+        />
+      )}
     </SidebarContainer>
   );
 };

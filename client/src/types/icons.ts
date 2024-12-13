@@ -1,5 +1,6 @@
 export const iconNames = [
   'a2z',
+  'arrowButton',
   'closepanel',
   'drag',
   'dragDark',

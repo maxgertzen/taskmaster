@@ -1,15 +1,22 @@
 import { FC, Fragment, useMemo } from 'react';
 
 import { useSearchTasks } from '../../hooks/useSearchTasks';
-import { useTaskStore, useUserStore } from '../../store/store';
+import {
+  useTaskStore,
+  useUserStore,
+  useViewportStore,
+} from '../../store/store';
 import { StyledTaskItemContainer } from '../TaskItem/TaskItem.styled';
 import { Title } from '../Title/Title';
+
+import { MobileTransitionWrapper } from './TaskSearchResults.styled';
 
 export const TaskSearchResults: FC = () => {
   const { searchResults } = useSearchTasks();
   const setListId = useTaskStore((state) => state.setSelectedListId);
   const searchTerm = useTaskStore((state) => state.searchTerm);
   const { name } = useUserStore((state) => state.user);
+  const isMobile = useViewportStore((state) => state.isMobile);
 
   const results = useMemo(() => {
     return searchResults
@@ -32,20 +39,26 @@ export const TaskSearchResults: FC = () => {
   }, [searchResults, setListId]);
 
   return !searchTerm ? (
-    <>
-      <Title variant='h4'>
-        Hi {name ?? ''}! Ready to get on top of your to-do’s?
-      </Title>
-      <p>
-        <br /> To get started,{' '}
-        <b>add a list via the plus icon next to 'lists'.</b>
-      </p>
-      <p>
-        Whether it's your weekly shopping, Sunday cleaning itinerary, or the
-        next steps of your latest project, you'll never miss out again.
-      </p>
-      <p>Select a list to view tasks or search for a task in the search bar</p>
-    </>
+    !isMobile ? (
+      <>
+        <Title variant='h4'>
+          Hi {name ?? ''}! Ready to get on top of your to-do’s?
+        </Title>
+        <p>
+          <br /> To get started,{' '}
+          <b>add a list via the plus icon next to 'lists'.</b>
+        </p>
+        <p>
+          Whether it's your weekly shopping, Sunday cleaning itinerary, or the
+          next steps of your latest project, you'll never miss out again.
+        </p>
+        <p>
+          Select a list to view tasks or search for a task in the search bar
+        </p>
+      </>
+    ) : (
+      <MobileTransitionWrapper />
+    )
   ) : (
     <div>
       <h1>Search Results</h1>

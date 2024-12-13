@@ -1,4 +1,4 @@
-import { FC, ReactNode, useEffect, useRef, useState } from 'react';
+import { FC, ReactNode, useEffect, useRef } from 'react';
 
 import { MenuContainer, MenuItem } from './PopupMenu.styled';
 
@@ -11,6 +11,7 @@ interface PopupMenuProps {
   onClose: () => void;
   isOpen: boolean;
   triggerRef: React.RefObject<HTMLElement>;
+  orientation?: 'left' | 'right' | 'full';
 }
 
 export const PopupMenu: FC<PopupMenuProps> = ({
@@ -18,22 +19,9 @@ export const PopupMenu: FC<PopupMenuProps> = ({
   onClose,
   isOpen,
   triggerRef,
+  orientation = 'left',
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
-  const [menuPosition, setMenuPosition] = useState<{
-    top: number;
-    left: number;
-  }>({ top: 0, left: 0 });
-
-  useEffect(() => {
-    if (isOpen && triggerRef.current) {
-      const triggerRect = triggerRef.current.getBoundingClientRect();
-      setMenuPosition({
-        top: triggerRect.bottom + window.scrollY,
-        left: triggerRect.left + window.scrollX,
-      });
-    }
-  }, [isOpen, triggerRef]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -62,7 +50,7 @@ export const PopupMenu: FC<PopupMenuProps> = ({
       ref={menuRef}
       role='menu'
       aria-labelledby='popup-menu-trigger'
-      top={menuPosition.top}
+      orientation={orientation}
       onClick={(event) => event.stopPropagation()}
     >
       {options.map((option, index) => (
