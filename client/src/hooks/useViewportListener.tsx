@@ -6,14 +6,15 @@ export const useViewportListener = () => {
   const setViewport = useViewportStore((state) => state.setViewport);
 
   useEffect(() => {
-    const handleResize = () => {
+    const updateViewport = () => {
       setViewport(window.innerWidth);
     };
 
-    window.addEventListener('resize', handleResize);
+    updateViewport();
+    window.addEventListener('resize', updateViewport);
 
-    handleResize();
-
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', updateViewport);
+    };
   }, [setViewport]);
 };
