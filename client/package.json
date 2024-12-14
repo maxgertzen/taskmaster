@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "vite preview --host"
+    "start": "vite preview --host --mode staging"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",

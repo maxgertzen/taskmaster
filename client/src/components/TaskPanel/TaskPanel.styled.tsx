@@ -12,7 +12,11 @@ export const TaskContainer = styled.div(({ theme }) => ({
     padding: theme.spacing(3),
     border: 'none',
     width: '50%',
-    height: '100%',
+    height: 'inherit',
+    justifyContent: 'flex-start',
+    '& :last-child': {
+      marginTop: 'auto',
+    },
   },
 }));
 

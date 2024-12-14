@@ -1,3 +1,4 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import { FC, useEffect, useState } from 'react';
 
 import { useDragAndDropHandler } from '../../hooks/useDragAndDropHandler';
@@ -22,6 +23,7 @@ export interface SidebarProps {
 }
 
 export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
+  const { logout } = useAuth0();
   const isMobile = useViewportStore((state) => state.isMobile);
   const [isAdding, setIsAdding] = useState(false);
   const { lists } = useLists();
@@ -63,10 +65,15 @@ export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
 
   const handleHomeClick = () => {
     onSelectList(null);
+    if (isMobile) {
+      setIsCollapsed(true);
+    }
   };
 
-  const handleExitClick = () => {
-    // Make Log Out
+  const handleExitClick = async () => {
+    await logout({
+      logoutParams: { returnTo: `${window.location.origin}/signin` },
+    });
   };
 
   useEffect(() => {
@@ -93,7 +100,9 @@ export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
           )}
         </StyledCollapsibleButton>
       )}
-      <HomeButton isCollapsed={isCollapsed} onClick={handleHomeClick} />
+      {!isMobile && (
+        <HomeButton isCollapsed={isCollapsed} onClick={handleHomeClick} />
+      )}
       {!isCollapsed ? (
         <ListSidebar
           lists={lists}

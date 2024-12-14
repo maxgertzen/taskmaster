@@ -123,7 +123,13 @@ export const TaskPanel: FC<TaskPanelProps> = ({ listId }) => {
             onDeleteTask={handleDeleteTask}
             onDragEnd={handleOnDragEnd}
           />
-          {isMobile && <TaskInput onSubmit={handleAddTask} withToggle />}
+          {isMobile && (
+            <TaskInput
+              highlightId='add-task'
+              onSubmit={handleAddTask}
+              withToggle
+            />
+          )}
         </>
       ) : (
         <TaskSearchResults />

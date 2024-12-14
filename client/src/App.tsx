@@ -13,9 +13,12 @@ const App: React.FC = () => {
   useViewportListener();
   useInitializeToken();
 
+  console.log(import.meta.env.MODE);
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {import.meta.env.MODE === 'development' && (
+        <ReactQueryDevtools initialIsOpen={false} />
+      )}
       <Router>
         <Routes>
           <Route path='/' element={<DashboardPage />} />
