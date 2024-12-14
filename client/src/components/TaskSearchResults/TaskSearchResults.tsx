@@ -6,6 +6,7 @@ import {
   useUserStore,
   useViewportStore,
 } from '../../store/store';
+import { ClickableWord } from '../ClickableWord/ClickableWord';
 import { StyledTaskItemContainer } from '../TaskItem/TaskItem.styled';
 import { Title } from '../Title/Title';
 
@@ -46,7 +47,11 @@ export const TaskSearchResults: FC = () => {
         </Title>
         <p>
           <br /> To get started,{' '}
-          <b>add a list via the plus icon next to 'lists'.</b>
+          <b>
+            add a list via the{' '}
+            <ClickableWord target='add-list'>plus icon</ClickableWord> next to
+            'lists'.
+          </b>
         </p>
         <p>
           Whether it's your weekly shopping, Sunday cleaning itinerary, or the

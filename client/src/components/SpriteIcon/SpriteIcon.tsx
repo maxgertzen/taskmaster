@@ -1,5 +1,5 @@
 /// <reference types="vite-plugin-svgr/client" />
-import { FC, FunctionComponent, useMemo } from 'react';
+import { FC, FunctionComponent, MouseEventHandler, useMemo } from 'react';
 
 import a2z from '../../assets/sprites/icons/a2z.svg?react';
 import arrowButton from '../../assets/sprites/icons/arrow-left.svg?react';
@@ -39,7 +39,7 @@ interface SpriteIconProps {
   alt?: string;
   size?: number;
   isVisible?: boolean;
-  onClick?: () => void;
+  onClick?: MouseEventHandler<HTMLDivElement>;
 }
 
 const iconMap: Record<
@@ -98,14 +98,21 @@ export const SpriteIcon: FC<SpriteIconProps> = ({
     );
   }, [mode, name]);
 
+  const handleOnClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClick?.(e);
+  };
+
   return (
     <StyledIconWrapper
       applyInvert={applyInvert}
       size={size}
       role='button'
       isVisible={isVisible}
+      onClick={onClick ? handleOnClick : undefined}
     >
-      <Svg height='100%' style={{ position: 'relative' }} onClick={onClick}>
+      <Svg height='100%' style={{ position: 'relative' }}>
         <title>{alt}</title>
       </Svg>
     </StyledIconWrapper>

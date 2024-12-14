@@ -7,8 +7,10 @@ import {
 import { FC } from 'react';
 
 import { Task } from '../../types/shared';
+import { ClickableWord } from '../ClickableWord/ClickableWord';
 import { Loader } from '../Loader/Loader';
 import { TaskItem } from '../TaskItem/TaskItem';
+import { Title } from '../Title/Title';
 
 import { StyledTaskListContainer } from './TaskList.styled';
 
@@ -25,7 +27,7 @@ export const TaskList: FC<TaskListProps> = ({
   onEditTask,
   onDragEnd,
 }) => {
-  if (tasks) {
+  if (tasks?.length) {
     return (
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId='task-list'>
@@ -58,6 +60,15 @@ export const TaskList: FC<TaskListProps> = ({
           )}
         </Droppable>
       </DragDropContext>
+    );
+  }
+
+  if (!tasks?.length) {
+    return (
+      <Title variant='h6'>
+        No tasks found, <ClickableWord target='add-task'>create</ClickableWord>{' '}
+        a new task to get started!
+      </Title>
     );
   }
 

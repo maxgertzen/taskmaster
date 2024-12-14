@@ -40,7 +40,7 @@ const baseTheme = {
 export const lightTheme = {
   ...baseTheme,
   colors: {
-    primary: '#1400ff',
+    primary: { main: '#1400ff', accent: '#1400ff' },
     secondary: '#3a8ba2',
     background: '#fdf7ff',
     surface: '#e1f0f6',
@@ -60,7 +60,7 @@ export const lightTheme = {
 export const darkTheme = {
   ...baseTheme,
   colors: {
-    primary: '#fdf7ff',
+    primary: { main: '#fdf7ff', accent: '#ffbb33' },
     secondary: '#9a89b4',
     background: '#1e1926',
     surface: '#362b48',

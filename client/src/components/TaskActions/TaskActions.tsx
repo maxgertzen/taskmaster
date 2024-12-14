@@ -29,7 +29,7 @@ export const TaskActions: FC<TaskActionsProps> = ({
 
   return (
     <TaskActionsContainer>
-      {!isMobile && <TaskInput onSubmit={onAdd} />}
+      {!isMobile && <TaskInput highlightId='add-task' onSubmit={onAdd} />}
       <IconContainer
         ref={triggerRef}
         aria-haspopup='true'
@@ -39,7 +39,7 @@ export const TaskActions: FC<TaskActionsProps> = ({
       >
         <SpriteIcon name='three-dots' alt='bulk actions' />
         <PopupMenu
-          orientation='full'
+          orientation='right'
           options={[
             { label: 'Delete All', onClick: onDeleteAll() },
             {

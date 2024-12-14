@@ -16,8 +16,11 @@ export const MenuContainer = styled('div')<{
   zIndex: 1000,
   display: 'flex',
   flexDirection: 'column',
-  padding: theme.spacing(1, 0),
+  padding: theme.spacing(1),
   marginTop: theme.spacing(5),
+  '& > *:not(:last-child)': {
+    borderBottom: theme.borders.main(theme.colors.grey),
+  },
   [`@media (max-width: ${theme.breakpoints.sm})`]: {
     marginTop: theme.spacing(4),
     width: orientation === 'full' ? '100vw' : 'auto',
@@ -37,7 +40,7 @@ export const MenuItem = styled.span<{ disabled?: boolean }>(
       },
       '&:focus': {
         background: theme.colors.accent,
-        outline: `2px solid ${theme.colors.primary}`,
+        outline: `2px solid ${theme.colors.primary.main}`,
       },
     }),
   })

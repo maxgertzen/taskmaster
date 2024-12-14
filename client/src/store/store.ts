@@ -33,3 +33,13 @@ export const useViewportStore = create<ViewportStore>((set) => ({
   isMobile: window.innerWidth < 768,
   setViewport: (width) => set({ isMobile: width < 768 }),
 }));
+
+interface SpotlightStore {
+  target: string | null;
+  setTarget: (target: string | null) => void;
+}
+
+export const useSpotlightStore = create<SpotlightStore>((set) => ({
+  target: null,
+  setTarget: (target) => set({ target }),
+}));

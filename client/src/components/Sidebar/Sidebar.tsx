@@ -39,8 +39,10 @@ export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
   };
 
   const handleDeleteList = async (listId: string) => {
+    if (selectedListId === listId) {
+      onSelectList(null);
+    }
     deleteList.mutate({ listId });
-    onSelectList(null);
   };
 
   const handleEditList = async (listId: string, name: string) => {

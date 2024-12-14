@@ -1,7 +1,8 @@
-import { FC, useState } from 'react';
+import { FC, Fragment, useState } from 'react';
 
 import { withAuthenticationRequired } from '../../auth/withAuthenticationRequired';
 import { Header, Sidebar, TaskPanel, Loader } from '../../components';
+import { SpotlightOverlay } from '../../components/SpotlightOverlay/SpotlightOverlay';
 import { useAuthStore } from '../../store/authStore';
 import {
   useTaskStore,
@@ -49,29 +50,32 @@ const Dashboard: FC = () => {
   }
 
   return (
-    <DashboardContainer>
-      <Header
-        user={userDetails}
-        onBack={view === 'taskPanel' ? handleOnBack : undefined}
-      />
-      {isMobile ? (
-        <SwipeContainer view={view}>
-          <Sidebar
-            selectedListId={selectedListId}
-            onSelectList={handleOnSelectList}
-          />
-          <TaskPanel listId={selectedListId} />
-        </SwipeContainer>
-      ) : (
-        <MainLayout>
-          <Sidebar
-            selectedListId={selectedListId}
-            onSelectList={handleOnSelectList}
-          />
-          <TaskPanel listId={selectedListId} />
-        </MainLayout>
-      )}
-    </DashboardContainer>
+    <Fragment>
+      <SpotlightOverlay />
+      <DashboardContainer>
+        <Header
+          user={userDetails}
+          onBack={view === 'taskPanel' ? handleOnBack : undefined}
+        />
+        {isMobile ? (
+          <SwipeContainer view={view}>
+            <Sidebar
+              selectedListId={selectedListId}
+              onSelectList={handleOnSelectList}
+            />
+            <TaskPanel listId={selectedListId} />
+          </SwipeContainer>
+        ) : (
+          <MainLayout>
+            <Sidebar
+              selectedListId={selectedListId}
+              onSelectList={handleOnSelectList}
+            />
+            <TaskPanel listId={selectedListId} />
+          </MainLayout>
+        )}
+      </DashboardContainer>
+    </Fragment>
   );
 };
 

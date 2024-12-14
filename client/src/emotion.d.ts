@@ -5,7 +5,7 @@ import { Typography } from './types/styled';
 declare module '@emotion/react' {
   export interface Theme {
     colors: {
-      primary: string;
+      primary: { main: string; accent: string };
       secondary: string;
       background: string;
       surface: string;

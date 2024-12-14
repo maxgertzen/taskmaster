@@ -46,13 +46,16 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
       setIsEditing(false);
     };
 
-    const handleActionClick = (action: 'edit' | 'delete') => () => {
-      if (action === 'edit') {
-        setIsEditing(true);
-      } else {
-        handleDeleteList();
-      }
-    };
+    const handleActionClick =
+      (action: 'edit' | 'delete') =>
+      (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+        event.stopPropagation();
+        if (action === 'edit') {
+          setIsEditing(true);
+        } else {
+          handleDeleteList();
+        }
+      };
 
     return (
       <ListItemContainer

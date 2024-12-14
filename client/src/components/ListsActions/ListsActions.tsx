@@ -1,5 +1,6 @@
 import { FC } from 'react';
 
+import { HighlightedArea } from '../HighlightedArea/HighlightedArea';
 import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
 import { Title } from '../Title/Title';
 
@@ -16,7 +17,9 @@ export const ListsActions: FC<ListsActionsProps> = ({ addList }) => {
         <SpriteIcon name='list' />
         <Title variant='h6'>Lists</Title>
       </TitleContainer>
-      <SpriteIcon name='plus' onClick={addList} />
+      <HighlightedArea id='add-list'>
+        <SpriteIcon name='plus' onClick={addList} />
+      </HighlightedArea>
     </ListsActionsContainer>
   );
 };

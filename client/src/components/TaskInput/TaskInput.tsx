@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { debounce } from '../../utils/debounce';
+import { HighlightedArea } from '../HighlightedArea/HighlightedArea';
 import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
 
 import { StyledTaskInputContainer, StyledInput } from './TaskInput.styled';
@@ -11,11 +12,13 @@ interface TaskInputProps {
   value?: string;
   onReset?: () => void;
   withToggle?: boolean;
+  highlightId?: string;
 }
 
 export const TaskInput: React.FC<TaskInputProps> = ({
   onSubmit,
   onReset,
+  highlightId,
   value = '',
   withToggle = false,
   isSearch = false,
@@ -95,11 +98,13 @@ export const TaskInput: React.FC<TaskInputProps> = ({
           isSearch={isSearch}
         />
       )}
-      <SpriteIcon
-        name={isSearch ? 'magnifying' : 'plus'}
-        size={4}
-        onClick={withToggle ? toggleInput : handleOnSubmit}
-      />
+      <HighlightedArea id={highlightId ?? ''}>
+        <SpriteIcon
+          name={isSearch ? 'magnifying' : 'plus'}
+          size={4}
+          onClick={withToggle ? toggleInput : handleOnSubmit}
+        />
+      </HighlightedArea>
     </StyledTaskInputContainer>
   );
 };
