@@ -4,6 +4,8 @@ import { useDragAndDropHandler } from '../../hooks/useDragAndDropHandler';
 import { useListsMutation } from '../../hooks/useListMutation';
 import { useLists } from '../../hooks/useLists';
 import { useViewportStore } from '../../store/store';
+import { ExitButton } from '../ExitButton/ExitButton';
+import { HomeButton } from '../HomeButton/HomeButton';
 import { ListSidebar } from '../ListSidebar/ListSidebar';
 import { ResizableHandle } from '../ResizableHandle/ResizableHandle';
 import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
@@ -59,6 +61,14 @@ export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
     onReorder: onReorderLists,
   });
 
+  const handleHomeClick = () => {
+    onSelectList(null);
+  };
+
+  const handleExitClick = () => {
+    // Make Log Out
+  };
+
   useEffect(() => {
     if (isResizing) {
       document.body.style.cursor = 'col-resize';
@@ -83,7 +93,7 @@ export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
           )}
         </StyledCollapsibleButton>
       )}
-
+      <HomeButton isCollapsed={isCollapsed} onClick={handleHomeClick} />
       {!isCollapsed ? (
         <ListSidebar
           lists={lists}
@@ -106,6 +116,7 @@ export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
           onResize={(isResizing) => setIsResizing(isResizing)}
         />
       )}
+      <ExitButton isCollapsed={isCollapsed} onClick={handleExitClick} />
     </SidebarContainer>
   );
 };

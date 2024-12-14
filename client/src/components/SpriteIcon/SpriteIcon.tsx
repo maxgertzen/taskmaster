@@ -6,8 +6,11 @@ import arrowButton from '../../assets/sprites/icons/arrow-left.svg?react';
 import closepanel from '../../assets/sprites/icons/closepanel.svg?react';
 import dragDark from '../../assets/sprites/icons/drag-dm.svg?react';
 import drag from '../../assets/sprites/icons/drag.svg?react';
+import exit from '../../assets/sprites/icons/exit.svg?react';
 import hamburgerMenuDark from '../../assets/sprites/icons/hamburger-menu-dm.svg?react';
 import hamburgerMenu from '../../assets/sprites/icons/hamburger-menu.svg?react';
+import homeDark from '../../assets/sprites/icons/home-dm.svg?react';
+import home from '../../assets/sprites/icons/home.svg?react';
 import listDark from '../../assets/sprites/icons/list-dm.svg?react';
 import list from '../../assets/sprites/icons/list.svg?react';
 import logout from '../../assets/sprites/icons/logout.svg?react';
@@ -51,8 +54,11 @@ const iconMap: Record<
   closepanel,
   drag,
   dragDark,
+  exit,
   'hamburger-menu': hamburgerMenu,
   'hamburger-menuDark': hamburgerMenuDark,
+  home,
+  homeDark,
   list,
   listDark,
   logout,

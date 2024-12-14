@@ -20,11 +20,12 @@ export const StyledIconWrapper = styled.div<{
     alignItems: 'center',
     cursor: isClickable ? 'pointer' : 'default',
     opacity: isVisible ? 1 : 0.5,
+    transition: 'filter 0.15s ease-in',
     svg: {
-      filter: applyInvert ? 'invert(1)' : '',
+      filter: `contrast(1.5) ${applyInvert ? 'invert(1)' : ''}`,
     },
     ':hover': {
-      opacity: 0.9,
+      filter: 'hue-rotate(90deg) contrast(1.8)',
     },
   })
 );
