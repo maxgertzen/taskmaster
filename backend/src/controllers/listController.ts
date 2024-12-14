@@ -36,7 +36,7 @@ export const createList = async (
     }
 
     const newList = await getListService().createList(userId as string, name);
-    res.status(201).json(newList);
+    res.status(200).json(newList);
   } catch (error) {
     next(error);
   }
@@ -68,7 +68,7 @@ export const updateList = async (
 
 export const deleteList = async (
   req: DeleteListRequest,
-  res: Response<List["id"]>,
+  res: Response<{ deletedId: string }>,
   next: NextFunction
 ): Promise<void> => {
   try {
@@ -80,7 +80,7 @@ export const deleteList = async (
     }
 
     const result = await getListService().deleteList(userId as string, id);
-    res.status(204).json(result.id);
+    res.status(200).json(result);
   } catch (error) {
     next(error);
   }

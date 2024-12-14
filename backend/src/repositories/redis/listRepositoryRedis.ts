@@ -80,13 +80,16 @@ export class ListRepositoryRedis implements IListRepository {
     };
   }
 
-  async deleteList(userId: string, listId: string): Promise<{ id: string }> {
+  async deleteList(
+    userId: string,
+    listId: string
+  ): Promise<{ deletedId: string }> {
     const listKey = REDIS_KEYS.LIST(userId, listId);
 
     await this.redisClient.del(listKey);
     await this.redisClient.zRem(REDIS_KEYS.LISTS(userId), listKey);
 
-    return { id: listId };
+    return { deletedId: listId };
   }
 
   async reorderLists(

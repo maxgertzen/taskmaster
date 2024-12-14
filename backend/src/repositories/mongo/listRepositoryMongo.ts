@@ -72,14 +72,14 @@ export class ListRepositoryMongo implements IListRepository {
   );
 
   private readonly deleteListWithCache = withCacheInvalidation(
-    async (userId: string, listId: string): Promise<{ id: string }> => {
+    async (userId: string, listId: string): Promise<{ deletedId: string }> => {
       const result = await ListModel.deleteOne({ _id: listId, userId });
 
       if (result.deletedCount === 0) {
         throw new Error(`List with ID ${listId} not found`);
       }
 
-      return { id: listId };
+      return { deletedId: listId };
     }
   );
 
@@ -121,7 +121,10 @@ export class ListRepositoryMongo implements IListRepository {
     return this.updateListWithCache(userId, listId, name);
   }
 
-  async deleteList(userId: string, listId: string): Promise<{ id: string }> {
+  async deleteList(
+    userId: string,
+    listId: string
+  ): Promise<{ deletedId: string }> {
     return this.deleteListWithCache(userId, listId);
   }
 

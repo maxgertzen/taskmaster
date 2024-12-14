@@ -24,7 +24,10 @@ export class ListService {
     return this.repository.updateList(userId, listId, name);
   }
 
-  async deleteList(userId: string, listId: string): Promise<{ id: string }> {
+  async deleteList(
+    userId: string,
+    listId: string
+  ): Promise<{ deletedId: string }> {
     return this.repository.deleteList(userId, listId);
   }
 

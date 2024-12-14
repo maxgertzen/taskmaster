@@ -29,7 +29,7 @@ export const createTask = async (
       listId,
       text
     );
-    res.status(201).json(task);
+    res.status(200).json(task);
   } catch (error) {
     next(error);
   }
