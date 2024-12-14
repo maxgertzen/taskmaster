@@ -26,9 +26,9 @@ export const updateOptimistically = <T extends { id: string }>(
         throw new Error("Defaults must be provided for the 'add' operation");
       }
       const newItem: T = {
-        id: `temp-${Date.now()}`,
         ...newItemDefaults,
         ...input,
+        id: `temp-${Date.now()}`,
       } as T;
       return [...oldItems, newItem];
     }

@@ -30,8 +30,6 @@ type TaskMutationInput = {
   deleteMode?: 'completed' | 'all';
 };
 
-// TODO:
-// - Fix optimistic updates
 export const useTasksMutation = () => {
   const queryClient = useQueryClient();
   const token = useAuthStore((state) => state.token);
@@ -185,7 +183,6 @@ export const useTasksMutation = () => {
       return await handleOnMutate('reorder', input);
     },
     onError: handleOnError,
-    // onSettled: handleOnSettled,
     onSuccess: (data, input) => {
       const listId = input.listId || '';
       const queryKey = QUERY_KEYS.tasks({ listId });

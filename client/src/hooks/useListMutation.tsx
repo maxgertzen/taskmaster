@@ -26,7 +26,6 @@ type ListMutationInput = {
 };
 
 // TODO:
-// - Fix optimistic updates
 // - Handle errors and rollback changes if needed (show Alert)
 export const useListsMutation = () => {
   const queryClient = useQueryClient();
@@ -83,7 +82,7 @@ export const useListsMutation = () => {
   );
 
   const handleOnSettled = useCallback(async () => {
-    await queryClient.refetchQueries({ queryKey: [QUERY_KEYS.lists] });
+    await queryClient.refetchQueries({ queryKey: QUERY_KEYS.lists });
   }, [queryClient]);
 
   const addList = useMutation({
