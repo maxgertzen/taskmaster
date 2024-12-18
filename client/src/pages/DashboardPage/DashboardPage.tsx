@@ -1,48 +1,102 @@
-import { FC } from 'react';
+import { FC, Fragment, useEffect, useState } from 'react';
 
 import { withAuthenticationRequired } from '../../auth/withAuthenticationRequired';
-import { Header, Sidebar, TaskPanel } from '../../components';
+import { Header, Sidebar, TaskPanel, Loader } from '../../components';
+import { SpotlightOverlay } from '../../components/SpotlightOverlay/SpotlightOverlay';
 import { useAuthStore } from '../../store/authStore';
-import { useTaskStore, useUserStore } from '../../store/store';
+import {
+  useTaskStore,
+  useUserStore,
+  useViewportStore,
+} from '../../store/store';
 
-import { DashboardContainer, MainLayout } from './DashboardPage.styled';
+import {
+  DashboardContainer,
+  MainLayout,
+  SwipeContainer,
+} from './DashboardPage.styled';
 
-// TODO
-// 1. Create a loader component - this will be used to show a loading spinner
-// 2. Ensure debounce is working correctly
-// 3. Add due date to the task item
-// 4. Update the styling of the project to use Material UI
 const Dashboard: FC = () => {
   const token = useAuthStore((state) => state.token);
   const { selectedListId, setSelectedListId } = useTaskStore((state) => state);
-  const setSearchTerm = useTaskStore((state) => state.setSearchTerm);
-
   const userDetails = useUserStore((state) => state.user);
+  const isMobile = useViewportStore((state) => state.isMobile);
+  const [view, setView] = useState<'sidebar' | 'taskPanel'>('sidebar');
+  const searchTerm = useTaskStore((state) => state.searchTerm);
+  const setSearchTerm = useTaskStore((state) => state.setSearchTerm);
 
   const handleOnSelectList = (listId: string | null) => {
     setSelectedListId(listId);
     if (listId) {
       setSearchTerm('');
     }
+    if (isMobile && listId) {
+      setView('taskPanel');
+    }
   };
 
-  return token ? (
-    <DashboardContainer>
-      <Header user={userDetails} />
-      <MainLayout>
-        <Sidebar
-          selectedListId={selectedListId}
-          onSelectList={handleOnSelectList}
+  const handleOnBack = () => {
+    if (view === 'taskPanel') {
+      if (selectedListId == null) {
+        setSearchTerm('');
+      } else {
+        setSelectedListId(null);
+      }
+
+      setView('sidebar');
+    }
+  };
+
+  useEffect(() => {
+    if (selectedListId == null && searchTerm) {
+      setView('taskPanel');
+    }
+  }, [selectedListId, searchTerm]);
+
+  if (!token) {
+    return (
+      <DashboardContainer isFullPage>
+        <Loader />
+      </DashboardContainer>
+    );
+  }
+
+  return (
+    <Fragment>
+      <SpotlightOverlay />
+      <DashboardContainer>
+        <Header
+          user={userDetails}
+          view={view}
+          onBack={view === 'taskPanel' ? handleOnBack : undefined}
         />
-        <TaskPanel listId={selectedListId} />
-      </MainLayout>
-    </DashboardContainer>
-  ) : (
-    <div>Loading...</div>
+        {isMobile ? (
+          <SwipeContainer view={view}>
+            <Sidebar
+              selectedListId={selectedListId}
+              onSelectList={handleOnSelectList}
+            />
+            <TaskPanel listId={selectedListId} />
+          </SwipeContainer>
+        ) : (
+          <MainLayout>
+            <Sidebar
+              selectedListId={selectedListId}
+              onSelectList={handleOnSelectList}
+            />
+            <TaskPanel listId={selectedListId} />
+          </MainLayout>
+        )}
+      </DashboardContainer>
+    </Fragment>
   );
 };
 
 export const DashboardPage = withAuthenticationRequired(Dashboard, {
-  onRedirecting: () => <div>Loading...</div>,
+  onRedirecting: () => (
+    <DashboardContainer isFullPage>
+      <Loader />
+    </DashboardContainer>
+  ),
   returnTo: '/',
 });

@@ -1,6 +1,5 @@
 import { ITaskRepository } from "../../interfaces/taskRepository";
 import { TaskModel, MongoTask } from "../../models/task";
-import { reorderArray } from "../../utils/reorderArray";
 import { BaseTask, ClientTask, SearchResults } from "../../interfaces/entities";
 import {
   withCache,
@@ -40,21 +39,28 @@ export class TaskRepositoryMongo implements ITaskRepository {
     }
   );
 
+  private readonly getTasksDirect = async (
+    userId: string,
+    listId: string
+  ): Promise<ClientTask[]> => {
+    const tasks = await TaskModel.find({ userId, listId })
+      .sort({ orderIndex: 1 })
+      .lean<MongoTask[]>();
+
+    return tasks.map((task) => ({
+      id: task._id.toString(),
+      text: task.text,
+      completed: task.completed,
+      creationDate: task.creationDate,
+      userId: task.userId.toString(),
+      listId: task.listId.toString(),
+      orderIndex: task.orderIndex,
+    }));
+  };
+
   private readonly getTasksWithCache = withCache(
     async (userId: string, listId: string): Promise<ClientTask[]> => {
-      const tasks = await TaskModel.find({ userId, listId })
-        .sort({ orderIndex: 1 })
-        .lean<MongoTask[]>();
-
-      return tasks.map((task) => ({
-        id: task._id.toString(),
-        text: task.text,
-        completed: task.completed,
-        creationDate: task.creationDate,
-        userId: task.userId.toString(),
-        listId: task.listId.toString(),
-        orderIndex: task.orderIndex,
-      }));
+      return this.getTasksDirect(userId, listId);
     },
     {
       type: "TASKS",
@@ -150,22 +156,18 @@ export class TaskRepositoryMongo implements ITaskRepository {
     async (
       userId: string,
       listId: string,
-      oldIndex: number,
-      newIndex: number
+      orderedIds: string[]
     ): Promise<ClientTask[]> => {
-      const tasks = await this.getTasks(userId, listId);
-      const reorderedTasks = reorderArray(tasks, oldIndex, newIndex);
-
-      const bulkOperations = reorderedTasks.map((task, index) => ({
+      const bulkOperations = orderedIds.map((id, index) => ({
         updateOne: {
-          filter: { _id: task.id },
+          filter: { _id: id, userId, listId },
           update: { $set: { orderIndex: index } },
         },
       }));
 
       await TaskModel.bulkWrite(bulkOperations);
 
-      return reorderedTasks;
+      return await this.getTasksDirect(userId, listId);
     }
   );
 
@@ -179,7 +181,7 @@ export class TaskRepositoryMongo implements ITaskRepository {
         { userId, listId },
         { completed: newCompletedState }
       );
-      return this.getTasks(userId, listId);
+      return this.getTasksDirect(userId, listId);
     }
   );
 
@@ -195,7 +197,7 @@ export class TaskRepositoryMongo implements ITaskRepository {
           : { userId, listId };
 
       await TaskModel.deleteMany(query);
-      return this.getTasks(userId, listId);
+      return this.getTasksDirect(userId, listId);
     }
   );
 
@@ -237,10 +239,9 @@ export class TaskRepositoryMongo implements ITaskRepository {
   async reorderTasks(
     userId: string,
     listId: string,
-    oldIndex: number,
-    newIndex: number
+    orderedIds: string[]
   ): Promise<ClientTask[]> {
-    return this.reorderTasksWithCache(userId, listId, oldIndex, newIndex);
+    return this.reorderTasksWithCache(userId, listId, orderedIds);
   }
 
   async toggleCompleteAll(

@@ -29,7 +29,7 @@ export const createTask = async (
       listId,
       text
     );
-    res.status(201).json(task);
+    res.status(200).json(task);
   } catch (error) {
     next(error);
   }
@@ -43,15 +43,8 @@ export const getTasks = async (
   try {
     const { userId } = req;
     const { listId } = req.params;
-    const { filter, sort } = req.query;
 
-    const options = !filter && !sort ? {} : { filter, sort };
-
-    const tasks = await getTaskService().getTasks(
-      userId as string,
-      listId,
-      options
-    );
+    const tasks = await getTaskService().getTasks(userId as string, listId);
     res.status(200).json(tasks);
   } catch (error) {
     next(error);
@@ -119,14 +112,18 @@ export const reorderTasks = async (
 ): Promise<void> => {
   try {
     const { userId } = req;
-    const { listId, oldIndex, newIndex } = req.body;
+    const { listId, orderedIds } = req.body;
+
+    if (!orderedIds || !Array.isArray(orderedIds) || orderedIds.length === 0) {
+      throw new Error("Ordered IDs are required");
+    }
 
     const reorderedTasks = await getTaskService().reorderTasks(
       userId as string,
       listId,
-      oldIndex,
-      newIndex
+      orderedIds
     );
+
     res.status(200).json(reorderedTasks);
   } catch (error) {
     next(error);
@@ -160,7 +157,7 @@ export const bulkDelete = async (
 ): Promise<void> => {
   try {
     const { userId } = req;
-    const { listId, mode = "completed" } = req.body;
+    const { listId, mode = "all" } = req.body;
 
     const updatedTasks = await getTaskService().bulkDelete(
       userId as string,

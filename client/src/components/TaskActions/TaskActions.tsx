@@ -1,6 +1,9 @@
-import { FC } from 'react';
+import { FC, useRef } from 'react';
 
-import { Button } from '../Button/Button';
+import { usePopupMenuState } from '../../hooks/usePopupMenuState';
+import { useViewportStore } from '../../store/store';
+import { PopupMenu } from '../PopupMenu/PopupMenu';
+import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
 import { TaskInput } from '../TaskInput/TaskInput';
 
 import { IconContainer, TaskActionsContainer } from './TaskActions.styled';
@@ -20,23 +23,39 @@ export const TaskActions: FC<TaskActionsProps> = ({
   onToggleCompleteAll,
   onDeleteAll,
 }) => {
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const { closeMenu, isOpen, toggleMenu } = usePopupMenuState();
+  const isMobile = useViewportStore((state) => state.isMobile);
+
   return (
     <TaskActionsContainer>
-      <TaskInput onSubmit={onAdd} />
-      <IconContainer>
-        <Button variant='outline' onClick={() => onToggleCompleteAll()}>
-          {`${isAllCompleted ? 'Uncheck' : 'Check'} All`}
-        </Button>
-        <Button
-          disabled={!isAnyCompleted}
-          variant='danger'
-          onClick={onDeleteAll('completed')}
-        >
-          Delete Completed
-        </Button>
-        <Button variant='danger' onClick={onDeleteAll()}>
-          Delete All
-        </Button>
+      {!isMobile && <TaskInput highlightId='add-task' onSubmit={onAdd} />}
+      <IconContainer
+        ref={triggerRef}
+        aria-haspopup='true'
+        aria-expanded={isOpen}
+        role='button'
+        onClick={toggleMenu}
+      >
+        <SpriteIcon name='three-dots' alt='bulk actions' />
+        <PopupMenu
+          orientation='right'
+          options={[
+            { label: 'Delete All', onClick: onDeleteAll() },
+            {
+              label: 'Delete Completed',
+              onClick: onDeleteAll('completed'),
+              disabled: !isAnyCompleted,
+            },
+            {
+              label: `${isAllCompleted ? 'Uncheck' : 'Check'} All`,
+              onClick: onToggleCompleteAll,
+            },
+          ]}
+          onClose={closeMenu}
+          isOpen={isOpen}
+          triggerRef={triggerRef}
+        />
       </IconContainer>
     </TaskActionsContainer>
   );

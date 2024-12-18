@@ -1,6 +1,5 @@
 import { ITaskRepository } from "../interfaces/taskRepository";
 import { Task, ClientTask, SearchResults } from "../interfaces/entities";
-import { GetTasksRequestQuery } from "../types/requests";
 
 export class TaskService {
   private repository: ITaskRepository;
@@ -17,28 +16,8 @@ export class TaskService {
     return this.repository.createTask(userId, listId, text);
   }
 
-  async getTasks(
-    userId: string,
-    listId: string,
-    options?: GetTasksRequestQuery
-  ): Promise<ClientTask[]> {
-    let tasks = await this.repository.getTasks(userId, listId);
-
-    if (options?.filter) {
-      tasks = tasks.filter((task) =>
-        options.filter === "completed" ? task.completed : !task.completed
-      );
-    }
-
-    if (options?.sort) {
-      tasks.sort((a, b) =>
-        options.sort === "asc"
-          ? a.text.localeCompare(b.text)
-          : b.text.localeCompare(a.text)
-      );
-    }
-
-    return tasks;
+  async getTasks(userId: string, listId: string): Promise<ClientTask[]> {
+    return await this.repository.getTasks(userId, listId);
   }
 
   async getTasksSearchResults(
@@ -67,10 +46,9 @@ export class TaskService {
   async reorderTasks(
     userId: string,
     listId: string,
-    oldIndex: number,
-    newIndex: number
+    orderedIds: string[]
   ): Promise<ClientTask[]> {
-    return this.repository.reorderTasks(userId, listId, oldIndex, newIndex);
+    return this.repository.reorderTasks(userId, listId, orderedIds);
   }
 
   async toggleCompleteAll(

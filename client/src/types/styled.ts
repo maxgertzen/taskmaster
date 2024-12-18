@@ -5,6 +5,7 @@ type TypographyCSS = {
 
 export type Typography = {
   fontFamily: string;
+  headerFontFamily: string;
   h1: TypographyCSS;
   h2: TypographyCSS;
   h3: TypographyCSS;

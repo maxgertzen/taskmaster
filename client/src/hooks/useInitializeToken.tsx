@@ -32,7 +32,7 @@ export const useInitializeToken = () => {
   useEffect(() => {
     if (user?.name) {
       setUser({
-        name: user.name,
+        name: user.name?.split?.(' ')?.[0],
       });
     }
   }, [user, setUser]);

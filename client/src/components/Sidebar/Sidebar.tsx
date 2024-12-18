@@ -1,14 +1,21 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import { FC, useEffect, useState } from 'react';
 
 import { useDragAndDropHandler } from '../../hooks/useDragAndDropHandler';
 import { useListsMutation } from '../../hooks/useListMutation';
 import { useLists } from '../../hooks/useLists';
-import { FaIcon } from '../FontAwesomeIcon/FontAwesomeIcon';
+import { useViewportStore } from '../../store/store';
+import { ExitButton } from '../ExitButton/ExitButton';
+import { HomeButton } from '../HomeButton/HomeButton';
 import { ListSidebar } from '../ListSidebar/ListSidebar';
-import { LogoutButton } from '../LogoutButton/LogoutButton';
 import { ResizableHandle } from '../ResizableHandle/ResizableHandle';
+import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
 
-import { SidebarContainer, StyledCollapsibleButton } from './Sidebar.styled';
+import {
+  PanelButtonContainer,
+  SidebarContainer,
+  StyledCollapsibleButton,
+} from './Sidebar.styled';
 
 export interface SidebarProps {
   selectedListId: string | null;
@@ -16,43 +23,59 @@ export interface SidebarProps {
 }
 
 export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
+  const { logout } = useAuth0();
+  const isMobile = useViewportStore((state) => state.isMobile);
   const [isAdding, setIsAdding] = useState(false);
   const { lists } = useLists();
   const { addList, editList, deleteList, reorderList } = useListsMutation();
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
-  const [sidebarWidth, setSidebarWidth] = useState(250);
+  const [sidebarWidth, setSidebarWidth] = useState(300);
 
   const handleToggleSidebar = () => {
     setIsCollapsed((prev) => !prev);
   };
 
   const handleAddList = async (name: string) => {
-    addList.mutate({ name });
+    await addList.mutateAsync({ name });
     setIsAdding(false);
   };
 
   const handleDeleteList = async (listId: string) => {
-    deleteList.mutate({ listId });
     if (selectedListId === listId) {
       onSelectList(null);
     }
+    await deleteList.mutateAsync({ listId });
   };
 
   const handleEditList = async (listId: string, name: string) => {
-    editList.mutate({ listId, name });
+    await editList.mutateAsync({ listId, name });
   };
 
   const onReorderLists = async (oldIndex: number, newIndex: number) => {
-    reorderList.mutate({
-      reorderingObject: { oldIndex, newIndex },
-    });
+    await reorderList.mutateAsync({ newIndex, oldIndex });
   };
 
   const { handleOnDragEnd } = useDragAndDropHandler({
     onReorder: onReorderLists,
   });
+
+  const handleHomeClick = () => {
+    onSelectList(null);
+    if (isCollapsed) {
+      setIsCollapsed(false);
+    }
+    if (isMobile) {
+      setIsCollapsed(true);
+    }
+  };
+
+  const handleExitClick = async () => {
+    await logout({
+      logoutParams: { returnTo: `${window.location.origin}/signin` },
+    });
+  };
 
   useEffect(() => {
     if (isResizing) {
@@ -64,14 +87,24 @@ export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
 
   return (
     <SidebarContainer isCollapsed={isCollapsed} width={sidebarWidth}>
-      <StyledCollapsibleButton
-        isCollapsed={isCollapsed}
-        onClick={handleToggleSidebar}
-      >
-        <FaIcon icon={['far', 'square-caret-left']} size='lg' />
-      </StyledCollapsibleButton>
-
-      {!isCollapsed && (
+      {!isMobile && (
+        <StyledCollapsibleButton onClick={handleToggleSidebar}>
+          {isCollapsed ? (
+            <SpriteIcon name='openpanel' />
+          ) : (
+            <>
+              <PanelButtonContainer>
+                <SpriteIcon name='closepanel' alt='close panel' />
+                <p>Close Panel</p>
+              </PanelButtonContainer>
+            </>
+          )}
+        </StyledCollapsibleButton>
+      )}
+      {!isMobile && (
+        <HomeButton isCollapsed={isCollapsed} onClick={handleHomeClick} />
+      )}
+      {!isCollapsed ? (
         <ListSidebar
           lists={lists}
           selectedListId={selectedListId}
@@ -83,13 +116,17 @@ export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
           onAddList={handleAddList}
           onDragEnd={handleOnDragEnd}
         />
+      ) : (
+        <SpriteIcon name='list' onClick={() => setIsCollapsed(false)} />
       )}
-      {!isCollapsed && <LogoutButton />}
-      <ResizableHandle
-        initialWidth={sidebarWidth}
-        setWidth={setSidebarWidth}
-        onResize={(isResizing) => setIsResizing(isResizing)}
-      />
+      {!isMobile && (
+        <ResizableHandle
+          initialWidth={sidebarWidth}
+          setWidth={setSidebarWidth}
+          onResize={(isResizing) => setIsResizing(isResizing)}
+        />
+      )}
+      <ExitButton isCollapsed={isCollapsed} onClick={handleExitClick} />
     </SidebarContainer>
   );
 };

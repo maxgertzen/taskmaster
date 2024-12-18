@@ -20,7 +20,7 @@ export const StyledCheckbox = styled.input<{ checked: boolean }>(
     cursor: 'pointer',
     color: theme.colors.text,
     '&::checked': {
-      backgroundColor: theme.colors.primary,
+      backgroundColor: theme.colors.primary.main,
     },
     '&::after': {
       content: checked ? `"✓"` : '""',
@@ -28,7 +28,7 @@ export const StyledCheckbox = styled.input<{ checked: boolean }>(
       color: theme.colors.text,
     },
     ':focus': {
-      boxShadow: `0 0 0 1px ${theme.colors.primary}66`,
+      boxShadow: `0 0 0 1px ${theme.colors.primary.main}66`,
     },
     marginRight: theme.spacing(1.5),
   })

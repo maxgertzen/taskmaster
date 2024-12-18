@@ -1,8 +1,8 @@
 import { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
-import React, { useState, forwardRef, useEffect } from 'react';
+import React, { useState, forwardRef } from 'react';
 
 import { Task } from '../../types/shared';
-import { FaIcon } from '../FontAwesomeIcon/FontAwesomeIcon';
+import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
 import { TaskEditInput } from '../TaskEditInput/TaskEditInput';
 
 import { Checkbox } from './Checkbox/Checkbox';
@@ -25,11 +25,9 @@ export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
     { task, onDeleteTask, onUpdateTask, isDragging, dragHandleProps, ...rest },
     ref
   ) => {
-    const [isCheckboxChecked, setIsCheckboxChecked] = useState(task.completed);
     const [isEditing, setIsEditing] = useState(false);
 
     const handleToggleComplete = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setIsCheckboxChecked(e.target.checked);
       onUpdateTask({ completed: e.target.checked });
     };
 
@@ -51,20 +49,13 @@ export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
       onDeleteTask();
     };
 
-    useEffect(() => {
-      setIsCheckboxChecked(task.completed);
-    }, [task.completed]);
-
     return (
       <StyledTaskItemContainer ref={ref} {...rest} isDragging={isDragging}>
-        <StyledItemContainer isCompleted={isCheckboxChecked}>
+        <StyledItemContainer isCompleted={task.completed}>
           <DragIconWrapper {...dragHandleProps}>
-            <FaIcon icon={['fas', 'grip-vertical']} size='sm' />
+            <SpriteIcon name='drag' />
           </DragIconWrapper>
-          <Checkbox
-            checked={isCheckboxChecked}
-            onChange={handleToggleComplete}
-          />
+          <Checkbox checked={task.completed} onChange={handleToggleComplete} />
           {isEditing ? (
             <TaskEditInput
               initialText={task.text}
@@ -77,17 +68,8 @@ export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
           )}
         </StyledItemContainer>
         <StyledItemContainer gap={2}>
-          <FaIcon
-            icon={['fas', 'edit']}
-            size='sm'
-            onClick={onEditClick}
-            isActive={isEditing}
-          />
-          <FaIcon
-            icon={['fas', 'trash']}
-            size='sm'
-            onClick={handleDeleteTask}
-          />
+          {!isEditing && <SpriteIcon name='pencil' onClick={onEditClick} />}
+          <SpriteIcon name='trash' onClick={handleDeleteTask} />
         </StyledItemContainer>
       </StyledTaskItemContainer>
     );

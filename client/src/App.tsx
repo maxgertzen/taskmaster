@@ -4,16 +4,21 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import { useInitializeToken } from './hooks/useInitializeToken';
+import { useViewportListener } from './hooks/useViewportListener';
 import { DashboardPage, HomePage } from './pages';
 
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
+  useViewportListener();
   useInitializeToken();
 
+  console.log(import.meta.env.MODE);
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {import.meta.env.MODE === 'development' && (
+        <ReactQueryDevtools initialIsOpen={false} />
+      )}
       <Router>
         <Routes>
           <Route path='/' element={<DashboardPage />} />

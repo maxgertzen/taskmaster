@@ -11,6 +11,7 @@ import { ListInput } from '../ListInput/ListInput';
 import { ListItem } from '../ListItem/ListItem';
 import { ListItemContainer } from '../ListItem/ListItem.styled';
 import { ListsActions } from '../ListsActions/ListsActions';
+import { Loader } from '../Loader/Loader';
 
 import {
   ListSidebarContainer,
@@ -53,7 +54,11 @@ export const ListSidebar: FC<ListSidebarProps> = ({
                 isDraggingOver={snapshot.isDraggingOver}
               >
                 {lists.map(({ id, name }, index) => (
-                  <Draggable key={id} index={index} draggableId={id}>
+                  <Draggable
+                    key={`${id}-${name}-${index}`}
+                    index={index}
+                    draggableId={id}
+                  >
                     {(provided, snapshot) => (
                       <ListItem
                         ref={provided.innerRef}
@@ -62,6 +67,7 @@ export const ListSidebar: FC<ListSidebarProps> = ({
                         dragHandleProps={provided.dragHandleProps}
                         isDragging={snapshot.isDragging}
                         key={id}
+                        id={id}
                         name={name}
                         isActive={selectedListId === id}
                         handleDeleteList={() => onDeleteList(id)}
@@ -89,5 +95,5 @@ export const ListSidebar: FC<ListSidebarProps> = ({
     );
   }
 
-  return <div>Loading lists...</div>;
+  return <Loader paddingTop={3} />;
 };

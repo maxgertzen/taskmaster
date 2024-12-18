@@ -36,7 +36,7 @@ export const createList = async (
     }
 
     const newList = await getListService().createList(userId as string, name);
-    res.status(201).json(newList);
+    res.status(200).json(newList);
   } catch (error) {
     next(error);
   }
@@ -68,7 +68,7 @@ export const updateList = async (
 
 export const deleteList = async (
   req: DeleteListRequest,
-  res: Response<List["id"]>,
+  res: Response<{ deletedId: string }>,
   next: NextFunction
 ): Promise<void> => {
   try {
@@ -80,7 +80,7 @@ export const deleteList = async (
     }
 
     const result = await getListService().deleteList(userId as string, id);
-    res.status(204).json(result.id);
+    res.status(200).json(result);
   } catch (error) {
     next(error);
   }
@@ -93,16 +93,15 @@ export const reorderLists = async (
 ): Promise<void> => {
   try {
     const { userId } = req;
-    const { oldIndex, newIndex } = req.body;
+    const { orderedIds } = req.body;
 
-    if (typeof oldIndex !== "number" || typeof newIndex !== "number") {
-      throw new Error("Both oldIndex and newIndex must be numbers");
+    if (!orderedIds || !Array.isArray(orderedIds) || orderedIds.length === 0) {
+      throw new Error("Ordered IDs are required");
     }
 
     const reorderedLists = await getListService().reorderLists(
       userId as string,
-      oldIndex,
-      newIndex
+      orderedIds
     );
     res.status(200).json(reorderedLists);
   } catch (error) {

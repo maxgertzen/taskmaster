@@ -1,8 +1,9 @@
 import { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
 import { forwardRef, useState } from 'react';
 
-import { FaIcon } from '../FontAwesomeIcon/FontAwesomeIcon';
+import { useTasks } from '../../hooks/useTasks';
 import { ListInput } from '../ListInput/ListInput';
+import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
 
 import {
   ActionsContainer,
@@ -12,6 +13,7 @@ import {
 } from './ListItem.styled';
 
 interface ListItemProps {
+  id: string;
   name: string;
   isEditing?: boolean;
   dragHandleProps: DraggableProvidedDragHandleProps | null;
@@ -25,6 +27,7 @@ interface ListItemProps {
 export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
   (
     {
+      id,
       name,
       handleSelectList,
       handleDeleteList,
@@ -36,6 +39,7 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
     ref
   ) => {
     const [isEditing, setIsEditing] = useState(false);
+    const { prefetchTasks } = useTasks({ listId: null });
 
     const handleEditSubmit = (newName: string) => {
       onEdit(newName);
@@ -47,9 +51,9 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
     };
 
     const handleActionClick =
-      (action: 'edit' | 'delete') => (event: React.MouseEvent) => {
+      (action: 'edit' | 'delete') =>
+      (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
         event.stopPropagation();
-
         if (action === 'edit') {
           setIsEditing(true);
         } else {
@@ -63,6 +67,7 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
         {...rest}
         isActive={isActive}
         onClick={handleSelectList}
+        onMouseEnter={() => prefetchTasks(id)}
       >
         {isEditing ? (
           <ListInput
@@ -75,21 +80,13 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
           <>
             <Container>
               <DragIconWrapper {...dragHandleProps}>
-                <FaIcon icon={['fas', 'grip-vertical']} size='sm' />
+                <SpriteIcon name='drag' />
               </DragIconWrapper>
               {name}
             </Container>
             <ActionsContainer>
-              <FaIcon
-                icon={['fas', 'edit']}
-                size='xs'
-                onClick={handleActionClick('edit')}
-              />
-              <FaIcon
-                icon={['fas', 'trash']}
-                size='xs'
-                onClick={handleActionClick('delete')}
-              />
+              <SpriteIcon name='pencil' onClick={handleActionClick('edit')} />
+              <SpriteIcon name='trash' onClick={handleActionClick('delete')} />
             </ActionsContainer>
           </>
         )}

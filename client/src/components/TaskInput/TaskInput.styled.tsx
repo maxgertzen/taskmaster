@@ -4,17 +4,21 @@ export const StyledTaskInputContainer = styled.div<{ isSearch: boolean }>(
   ({ theme, isSearch }) => ({
     display: 'flex',
     justifyContent: 'center',
+    alignItems: 'center',
     position: 'relative',
     flex: 14,
     flexShrink: 0,
     flexBasis: '50%',
+    gap: theme.spacing(1),
     ...(isSearch ? { marginRight: theme.spacing(1) } : {}),
     svg: {
-      position: 'absolute',
-      right: theme.spacing(2),
-      top: '50%',
-      transform: 'translateY(-50%)',
       cursor: 'pointer',
+    },
+    [`@media (max-width: ${theme.breakpoints.sm})`]: {
+      flex: 1,
+      gap: theme.spacing(0.5),
+      justifyContent: 'flex-end',
+      marginRight: 0,
     },
   })
 );

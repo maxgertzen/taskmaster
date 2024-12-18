@@ -26,8 +26,7 @@ export interface DeleteListRequest extends Request {
 }
 
 export type ReorderListRequestBody = {
-  oldIndex: number;
-  newIndex: number;
+  orderedIds: string[];
 };
 
 export interface ReorderListRequest extends Request {
@@ -46,15 +45,8 @@ export interface CreateTaskRequest extends Request {
 export type GetTasksRequestParams = {
   listId: string;
 };
-
-export type GetTasksRequestQuery = {
-  filter?: "completed" | "incomplete";
-  sort?: "asc" | "desc";
-};
-
 export interface GetTasksRequest extends Request {
   params: GetTasksRequestParams;
-  query: GetTasksRequestQuery;
 }
 
 export type GetTasksSearchResultsQuery = {
@@ -86,8 +78,7 @@ export interface DeleteTaskRequest extends Request {
 
 export type ReorderTasksRequestBody = {
   listId: string;
-  oldIndex: number;
-  newIndex: number;
+  orderedIds: string[];
 };
 
 export interface ReorderTasksRequest extends Request {

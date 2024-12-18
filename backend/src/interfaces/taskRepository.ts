@@ -13,8 +13,7 @@ export interface ITaskRepository {
   reorderTasks(
     userId: string,
     listId: string,
-    oldIndex: number,
-    newIndex: number
+    orderedIds: string[]
   ): Promise<ClientTask[]>;
   toggleCompleteAll(
     userId: string,

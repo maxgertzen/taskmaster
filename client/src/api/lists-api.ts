@@ -21,14 +21,14 @@ export const fetchLists =
 
 export const reorderLists =
   (token: string | null) =>
-  async (oldIndex: number, newIndex: number): Promise<List[]> => {
+  async (orderedIds: string[]): Promise<List[]> => {
     if (!token) {
       throw new Error('No token found');
     }
     return await fetcher<List[], ReorderListRequest>({
       url: `${LISTS_API_URL}/reorder`,
       method: 'POST',
-      body: { oldIndex, newIndex },
+      body: { orderedIds },
       token,
     });
   };

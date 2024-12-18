@@ -12,8 +12,7 @@ export type DeleteListRequest = {
 };
 
 export type ReorderListRequest = {
-  oldIndex: number;
-  newIndex: number;
+  orderedIds: string[];
 };
 
 export type CreateTaskRequest = {
@@ -38,8 +37,7 @@ export type DeleteTaskRequest = {
 
 export type ReorderTasksRequest = {
   listId: string;
-  oldIndex: number;
-  newIndex: number;
+  orderedIds: string[];
 };
 
 export type CompleteAllRequest = {

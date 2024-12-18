@@ -5,28 +5,29 @@ export const SidebarContainer = styled.div<{
   width: number;
 }>(({ theme, isCollapsed, width }) => ({
   position: 'relative',
-  width: isCollapsed ? '0' : `${width}px`,
+  width: isCollapsed ? theme.spacing(4) : `${width}px`,
   padding: theme.spacing(2),
   backgroundColor: theme.colors.surface,
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'space-between',
+  justifyContent: 'start',
+  alignItems: isCollapsed ? 'center' : 'start',
+  gap: theme.spacing(2),
+  [`@media (max-width: 768px)`]: {
+    width: '50%',
+    height: '100%',
+    padding: theme.spacing(1, 2),
+    alignItems: 'start',
+  },
 }));
 
-export const StyledCollapsibleButton = styled.button<{ isCollapsed: boolean }>(
-  ({ theme, isCollapsed }) => ({
-    position: 'absolute',
-    top: 0,
-    right: theme.spacing(-4.25),
-    backgroundColor: theme.colors.surface,
-    padding: theme.spacing(1),
-    borderRight: `${theme.spacing(0.5)} double ${theme.colors.grey}`,
-    borderBottom: `${theme.spacing(0.5)} double ${theme.colors.grey}`,
-    cursor: 'pointer',
-    zIndex: 1,
-    svg: {
-      transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)',
-      transition: 'transform 0.8s',
-    },
-  })
-);
+export const StyledCollapsibleButton = styled.button(({ theme }) => ({
+  backgroundColor: theme.colors.surface,
+  cursor: 'pointer',
+}));
+
+export const PanelButtonContainer = styled.div(({ theme }) => ({
+  display: 'flex',
+  gap: theme.spacing(1),
+  alignItems: 'center',
+}));

@@ -1,10 +1,11 @@
 import '@emotion/react';
+import { breakpoints } from './styles/theme';
 import { Typography } from './types/styled';
 
 declare module '@emotion/react' {
   export interface Theme {
     colors: {
-      primary: string;
+      primary: { main: string; accent: string };
       secondary: string;
       background: string;
       surface: string;
@@ -22,5 +23,6 @@ declare module '@emotion/react' {
       color: string;
       width: string;
     };
+    breakpoints: typeof breakpoints;
   }
 }

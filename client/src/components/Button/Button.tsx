@@ -1,30 +1,35 @@
 import { FC } from 'react';
 
-import { StyledButton } from './Button.styled';
+import { useThemeStore } from '../../store/themeStore';
+import { ButtonType } from '../../types/shared';
+
+import { ButtonWrapper, StyledButton } from './Button.styled';
 
 interface ButtonProps {
   children: string;
   onClick?: () => void;
-  type?: 'button' | 'submit' | 'reset';
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger';
+  variant?: ButtonType;
   disabled?: boolean;
+  isActive?: boolean;
 }
 
 export const Button: FC<ButtonProps> = ({
   children,
   onClick,
   disabled = false,
-  type = 'button',
   variant = 'primary',
+  isActive = false,
 }) => {
+  const theme = useThemeStore((state) => state.theme);
   return (
-    <StyledButton
-      type={type}
+    <ButtonWrapper
       variant={variant}
-      disabled={disabled}
-      onClick={onClick}
+      isActive={isActive}
+      isDarkTheme={theme === 'dark'}
     >
-      {children}
-    </StyledButton>
+      <StyledButton disabled={disabled} onClick={onClick}>
+        {children}
+      </StyledButton>
+    </ButtonWrapper>
   );
 };

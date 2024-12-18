@@ -2,9 +2,13 @@ import { FC } from 'react';
 
 import { Filters, Sort } from '../../types/mutations';
 import { Button } from '../Button/Button';
-import { FaIcon } from '../FontAwesomeIcon/FontAwesomeIcon';
+import { HighlightedArea } from '../HighlightedArea/HighlightedArea';
+import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
 
-import { TaskListViewsContainer } from './TaskListViews.styled';
+import {
+  StyledButtonsWrapper,
+  TaskListViewsContainer,
+} from './TaskListViews.styled';
 
 interface TaskListViewsProps {
   filter: Filters;
@@ -21,36 +25,44 @@ export const TaskListViews: FC<TaskListViewsProps> = ({
 }) => {
   return (
     <TaskListViewsContainer>
-      <Button
-        variant={filter == null ? 'primary' : 'outline'}
-        onClick={() => {
-          onFilter(null);
-          onSort(null);
-        }}
-      >
-        All
-      </Button>
-      <Button
-        variant={filter === 'incomplete' ? 'primary' : 'outline'}
-        onClick={() => onFilter('incomplete')}
-      >
-        Active
-      </Button>
-      <Button
-        variant={filter === 'completed' ? 'primary' : 'outline'}
-        onClick={() => onFilter('completed')}
-      >
-        Completed
-      </Button>
-      <FaIcon
-        isActive={sort === 'desc'}
-        icon={['fas', 'arrow-up-a-z']}
+      <StyledButtonsWrapper>
+        <HighlightedArea id='clear-filter'>
+          <Button
+            variant='primary'
+            onClick={() => {
+              onFilter(null);
+              onSort(null);
+            }}
+          >
+            All
+          </Button>
+        </HighlightedArea>
+        <Button
+          variant='primary'
+          isActive={filter === 'incomplete'}
+          onClick={() => onFilter('incomplete')}
+        >
+          Active
+        </Button>
+        <Button
+          variant='success'
+          isActive={filter === 'completed'}
+          onClick={() => onFilter('completed')}
+        >
+          Completed
+        </Button>
+      </StyledButtonsWrapper>
+      <SpriteIcon
+        name='z2a'
+        alt='filter'
         onClick={() => onSort('desc')}
+        isVisible={sort === 'desc'}
       />
-      <FaIcon
-        isActive={sort === 'asc'}
-        icon={['fas', 'arrow-down-a-z']}
+      <SpriteIcon
+        name='a2z'
+        alt='filter'
         onClick={() => onSort('asc')}
+        isVisible={sort === 'asc'}
       />
     </TaskListViewsContainer>
   );

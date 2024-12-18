@@ -12,6 +12,7 @@ type ReorderInput = {
 export type OptimisticUpdateInput<T> = Partial<T> & {
   id?: string;
   listId?: string | null;
+  deleteMode?: 'completed' | 'all';
 } & Partial<ReorderInput>;
 
 export const updateOptimistically = <T extends { id: string }>(
@@ -26,9 +27,9 @@ export const updateOptimistically = <T extends { id: string }>(
         throw new Error("Defaults must be provided for the 'add' operation");
       }
       const newItem: T = {
-        id: `temp-${Date.now()}`,
         ...newItemDefaults,
         ...input,
+        id: `temp-${Date.now()}`,
       } as T;
       return [...oldItems, newItem];
     }
@@ -64,6 +65,11 @@ export const updateOptimistically = <T extends { id: string }>(
       });
     }
     case 'delete-all': {
+      if (input.deleteMode === 'completed') {
+        return oldItems.filter(
+          (item) => 'completed' in item && !item.completed
+        );
+      }
       return [];
     }
     default:

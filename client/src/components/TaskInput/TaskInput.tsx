@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { debounce } from '../../utils/debounce';
-import { FaIcon } from '../FontAwesomeIcon/FontAwesomeIcon';
+import { HighlightedArea } from '../HighlightedArea/HighlightedArea';
+import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
 
 import { StyledTaskInputContainer, StyledInput } from './TaskInput.styled';
 
@@ -10,14 +11,19 @@ interface TaskInputProps {
   onSubmit: (text: string) => void;
   value?: string;
   onReset?: () => void;
+  withToggle?: boolean;
+  highlightId?: string;
 }
 
 export const TaskInput: React.FC<TaskInputProps> = ({
   onSubmit,
-  isSearch = false,
-  value = '',
   onReset,
+  highlightId,
+  value = '',
+  withToggle = false,
+  isSearch = false,
 }) => {
+  const [showInput, setShowInput] = useState<boolean>(!withToggle || !!value);
   const [text, setText] = useState<string>(value);
 
   const debouncedOnSubmit = useMemo(
@@ -41,6 +47,13 @@ export const TaskInput: React.FC<TaskInputProps> = ({
     if (onReset) {
       onReset();
     }
+  };
+
+  const toggleInput = () => {
+    if (showInput && text) {
+      handleOnSubmit();
+    }
+    setShowInput((prev) => !prev);
   };
 
   const handleKeyDown = ({ key }: React.KeyboardEvent<HTMLInputElement>) => {
@@ -75,19 +88,23 @@ export const TaskInput: React.FC<TaskInputProps> = ({
 
   return (
     <StyledTaskInputContainer isSearch={isSearch}>
-      <StyledInput
-        type='text'
-        value={text}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        placeholder={isSearch ? 'Search tasks' : 'Add a task'}
-        isSearch={isSearch}
-      />
-      <FaIcon
-        icon={['fas', isSearch ? 'magnifying-glass' : 'plus']}
-        size={isSearch ? '1x' : '2x'}
-        onClick={handleOnSubmit}
-      />
+      {showInput && (
+        <StyledInput
+          type='text'
+          value={text}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          placeholder={isSearch ? 'Search tasks' : 'Add a task'}
+          isSearch={isSearch}
+        />
+      )}
+      <HighlightedArea id={highlightId ?? ''}>
+        <SpriteIcon
+          name={isSearch ? 'magnifying' : 'plus'}
+          size={4}
+          onClick={withToggle ? toggleInput : handleOnSubmit}
+        />
+      </HighlightedArea>
     </StyledTaskInputContainer>
   );
 };
