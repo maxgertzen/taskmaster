@@ -29,6 +29,7 @@ export const TaskSearchResults: FC = () => {
                 <StyledTaskItemContainer
                   key={idx}
                   onClick={() => setListId(task.listId ?? '')}
+                  style={{ cursor: 'pointer' }}
                 >
                   <span>{task.text}</span>
                 </StyledTaskItemContainer>
@@ -67,6 +68,7 @@ export const TaskSearchResults: FC = () => {
   ) : (
     <div>
       <h1>Search Results</h1>
+      <br />
       <p>Search term: {searchTerm}</p>
       {results}
     </div>

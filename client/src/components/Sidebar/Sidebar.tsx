@@ -63,6 +63,9 @@ export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
 
   const handleHomeClick = () => {
     onSelectList(null);
+    if (isCollapsed) {
+      setIsCollapsed(false);
+    }
     if (isMobile) {
       setIsCollapsed(true);
     }

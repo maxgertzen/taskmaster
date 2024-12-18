@@ -2,6 +2,7 @@ import { FC } from 'react';
 
 import { Filters, Sort } from '../../types/mutations';
 import { Button } from '../Button/Button';
+import { HighlightedArea } from '../HighlightedArea/HighlightedArea';
 import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
 
 import {
@@ -25,15 +26,17 @@ export const TaskListViews: FC<TaskListViewsProps> = ({
   return (
     <TaskListViewsContainer>
       <StyledButtonsWrapper>
-        <Button
-          variant='primary'
-          onClick={() => {
-            onFilter(null);
-            onSort(null);
-          }}
-        >
-          All
-        </Button>
+        <HighlightedArea id='clear-filter'>
+          <Button
+            variant='primary'
+            onClick={() => {
+              onFilter(null);
+              onSort(null);
+            }}
+          >
+            All
+          </Button>
+        </HighlightedArea>
         <Button
           variant='primary'
           isActive={filter === 'incomplete'}

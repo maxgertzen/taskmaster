@@ -23,7 +23,7 @@ export const TaskInput: React.FC<TaskInputProps> = ({
   withToggle = false,
   isSearch = false,
 }) => {
-  const [showInput, setShowInput] = useState<boolean>(!withToggle);
+  const [showInput, setShowInput] = useState<boolean>(!withToggle || !!value);
   const [text, setText] = useState<string>(value);
 
   const debouncedOnSubmit = useMemo(

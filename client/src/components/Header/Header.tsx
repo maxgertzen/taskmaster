@@ -13,6 +13,7 @@ import { SwitchThemeButton } from '../SwitchThemeButton/SwitchThemeButton';
 import {
   BackButtonWrapper,
   HeaderContainer,
+  UserActionPanelViewContainer,
   UserActionsContainer,
   UserNameContainer,
   VerticalDivider,
@@ -21,6 +22,7 @@ import {
 interface HeaderProps {
   user: User;
   view?: 'sidebar' | 'taskPanel';
+  setView?: (view: 'sidebar' | 'taskPanel') => void;
   onBack?: () => void;
 }
 
@@ -39,7 +41,12 @@ const UserName: React.FC<HeaderProps> = ({ user: { name } }) => {
   );
 };
 
-export const Header: React.FC<HeaderProps> = ({ user, onBack }) => {
+export const Header: React.FC<HeaderProps> = ({
+  user,
+  view,
+  setView,
+  onBack,
+}) => {
   const triggerRef = useRef<HTMLDivElement>(null);
   const { closeMenu, isOpen, toggleMenu } = usePopupMenuState();
   const selectedListId = useTaskStore((state) => state.selectedListId);
@@ -50,15 +57,24 @@ export const Header: React.FC<HeaderProps> = ({ user, onBack }) => {
   return (
     <HeaderContainer>
       {!isMobile && <Logo withTitle />}
-      {onBack && isMobile && selectedListId ? (
-        <BackButtonWrapper
-          role='button'
-          aria-label='Back to lists'
-          onClick={onBack}
-        >
-          <SpriteIcon name='arrowButton' size={4} />
-          <label>Lists</label>
-        </BackButtonWrapper>
+      {onBack && isMobile ? (
+        <UserActionPanelViewContainer>
+          <BackButtonWrapper
+            role='button'
+            aria-label='Back to lists'
+            onClick={onBack}
+          >
+            <SpriteIcon name='arrowButton' size={4} />
+            <label>Lists</label>
+          </BackButtonWrapper>
+          <Searchbar
+            selectedListId={selectedListId}
+            onSearchCallback={() => {
+              setListId(null);
+              setView?.('taskPanel');
+            }}
+          />
+        </UserActionPanelViewContainer>
       ) : (
         <UserActionsContainer>
           <Searchbar
@@ -73,24 +89,37 @@ export const Header: React.FC<HeaderProps> = ({ user, onBack }) => {
           )}
 
           <UserNameContainer>
-            <UserName user={user} />
-            <div
-              ref={triggerRef}
-              aria-haspopup='true'
-              aria-expanded={isOpen}
-              onClick={toggleMenu}
-            >
-              <PopupMenu
-                options={[
-                  { label: <SwitchThemeButton withText /> },
-                  { label: <LogoutButton /> },
-                ]}
-                onClose={closeMenu}
-                isOpen={isOpen}
-                triggerRef={triggerRef}
-              />
-              <SpriteIcon name='user' size={4} />
-            </div>
+            {view === 'taskPanel' && isMobile ? (
+              <BackButtonWrapper
+                role='button'
+                aria-label='Back to lists'
+                onClick={onBack}
+              >
+                <SpriteIcon name='arrowButton' size={4} />
+                <label>Lists</label>
+              </BackButtonWrapper>
+            ) : (
+              <Fragment>
+                <UserName user={user} />
+                <div
+                  ref={triggerRef}
+                  aria-haspopup='true'
+                  aria-expanded={isOpen}
+                  onClick={toggleMenu}
+                >
+                  <PopupMenu
+                    options={[
+                      { label: <SwitchThemeButton withText /> },
+                      { label: <LogoutButton /> },
+                    ]}
+                    onClose={closeMenu}
+                    isOpen={isOpen}
+                    triggerRef={triggerRef}
+                  />
+                  <SpriteIcon name='user' size={4} />
+                </div>
+              </Fragment>
+            )}
           </UserNameContainer>
         </UserActionsContainer>
       )}

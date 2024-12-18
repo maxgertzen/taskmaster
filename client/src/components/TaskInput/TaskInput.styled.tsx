@@ -18,6 +18,7 @@ export const StyledTaskInputContainer = styled.div<{ isSearch: boolean }>(
       flex: 1,
       gap: theme.spacing(0.5),
       justifyContent: 'flex-end',
+      marginRight: 0,
     },
   })
 );

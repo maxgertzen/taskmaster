@@ -14,7 +14,7 @@ export const TaskContainer = styled.div(({ theme }) => ({
     width: '50%',
     height: 'inherit',
     justifyContent: 'flex-start',
-    '& :last-child': {
+    '& [data-spotlight="add-task"]:last-child': {
       marginTop: 'auto',
     },
   },

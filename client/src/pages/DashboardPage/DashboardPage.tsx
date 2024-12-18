@@ -1,4 +1,4 @@
-import { FC, Fragment, useState } from 'react';
+import { FC, Fragment, useEffect, useState } from 'react';
 
 import { withAuthenticationRequired } from '../../auth/withAuthenticationRequired';
 import { Header, Sidebar, TaskPanel, Loader } from '../../components';
@@ -22,6 +22,7 @@ const Dashboard: FC = () => {
   const userDetails = useUserStore((state) => state.user);
   const isMobile = useViewportStore((state) => state.isMobile);
   const [view, setView] = useState<'sidebar' | 'taskPanel'>('sidebar');
+  const searchTerm = useTaskStore((state) => state.searchTerm);
   const setSearchTerm = useTaskStore((state) => state.setSearchTerm);
 
   const handleOnSelectList = (listId: string | null) => {
@@ -36,10 +37,21 @@ const Dashboard: FC = () => {
 
   const handleOnBack = () => {
     if (view === 'taskPanel') {
-      setSelectedListId(null);
+      if (selectedListId == null) {
+        setSearchTerm('');
+      } else {
+        setSelectedListId(null);
+      }
+
       setView('sidebar');
     }
   };
+
+  useEffect(() => {
+    if (selectedListId == null && searchTerm) {
+      setView('taskPanel');
+    }
+  }, [selectedListId, searchTerm]);
 
   if (!token) {
     return (
@@ -55,6 +67,7 @@ const Dashboard: FC = () => {
       <DashboardContainer>
         <Header
           user={userDetails}
+          view={view}
           onBack={view === 'taskPanel' ? handleOnBack : undefined}
         />
         {isMobile ? (

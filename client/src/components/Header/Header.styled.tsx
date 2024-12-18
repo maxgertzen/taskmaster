@@ -21,7 +21,7 @@ export const UserActionsContainer = styled.div(({ theme }) => ({
   [`@media (max-width: ${theme.breakpoints.sm})`]: {
     flexDirection: 'row-reverse',
     justifyContent: 'space-between',
-    alignItems: 'start',
+    alignItems: 'center',
     position: 'fixed',
     top: 0,
     left: 0,
@@ -30,6 +30,11 @@ export const UserActionsContainer = styled.div(({ theme }) => ({
     zIndex: 1000,
     gap: theme.spacing(1),
     padding: theme.spacing(2),
+    height: 'inherit',
+    span: {
+      marginRight: 0,
+      flex: 1,
+    },
   },
 }));
 
@@ -50,6 +55,7 @@ export const UserMenuContainer = styled.div(({ theme }) => ({
   marginLeft: theme.spacing(1),
   [`@media (max-width: ${theme.breakpoints.sm})`]: {
     order: -1,
+    gap: theme.spacing(2),
   },
 }));
 
@@ -78,4 +84,14 @@ export const BackButtonWrapper = styled.div({
   display: 'flex',
   alignItems: 'center',
   cursor: 'pointer',
+  flex: 1,
 });
+
+export const UserActionPanelViewContainer = styled.div(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
+  height: 'inherit',
+  padding: theme.spacing(1),
+}));

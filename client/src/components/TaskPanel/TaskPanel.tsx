@@ -119,6 +119,7 @@ export const TaskPanel: FC<TaskPanelProps> = ({ listId }) => {
           />
           <TaskList
             tasks={tasks}
+            activeFilter={filter}
             onEditTask={handleEditTask}
             onDeleteTask={handleDeleteTask}
             onDragEnd={handleOnDragEnd}

@@ -13,9 +13,6 @@ export const SidebarContainer = styled.div<{
   justifyContent: 'start',
   alignItems: isCollapsed ? 'center' : 'start',
   gap: theme.spacing(2),
-  '& :last-child': {
-    marginTop: 'auto',
-  },
   [`@media (max-width: 768px)`]: {
     width: '50%',
     height: '100%',
