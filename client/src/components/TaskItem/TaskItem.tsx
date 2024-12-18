@@ -1,5 +1,5 @@
 import { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
-import React, { useState, forwardRef, useEffect } from 'react';
+import React, { useState, forwardRef } from 'react';
 
 import { Task } from '../../types/shared';
 import { SpriteIcon } from '../SpriteIcon/SpriteIcon';
@@ -25,11 +25,9 @@ export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
     { task, onDeleteTask, onUpdateTask, isDragging, dragHandleProps, ...rest },
     ref
   ) => {
-    const [isCheckboxChecked, setIsCheckboxChecked] = useState(task.completed);
     const [isEditing, setIsEditing] = useState(false);
 
     const handleToggleComplete = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setIsCheckboxChecked(e.target.checked);
       onUpdateTask({ completed: e.target.checked });
     };
 
@@ -51,20 +49,13 @@ export const TaskItem = forwardRef<HTMLLIElement, TaskProps>(
       onDeleteTask();
     };
 
-    useEffect(() => {
-      setIsCheckboxChecked(task.completed);
-    }, [task.completed]);
-
     return (
       <StyledTaskItemContainer ref={ref} {...rest} isDragging={isDragging}>
-        <StyledItemContainer isCompleted={isCheckboxChecked}>
+        <StyledItemContainer isCompleted={task.completed}>
           <DragIconWrapper {...dragHandleProps}>
             <SpriteIcon name='drag' />
           </DragIconWrapper>
-          <Checkbox
-            checked={isCheckboxChecked}
-            onChange={handleToggleComplete}
-          />
+          <Checkbox checked={task.completed} onChange={handleToggleComplete} />
           {isEditing ? (
             <TaskEditInput
               initialText={task.text}

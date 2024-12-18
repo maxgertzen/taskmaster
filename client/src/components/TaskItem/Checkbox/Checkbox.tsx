@@ -9,13 +9,21 @@ interface CheckboxProps {
 }
 
 export const Checkbox: React.FC<CheckboxProps> = ({
-  checked,
   onChange,
+  checked = false,
   label = '',
 }) => {
+  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange?.(e);
+  };
+
   return (
     <CheckboxContainer>
-      <StyledCheckbox type='checkbox' checked={checked} onChange={onChange} />
+      <StyledCheckbox
+        type='checkbox'
+        checked={checked}
+        onChange={handleOnChange}
+      />
       {label && <Label>{label}</Label>}
     </CheckboxContainer>
   );
