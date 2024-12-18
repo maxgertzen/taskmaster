@@ -45,15 +45,8 @@ export interface CreateTaskRequest extends Request {
 export type GetTasksRequestParams = {
   listId: string;
 };
-
-export type GetTasksRequestQuery = {
-  filter?: "completed" | "incomplete";
-  sort?: "asc" | "desc";
-};
-
 export interface GetTasksRequest extends Request {
   params: GetTasksRequestParams;
-  query: GetTasksRequestQuery;
 }
 
 export type GetTasksSearchResultsQuery = {

@@ -181,7 +181,7 @@ export class TaskRepositoryMongo implements ITaskRepository {
         { userId, listId },
         { completed: newCompletedState }
       );
-      return this.getTasks(userId, listId);
+      return this.getTasksDirect(userId, listId);
     }
   );
 
@@ -197,7 +197,7 @@ export class TaskRepositoryMongo implements ITaskRepository {
           : { userId, listId };
 
       await TaskModel.deleteMany(query);
-      return this.getTasks(userId, listId);
+      return this.getTasksDirect(userId, listId);
     }
   );
 

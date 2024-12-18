@@ -43,15 +43,8 @@ export const getTasks = async (
   try {
     const { userId } = req;
     const { listId } = req.params;
-    const { filter, sort } = req.query;
 
-    const options = !filter && !sort ? {} : { filter, sort };
-
-    const tasks = await getTaskService().getTasks(
-      userId as string,
-      listId,
-      options
-    );
+    const tasks = await getTaskService().getTasks(userId as string, listId);
     res.status(200).json(tasks);
   } catch (error) {
     next(error);
@@ -164,7 +157,7 @@ export const bulkDelete = async (
 ): Promise<void> => {
   try {
     const { userId } = req;
-    const { listId, mode = "completed" } = req.body;
+    const { listId, mode = "all" } = req.body;
 
     const updatedTasks = await getTaskService().bulkDelete(
       userId as string,
