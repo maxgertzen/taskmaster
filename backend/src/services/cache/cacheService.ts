@@ -66,7 +66,6 @@ export class CacheService {
 
   async invalidateCache(userId: string): Promise<void> {
     try {
-      // Using the same prefix pattern as defined in CACHE_KEYS
       const keys = await this.client.keys(`${this.keyPrefix}${userId}:*`);
       if (keys.length > 0) {
         await this.client.del(keys);

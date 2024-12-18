@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useCallback } from 'react';
+import { useMemo, useRef } from 'react';
 
 import {
   createList,
@@ -9,17 +9,22 @@ import {
 } from '../api/lists-api';
 import { QUERY_KEYS } from '../api/query-keys';
 import { useAuthStore } from '../store/authStore';
-import { MutationOperation } from '../types/mutations';
 import { List } from '../types/shared';
+import { debounce } from '../utils/debounce';
 import {
-  updateOptimistically,
-  OptimisticUpdateInput,
-} from '../utils/updateOptimistically';
+  getRealId,
+  onErrorShared,
+  onMutateShared,
+  onSettledShared,
+  replaceTemporaryId,
+} from '../utils/mutationHelpers';
+import { updateOptimistically } from '../utils/updateOptimistically';
 
 type ListMutationInput = {
   listId?: string;
   name?: string;
-  reorderingObject?: {
+  orderedIds?: string[];
+  orderObject?: {
     oldIndex: number;
     newIndex: number;
   };
@@ -29,61 +34,20 @@ type ListMutationInput = {
 // - Handle errors and rollback changes if needed (show Alert)
 export const useListsMutation = () => {
   const queryClient = useQueryClient();
-
   const token = useAuthStore((state) => state.token);
 
-  const updateListsOptimistically = useCallback(
-    (
-      operation: MutationOperation,
-      input: OptimisticUpdateInput<List | ListMutationInput>,
-      oldLists: List[] = []
-    ) =>
-      updateOptimistically(operation, input, oldLists, {
-        name: input.name || '',
-        id: input.id || input.listId || '',
-        ...input,
-      }),
-    []
-  );
+  const reorderingInProgressRef = useRef(false);
 
-  const handleOnMutate = useCallback(
-    async (
-      operation: MutationOperation,
-      input: OptimisticUpdateInput<List>
-    ) => {
-      const queryKey = QUERY_KEYS.lists;
-      await queryClient.cancelQueries({ queryKey });
-      const previousLists = queryClient.getQueryData<List[]>(queryKey);
-
-      queryClient.setQueryData(queryKey, (oldLists: List[] = []) =>
-        updateListsOptimistically(operation, input, oldLists)
-      );
-
-      return { previousLists };
-    },
-    [queryClient, updateListsOptimistically]
-  );
-
-  const handleOnError = useCallback(
-    (
-      _err: Error,
-      _input: ListMutationInput,
-      context:
-        | {
-            previousLists: List[] | undefined;
-          }
-        | undefined
-    ) => {
-      if (context?.previousLists) {
-        queryClient.setQueryData(QUERY_KEYS.lists, context.previousLists);
+  const debouncedReorderList = useMemo(() => {
+    return debounce(async (orderedIds: string[]) => {
+      try {
+        reorderingInProgressRef.current = true;
+        await reorderLists(token)(orderedIds);
+      } finally {
+        reorderingInProgressRef.current = false;
       }
-    },
-    [queryClient]
-  );
-
-  const handleOnSettled = useCallback(async () => {
-    await queryClient.refetchQueries({ queryKey: QUERY_KEYS.lists });
-  }, [queryClient]);
+    }, 1000);
+  }, [token]);
 
   const addList = useMutation({
     mutationFn: async (input: ListMutationInput) => {
@@ -92,61 +56,144 @@ export const useListsMutation = () => {
       }
     },
     onMutate: async (input) => {
-      return handleOnMutate('add', input);
+      return onMutateShared<List>({
+        input,
+        queryKey: QUERY_KEYS.lists,
+        queryClient,
+        operation: 'add',
+        newItemDefaults: { name: input.name },
+      });
     },
-    onError: handleOnError,
-    onSettled: handleOnSettled,
+    onSuccess: (data, variables, context) => {
+      replaceTemporaryId<List>({
+        tempId: context?.tempId || variables.listId || '',
+        realId: data?.id || '',
+        queryKey: QUERY_KEYS.lists,
+        queryClient,
+      });
+    },
+    onError: (_err, _var, context) =>
+      onErrorShared<List>({
+        queryKey: QUERY_KEYS.lists,
+        queryClient,
+        context,
+      }),
+    onSettled: () => {
+      onSettledShared({
+        queryKey: QUERY_KEYS.lists,
+        queryClient,
+      });
+    },
   });
 
   const editList = useMutation({
-    mutationFn: async (input: ListMutationInput) => {
-      if (input.listId && input.name) {
-        return updateList(token)(input.listId, input.name);
-      }
+    mutationFn: async (input: { listId: string; name: string }) => {
+      const realId = getRealId({
+        id: input.listId,
+        queryKey: QUERY_KEYS.lists,
+        queryClient,
+      });
+
+      return updateList(token)(realId, input.name);
     },
-    onMutate: async (input) => {
-      return handleOnMutate('edit', input);
-    },
-    onError: handleOnError,
-    onSettled: handleOnSettled,
+    onMutate: async (input) =>
+      onMutateShared<List>({
+        input,
+        queryKey: QUERY_KEYS.lists,
+        queryClient,
+        operation: 'edit',
+      }),
+    onError: (_err, _var, context) =>
+      onErrorShared<List>({
+        queryKey: QUERY_KEYS.lists,
+        queryClient,
+        context,
+      }),
+    onSettled: () =>
+      onSettledShared({
+        queryKey: QUERY_KEYS.lists,
+        queryClient,
+      }),
   });
 
   const deleteListMutation = useMutation({
-    mutationFn: async (input: ListMutationInput) => {
-      if (input.listId) {
-        return deleteList(token)(input.listId);
-      }
+    mutationFn: async (input: { listId: string }) => {
+      const realId = getRealId({
+        id: input.listId,
+        queryKey: QUERY_KEYS.lists,
+        queryClient,
+      });
+      return deleteList(token)(realId);
     },
-    onMutate: async (input) => {
-      return handleOnMutate('delete', input);
-    },
-    onError: handleOnError,
-    onSettled: handleOnSettled,
+    onMutate: async (input) =>
+      onMutateShared<List>({
+        input: { ...input, id: input.listId },
+        queryKey: QUERY_KEYS.lists,
+        queryClient,
+        operation: 'delete',
+      }),
+    onError: (_err, _var, context) =>
+      onErrorShared<List>({
+        queryKey: QUERY_KEYS.lists,
+        queryClient,
+        context,
+      }),
+    onSettled: () =>
+      onSettledShared({
+        queryKey: QUERY_KEYS.lists,
+        queryClient,
+      }),
   });
 
-  const reorderList = useMutation({
-    mutationFn: async (input: ListMutationInput) => {
-      if (
-        input.reorderingObject?.newIndex !== undefined &&
-        input.reorderingObject?.oldIndex !== undefined
-      ) {
-        return reorderLists(token)(
-          input.reorderingObject.oldIndex,
-          input.reorderingObject.newIndex
-        );
-      }
+  const reorderListsMutation = useMutation({
+    mutationFn: async ({
+      oldIndex,
+      newIndex,
+    }: {
+      oldIndex: number;
+      newIndex: number;
+    }) => {
+      const previousLists = queryClient.getQueryData<List[]>(QUERY_KEYS.lists);
+      if (!previousLists) return;
+
+      const reorderedLists = updateOptimistically<List>(
+        'reorder',
+        { reorderingObject: { oldIndex, newIndex } },
+        previousLists
+      );
+
+      const newOrderedIds = reorderedLists.map((list) => list.id);
+
+      debouncedReorderList(newOrderedIds);
+
+      return reorderedLists;
     },
-    onMutate: async (input) => {
-      return handleOnMutate('reorder', input);
+    onMutate: async ({
+      oldIndex,
+      newIndex,
+    }: {
+      oldIndex: number;
+      newIndex: number;
+    }) => {
+      return onMutateShared<List>({
+        input: { reorderingObject: { oldIndex, newIndex } },
+        queryKey: QUERY_KEYS.lists,
+        queryClient,
+        operation: 'reorder',
+      });
     },
-    onError: handleOnError,
-    onSuccess: handleOnSettled,
+    onError: (_err, _variables, context) =>
+      onErrorShared<List>({
+        queryKey: QUERY_KEYS.lists,
+        queryClient,
+        context,
+      }),
   });
 
   return {
     addList,
     editList,
     deleteList: deleteListMutation,
-    reorderList,
+    reorderList: reorderListsMutation,
   };
 };

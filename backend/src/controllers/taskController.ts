@@ -119,14 +119,18 @@ export const reorderTasks = async (
 ): Promise<void> => {
   try {
     const { userId } = req;
-    const { listId, oldIndex, newIndex } = req.body;
+    const { listId, orderedIds } = req.body;
+
+    if (!orderedIds || !Array.isArray(orderedIds) || orderedIds.length === 0) {
+      throw new Error("Ordered IDs are required");
+    }
 
     const reorderedTasks = await getTaskService().reorderTasks(
       userId as string,
       listId,
-      oldIndex,
-      newIndex
+      orderedIds
     );
+
     res.status(200).json(reorderedTasks);
   } catch (error) {
     next(error);

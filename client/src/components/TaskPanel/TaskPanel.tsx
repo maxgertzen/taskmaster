@@ -46,24 +46,24 @@ export const TaskPanel: FC<TaskPanelProps> = ({ listId }) => {
     bulkDelete,
   } = useTasksMutation();
 
-  const handleDeleteTask = async (taskId: string) => {
-    deleteTask.mutate({ taskId, listId });
+  const handleDeleteTask = async (id: string) => {
+    await deleteTask.mutateAsync({ id, listId });
   };
 
-  const handleEditTask = (taskId: string) => async (updates: Partial<Task>) => {
-    editTask.mutate({
-      taskId,
+  const handleEditTask = (id: string) => async (updates: Partial<Task>) => {
+    await editTask.mutateAsync({
+      id,
       listId,
       ...updates,
     });
   };
 
   const handleAddTask = async (text: string) => {
-    addTask.mutate({ listId, text });
+    await addTask.mutateAsync({ listId, text });
   };
 
   const onReorderTasks = async (oldIndex: number, newIndex: number) => {
-    return reorderTask.mutate({
+    await reorderTask.mutateAsync({
       listId,
       reorderingObject: { oldIndex, newIndex },
     });
@@ -74,12 +74,12 @@ export const TaskPanel: FC<TaskPanelProps> = ({ listId }) => {
   });
 
   const handleCompleteAll = async () => {
-    toggleComplete.mutate({ listId, completed: !isAllCompleted });
+    await toggleComplete.mutateAsync({ listId, completed: !isAllCompleted });
   };
 
   const handleBulkDelete = (mode?: 'completed') => async () => {
     if (mode === 'completed' && !tasks?.some((task) => task.completed)) return;
-    bulkDelete.mutate({ listId, deleteMode: mode });
+    await bulkDelete.mutateAsync({ listId, deleteMode: mode });
   };
 
   const handleFilter = (newFilter: Filters) => {

@@ -1,7 +1,6 @@
 import { IListRepository } from "../../interfaces/listRepository";
 import { REDIS_KEYS } from "../../utils/redisKeys";
 import { BaseList } from "../../interfaces/entities";
-import { reorderArray } from "../../utils/reorderArray";
 import { generateUniqueId } from "../../utils/nanoid";
 import { getRedisClient } from "../../config/database";
 
@@ -94,35 +93,37 @@ export class ListRepositoryRedis implements IListRepository {
 
   async reorderLists(
     userId: string,
-    oldIndex: number,
-    newIndex: number
+    orderedIds: string[]
   ): Promise<BaseList[]> {
     const listKey = REDIS_KEYS.LISTS(userId);
-    const listsWithScores = await this.redisClient.zRangeWithScores(
-      listKey,
-      0,
-      -1
-    );
+    const existingKeys = await this.redisClient.zRange(listKey, 0, -1);
+    const existingIds = existingKeys.map((key) => key.split(":").pop());
+    const invalidIds = orderedIds.filter((id) => !existingIds.includes(id));
+
+    if (invalidIds.length) {
+      throw new Error(`Invalid list IDs: ${invalidIds.join(", ")}`);
+    }
+
+    const reorderedKeys = orderedIds.map((id) => REDIS_KEYS.LIST(userId, id));
 
     const multi = this.redisClient.multi();
 
-    const reorderedLists = reorderArray(listsWithScores, oldIndex, newIndex);
-
-    reorderedLists.map(({ value: listKey }, index) => {
-      return multi.zAdd(listKey, {
+    reorderedKeys.forEach((key, index) => {
+      multi.zAdd(listKey, {
         score: index,
-        value: listKey,
+        value: key,
       });
+      multi.hSet(key, { orderIndex: index });
     });
 
     await multi.exec();
 
-    const reorderedListDetails = await Promise.all(
-      reorderedLists.map(async ({ value: listKey }) => {
-        const listData = await this.redisClient.hGetAll(listKey);
+    const reorderedLists = await Promise.all(
+      reorderedKeys.map(async (key) => {
+        const listData = await this.redisClient.hGetAll(key);
 
         if (!listData.id || !listData.name) {
-          throw new Error(`Missing fields in list with key: ${listKey}`);
+          throw new Error(`Missing fields in list with key: ${key}`);
         }
 
         return {
@@ -135,6 +136,6 @@ export class ListRepositoryRedis implements IListRepository {
       })
     );
 
-    return reorderedListDetails.sort((a, b) => a.orderIndex - b.orderIndex);
+    return reorderedLists;
   }
 }

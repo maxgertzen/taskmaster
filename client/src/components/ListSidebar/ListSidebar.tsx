@@ -67,6 +67,7 @@ export const ListSidebar: FC<ListSidebarProps> = ({
                         dragHandleProps={provided.dragHandleProps}
                         isDragging={snapshot.isDragging}
                         key={id}
+                        id={id}
                         name={name}
                         isActive={selectedListId === id}
                         handleDeleteList={() => onDeleteList(id)}

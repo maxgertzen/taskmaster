@@ -1,6 +1,5 @@
 import { IListRepository } from "../../interfaces/listRepository";
 import { ListModel, MongoList } from "../../models/list";
-import { reorderArray } from "../../utils/reorderArray";
 import { BaseList } from "../../interfaces/entities";
 import {
   withCache,
@@ -27,20 +26,26 @@ export class ListRepositoryMongo implements IListRepository {
     }
   );
 
+  private readonly getListsDirect = async (
+    userId: string
+  ): Promise<BaseList[]> => {
+    const lists = await ListModel.find({ userId })
+      .sort({ orderIndex: 1 })
+      .lean<MongoList[]>();
+
+    return lists.map((list) => ({
+      id: list._id.toString(),
+      name: list.name,
+      creationDate: list.creationDate,
+      userId: list.userId.toString(),
+      sharedWith: list.sharedWith?.map((id) => id.toString()),
+      orderIndex: list.orderIndex,
+    }));
+  };
+
   private readonly getListsWithCache = withCache(
     async (userId: string): Promise<BaseList[]> => {
-      const lists = await ListModel.find({ userId })
-        .sort({ orderIndex: 1 })
-        .lean<MongoList[]>();
-
-      return lists.map((list) => ({
-        id: list._id.toString(),
-        name: list.name,
-        creationDate: list.creationDate,
-        userId: list.userId.toString(),
-        sharedWith: list.sharedWith?.map((id) => id.toString()),
-        orderIndex: list.orderIndex,
-      }));
+      return this.getListsDirect(userId);
     },
     {
       type: "LISTS",
@@ -84,24 +89,17 @@ export class ListRepositoryMongo implements IListRepository {
   );
 
   private readonly reorderListsWithCache = withCacheInvalidation(
-    async (
-      userId: string,
-      oldIndex: number,
-      newIndex: number
-    ): Promise<BaseList[]> => {
-      const lists = await this.getLists(userId);
-      const reorderedLists = reorderArray(lists, oldIndex, newIndex);
-
-      const bulkOperations = reorderedLists.map((list, index) => ({
+    async (userId: string, orderedIds: string[]): Promise<BaseList[]> => {
+      const bulkOperations = orderedIds.map((id, index) => ({
         updateOne: {
-          filter: { _id: list.id },
+          filter: { _id: id },
           update: { $set: { orderIndex: index } },
         },
       }));
 
       await ListModel.bulkWrite(bulkOperations);
 
-      return reorderedLists;
+      return await this.getListsDirect(userId);
     }
   );
 
@@ -130,9 +128,8 @@ export class ListRepositoryMongo implements IListRepository {
 
   async reorderLists(
     userId: string,
-    oldIndex: number,
-    newIndex: number
+    orderedIds: string[]
   ): Promise<BaseList[]> {
-    return this.reorderListsWithCache(userId, oldIndex, newIndex);
+    return this.reorderListsWithCache(userId, orderedIds);
   }
 }

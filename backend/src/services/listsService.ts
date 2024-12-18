@@ -31,11 +31,7 @@ export class ListService {
     return this.repository.deleteList(userId, listId);
   }
 
-  async reorderLists(
-    userId: string,
-    oldIndex: number,
-    newIndex: number
-  ): Promise<List[]> {
-    return this.repository.reorderLists(userId, oldIndex, newIndex);
+  async reorderLists(userId: string, orderedIds: string[]): Promise<List[]> {
+    return this.repository.reorderLists(userId, orderedIds);
   }
 }

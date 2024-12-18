@@ -2,7 +2,6 @@ import { ITaskRepository } from "../../interfaces/taskRepository";
 import { getRedisClient } from "../../config/database";
 import { REDIS_KEYS } from "../../utils/redisKeys";
 import { BaseTask, ClientTask, SearchResults } from "../../interfaces/entities";
-import { reorderArray } from "../../utils/reorderArray";
 import { generateUniqueId } from "../../utils/nanoid";
 
 export class TaskRepositoryRedis implements ITaskRepository {
@@ -162,26 +161,36 @@ export class TaskRepositoryRedis implements ITaskRepository {
   async reorderTasks(
     userId: string,
     listId: string,
-    oldIndex: number,
-    newIndex: number
+    orderedIds: string[]
   ): Promise<ClientTask[]> {
     const taskListKey = REDIS_KEYS.TASK_LIST(userId, listId);
     const taskKeys = await this.redisClient.lRange(taskListKey, 0, -1);
 
-    const reorderedTaskKeys = reorderArray(taskKeys, oldIndex, newIndex);
+    const currentTaskIds = new Set(taskKeys.map((key) => key.split(":").pop()));
 
-    await this.redisClient
+    const invalidIds = orderedIds.filter((id) => !currentTaskIds.has(id));
+    if (invalidIds.length) {
+      throw new Error(`Invalid task IDs: ${invalidIds.join(", ")}`);
+    }
+
+    const reorderedTaskKeys = orderedIds.map(
+      (key) => key.split(":").pop() ?? ""
+    );
+
+    const multi = this.redisClient
       .multi()
       .del(taskListKey)
-      .rPush(taskListKey, reorderedTaskKeys)
-      .exec();
+      .rPush(taskListKey, reorderedTaskKeys);
+
+    reorderedTaskKeys.forEach((taskKey, index) => {
+      multi.hSet(taskKey, { orderIndex: index });
+    });
+
+    await multi.exec();
 
     const reorderedTasks = await Promise.all(
-      reorderedTaskKeys.map(async (key, index) => {
-        const task = await this.redisClient.hGetAll(key);
-
-        await this.redisClient.hSet(key, { orderIndex: index });
-
+      reorderedTaskKeys.map(async (taskKey, index) => {
+        const task = await this.redisClient.hGetAll(taskKey);
         return {
           id: task.id,
           text: task.text,
@@ -194,7 +203,7 @@ export class TaskRepositoryRedis implements ITaskRepository {
       })
     );
 
-    return reorderedTasks.sort((a, b) => a.orderIndex - b.orderIndex);
+    return reorderedTasks;
   }
 
   async toggleCompleteAll(

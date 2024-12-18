@@ -67,10 +67,9 @@ export class TaskService {
   async reorderTasks(
     userId: string,
     listId: string,
-    oldIndex: number,
-    newIndex: number
+    orderedIds: string[]
   ): Promise<ClientTask[]> {
-    return this.repository.reorderTasks(userId, listId, oldIndex, newIndex);
+    return this.repository.reorderTasks(userId, listId, orderedIds);
   }
 
   async toggleCompleteAll(

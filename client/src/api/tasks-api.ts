@@ -89,15 +89,11 @@ export const deleteTask =
 
 export const reorderTasks =
   (token: string | null) =>
-  async (
-    listId: string,
-    oldIndex: number,
-    newIndex: number
-  ): Promise<Task[]> => {
+  async (listId: string, orderedIds: string[]): Promise<Task[]> => {
     return await fetcher<Task[], ReorderTasksRequest>({
       url: `${TASKS_API_URL}/reorder`,
       method: 'POST',
-      body: { listId, oldIndex, newIndex },
+      body: { listId, orderedIds },
       token,
     });
   };

@@ -38,7 +38,7 @@ export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
   };
 
   const handleAddList = async (name: string) => {
-    addList.mutate({ name });
+    await addList.mutateAsync({ name });
     setIsAdding(false);
   };
 
@@ -46,17 +46,15 @@ export const Sidebar: FC<SidebarProps> = ({ selectedListId, onSelectList }) => {
     if (selectedListId === listId) {
       onSelectList(null);
     }
-    deleteList.mutate({ listId });
+    await deleteList.mutateAsync({ listId });
   };
 
   const handleEditList = async (listId: string, name: string) => {
-    editList.mutate({ listId, name });
+    await editList.mutateAsync({ listId, name });
   };
 
   const onReorderLists = async (oldIndex: number, newIndex: number) => {
-    reorderList.mutate({
-      reorderingObject: { oldIndex, newIndex },
-    });
+    await reorderList.mutateAsync({ newIndex, oldIndex });
   };
 
   const { handleOnDragEnd } = useDragAndDropHandler({

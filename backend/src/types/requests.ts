@@ -26,8 +26,7 @@ export interface DeleteListRequest extends Request {
 }
 
 export type ReorderListRequestBody = {
-  oldIndex: number;
-  newIndex: number;
+  orderedIds: string[];
 };
 
 export interface ReorderListRequest extends Request {
@@ -86,8 +85,7 @@ export interface DeleteTaskRequest extends Request {
 
 export type ReorderTasksRequestBody = {
   listId: string;
-  oldIndex: number;
-  newIndex: number;
+  orderedIds: string[];
 };
 
 export interface ReorderTasksRequest extends Request {
