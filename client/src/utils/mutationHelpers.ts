@@ -20,7 +20,7 @@ export const handleOptimisticUpdate = <
   queryClient: QueryClient;
   newItemDefaults?: Partial<T>;
 }) => {
-  const tempId = operation === 'add' ? generateTempId() : undefined;
+  const tempId = operation === 'add' ? generateTempId() : input.id || '';
 
   queryClient.cancelQueries({ queryKey });
 

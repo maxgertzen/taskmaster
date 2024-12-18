@@ -1,4 +1,5 @@
 import { useQuery, useQueries, useQueryClient } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 import { QUERY_KEYS } from '../api/query-keys';
 import { fetchTasks } from '../api/tasks-api';
@@ -6,6 +7,7 @@ import { STALE_TIME } from '../constants/staleTime';
 import { useAuthStore } from '../store/authStore';
 import { Filters, Sort } from '../types/mutations';
 import { Task } from '../types/shared';
+import { filterTasks, sortTasks } from '../utils/taskHelpers';
 
 import { useLists } from './useLists';
 
@@ -30,12 +32,19 @@ export const useTasks = ({
     queryFn: fetchTasks(token),
     queryKey: QUERY_KEYS.tasks({
       listId: listId as string,
-      filter,
-      sort,
     }),
     enabled: !!token && !!listId,
     staleTime: STALE_TIME,
   });
+
+  const filteredAndSortedTasks = useMemo(() => {
+    if (!tasksQuery.data) return [];
+
+    let result = filterTasks(tasksQuery.data, filter);
+    result = sortTasks(result, sort);
+
+    return result;
+  }, [tasksQuery.data, filter, sort]);
 
   useQueries({
     queries:
@@ -43,7 +52,7 @@ export const useTasks = ({
         ?.slice(0, prefetchLimit)
         .filter((list) => list.id !== listId)
         .map((list) => ({
-          queryKey: QUERY_KEYS.tasks({ listId: list.id, filter, sort }),
+          queryKey: QUERY_KEYS.tasks({ listId: list.id }),
           queryFn: fetchTasks(token),
           enabled: !!token,
           staleTime: STALE_TIME,
@@ -55,14 +64,14 @@ export const useTasks = ({
     if (!token || !listId) return;
 
     queryClient.prefetchQuery({
-      queryKey: QUERY_KEYS.tasks({ listId, filter, sort }),
+      queryKey: QUERY_KEYS.tasks({ listId }),
       queryFn: fetchTasks(token),
       staleTime: STALE_TIME,
     });
   };
 
   return {
-    tasks: tasksQuery.data as Task[],
+    tasks: filteredAndSortedTasks as Task[],
     isError: tasksQuery.isError,
     prefetchTasks,
   };

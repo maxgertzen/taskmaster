@@ -18,15 +18,13 @@ const TASKS_API_URL = `${import.meta.env.VITE_API_URL}/tasks`;
 export const fetchTasks =
   (token: string | null) =>
   async ({
-    queryKey: [{ listId, filter, sort, search }],
+    queryKey: [{ listId, search }],
   }: QueryFunctionContext<ReturnType<typeof QUERY_KEYS.tasks>>): Promise<
     Task[]
   > => {
     return await fetcher<Task[]>({
       url: `${TASKS_API_URL}/${listId}`,
       urlSearchParams: {
-        ...(filter && { filter }),
-        ...(sort && { sort }),
         ...(search && { search }),
       },
       token,

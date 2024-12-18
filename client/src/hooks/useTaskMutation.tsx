@@ -109,8 +109,8 @@ export const useTasksMutation = () => {
         input: {
           id: input.id,
           listId: input.listId,
-          text: input.text,
           completed: input.completed,
+          ...(input.text ? { text: input.text } : {}),
         },
         queryKey: QUERY_KEYS.tasks({ listId: input.listId || '' }),
         queryClient,
@@ -212,18 +212,11 @@ export const useTasksMutation = () => {
   const toggleComplete = useMutation({
     mutationFn: async (input: TaskMutationInput) => {
       if (!input.listId) return [] as Task[];
-
-      const realId = getRealId({
-        id: input.id,
-        queryKey: QUERY_KEYS.tasks({ listId: input.listId || '' }),
-        queryClient,
-      });
-
-      return toggleCompleteAll(token)(realId, input.completed || false);
+      return toggleCompleteAll(token)(input.listId, input.completed || false);
     },
     onMutate: async (input) =>
       onMutateShared<Task>({
-        input: { completed: input.completed || false },
+        input: { completed: input.completed || false, listId: input.listId },
         queryKey: QUERY_KEYS.tasks({ listId: input.listId || '' }),
         queryClient,
         operation: 'toggle-complete',
@@ -245,17 +238,9 @@ export const useTasksMutation = () => {
 
   const bulkDeleteMutation = useMutation({
     mutationFn: async (input: TaskMutationInput) => {
-      if (input.listId) {
-        return bulkDelete(token)(input.listId, input.deleteMode);
-      }
+      if (!input.listId) return [] as Task[];
 
-      const realId = getRealId({
-        id: input.id,
-        queryKey: QUERY_KEYS.tasks({ listId: input.listId || '' }),
-        queryClient,
-      });
-
-      return deleteTask(token)(realId, input.listId || '');
+      return bulkDelete(token)(input.listId, input.deleteMode);
     },
     onMutate: async (input) =>
       onMutateShared<Task & { deleteMode: 'completed' | 'all' }>({
