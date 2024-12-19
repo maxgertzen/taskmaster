@@ -1,9 +1,11 @@
 import { FC } from 'react';
 
-import { Title, Button, Logo } from '../../components';
-import { useAuth0 } from '../../mocks';
+import { useAuth0 } from '@/mocks';
 
-import { ContentContainer, HomePageContainer } from './HomePage.styled';
+import { Title, Button } from '../../features/ui/components';
+import { HomeLayout } from '../../layouts';
+
+import { ActionButton } from './HomePage.styled';
 
 // TODO:
 // - Implement a way to login
@@ -22,13 +24,12 @@ export const HomePage: FC = () => {
   };
 
   return (
-    <HomePageContainer>
-      <ContentContainer>
-        <Logo />
-        <Title variant='h1'>Welcome to TaskMaster</Title>
-        <Title variant='h4'>Please continue to sign-in or sign-up</Title>
-      </ContentContainer>
-      <Button onClick={handleLogin}>Continue</Button>
-    </HomePageContainer>
+    <HomeLayout>
+      <Title variant='h1'>Welcome to TaskMaster</Title>
+      <Title variant='h4'>Please continue to sign-in or sign-up</Title>
+      <ActionButton>
+        <Button onClick={handleLogin}>Continue</Button>
+      </ActionButton>
+    </HomeLayout>
   );
 };

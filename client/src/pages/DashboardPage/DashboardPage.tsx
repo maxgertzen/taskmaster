@@ -1,57 +1,69 @@
-import { FC, Fragment, useEffect, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { FC, useEffect, useState } from 'react';
 
-import { withAuthenticationRequired } from '../../auth/withAuthenticationRequired';
-import { Header, Sidebar, TaskPanel, Loader } from '../../components';
-import { SpotlightOverlay } from '../../components/SpotlightOverlay/SpotlightOverlay';
-import { useAuthStore } from '../../store/authStore';
-import {
-  useTaskStore,
-  useUserStore,
-  useViewportStore,
-} from '../../store/store';
+import { useLists } from '@/features/lists/hooks/useLists';
+import { SidebarLayout } from '@/features/lists/layouts/Sidebar';
+import { TaskArea } from '@/features/tasks/layouts/TaskArea/TaskArea';
+import { prefetchTasksForLists } from '@/features/tasks/utils/prefetchTasksForLists';
+import { Loader } from '@/features/ui/components';
+import { DashboardLayout } from '@/layouts/DashboardLayout/DashboardLayout';
+import { useAuthStore } from '@/shared/store/authStore';
+import { useDashboardStore } from '@/shared/store/dashboardStore';
+import { useViewportStore } from '@/shared/store/viewportStore';
+import { List } from '@/shared/types/shared';
+import { SelectedView } from '@/shared/types/ui';
+import { withAuthenticationRequired } from '@/shared/utils/withAuthenticationRequired';
 
-import {
-  DashboardContainer,
-  MainLayout,
-  SwipeContainer,
-} from './DashboardPage.styled';
+import { DashboardContainer } from './DashboardPage.styled';
 
 const Dashboard: FC = () => {
-  const token = useAuthStore((state) => state.token);
-  const { selectedListId, setSelectedListId } = useTaskStore((state) => state);
-  const userDetails = useUserStore((state) => state.user);
+  const { token, user } = useAuthStore((state) => state);
+  const { lists } = useLists();
+  const {
+    selectedList,
+    searchTerm,
+    setSelectedList,
+    resetSelectedList,
+    setSearchTerm,
+  } = useDashboardStore((state) => state);
   const isMobile = useViewportStore((state) => state.isMobile);
-  const [view, setView] = useState<'sidebar' | 'taskPanel'>('sidebar');
-  const searchTerm = useTaskStore((state) => state.searchTerm);
-  const setSearchTerm = useTaskStore((state) => state.setSearchTerm);
+  const [view, setView] = useState<SelectedView>('list');
+  const queryClient = useQueryClient();
 
-  const handleOnSelectList = (listId: string | null) => {
-    setSelectedListId(listId);
-    if (listId) {
+  const handleOnSelectList = (list: List | null) => {
+    setSelectedList(list);
+    if (list) {
       setSearchTerm('');
     }
-    if (isMobile && listId) {
-      setView('taskPanel');
+    if (isMobile && list) {
+      setView('board');
     }
   };
 
   const handleOnBack = () => {
-    if (view === 'taskPanel') {
-      if (selectedListId == null) {
+    if (view === 'board') {
+      if (selectedList == null) {
         setSearchTerm('');
       } else {
-        setSelectedListId(null);
+        resetSelectedList();
       }
 
-      setView('sidebar');
+      setView('list');
     }
   };
 
   useEffect(() => {
-    if (selectedListId == null && searchTerm) {
-      setView('taskPanel');
+    if (selectedList == null && searchTerm) {
+      setView('board');
     }
-  }, [selectedListId, searchTerm]);
+  }, [selectedList, searchTerm]);
+
+  useEffect(() => {
+    if (lists?.length) {
+      const listIdsToPrefetch = lists.slice(0, 3).map((list) => list.id);
+      prefetchTasksForLists(listIdsToPrefetch, queryClient, token);
+    }
+  }, [lists, token, queryClient]);
 
   if (!token) {
     return (
@@ -62,33 +74,14 @@ const Dashboard: FC = () => {
   }
 
   return (
-    <Fragment>
-      <SpotlightOverlay />
-      <DashboardContainer>
-        <Header
-          user={userDetails}
-          view={view}
-          onBack={view === 'taskPanel' ? handleOnBack : undefined}
-        />
-        {isMobile ? (
-          <SwipeContainer view={view}>
-            <Sidebar
-              selectedListId={selectedListId}
-              onSelectList={handleOnSelectList}
-            />
-            <TaskPanel listId={selectedListId} />
-          </SwipeContainer>
-        ) : (
-          <MainLayout>
-            <Sidebar
-              selectedListId={selectedListId}
-              onSelectList={handleOnSelectList}
-            />
-            <TaskPanel listId={selectedListId} />
-          </MainLayout>
-        )}
-      </DashboardContainer>
-    </Fragment>
+    <DashboardLayout user={user} view={view} onBack={handleOnBack}>
+      <SidebarLayout
+        lists={lists}
+        selectedList={selectedList}
+        onSelectList={handleOnSelectList}
+      />
+      <TaskArea selectedList={selectedList} />
+    </DashboardLayout>
   );
 };
 

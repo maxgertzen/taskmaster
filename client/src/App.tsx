@@ -3,9 +3,9 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-import { useInitializeToken } from './hooks/useInitializeToken';
-import { useViewportListener } from './hooks/useViewportListener';
+import { useViewportListener } from './features/ui/hooks/useViewportListener';
 import { DashboardPage, HomePage } from './pages';
+import { useInitializeToken } from './shared/hooks';
 
 const queryClient = new QueryClient();
 

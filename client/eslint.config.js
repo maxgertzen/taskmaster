@@ -11,6 +11,15 @@ import unusedImports from 'eslint-plugin-unused-imports';
 export default typescriptEslint.config(
   { ignores: ['dist'] },
   {
+    settings: {
+      'import/parsers': {
+        '@typescript-eslint/parser': ['.ts', '.tsx'],
+      },
+      'import/resolver': {
+        typescript: {},
+        node: true,
+      },
+    },
     extends: [
       js.configs.recommended,
       ...typescriptEslint.configs.recommended,

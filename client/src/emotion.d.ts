@@ -1,6 +1,6 @@
 import '@emotion/react';
+import { Typography } from './shared/types/styled';
 import { breakpoints } from './styles/theme';
-import { Typography } from './types/styled';
 
 declare module '@emotion/react' {
   export interface Theme {
