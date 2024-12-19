@@ -11,7 +11,7 @@ import {
 import { SearchResults, Task } from '../types/shared';
 import { fetcher } from '../utils/fetcher';
 
-import { QUERY_KEYS } from './query-keys';
+import { QUERY_KEYS } from '../shared/api/query-keys';
 
 const TASKS_API_URL = `${import.meta.env.VITE_API_URL}/tasks`;
 
