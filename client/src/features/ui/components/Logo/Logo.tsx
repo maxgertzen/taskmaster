@@ -23,11 +23,7 @@ export const Logo: FC<LogoProps> = ({ size = 'medium', withTitle = false }) => {
         src={themeMode === 'dark' ? taskMasterGrayScaleUrl : taskMasterUrl}
         alt='TaskMaster Logo'
       />
-      {withTitle && (
-        <StyledTitle size={size} variant='h1'>
-          TaskMaster
-        </StyledTitle>
-      )}
+      {withTitle && <StyledTitle size={size}>TaskMaster</StyledTitle>}
     </LogoContainer>
   );
 };

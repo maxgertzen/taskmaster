@@ -1,7 +1,5 @@
 import styled from '@emotion/styled';
 
-import { Title } from '..';
-
 export const LogoContainer = styled('div')<{ withTitle?: boolean }>(
   ({ theme, withTitle = false }) => ({
     display: 'flex',
@@ -18,7 +16,7 @@ export const LogoContainer = styled('div')<{ withTitle?: boolean }>(
   })
 );
 
-export const StyledTitle = styled(Title)<{
+export const StyledTitle = styled('h1')<{
   size: 'small' | 'medium' | 'large';
 }>(({ theme, size }) => ({
   fontSize:

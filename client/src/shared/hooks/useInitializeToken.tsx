@@ -7,10 +7,8 @@ import { useAuth } from './useAuth';
 export const useInitializeToken = () => {
   const { getAccessTokenSilently, isAuthenticated, isLoading, user } =
     useAuth();
-  const [setToken, setUser] = useAuthStore((state) => [
-    state.setToken,
-    state.setUser,
-  ]);
+  const setToken = useAuthStore((state) => state.setToken);
+  const setUser = useAuthStore((state) => state.setUser);
 
   useEffect(() => {
     const fetchToken = async () => {
