@@ -8,12 +8,14 @@ import { checkJwt, attachUser } from "./middlewares/authorisation";
 const createApp = async () => {
   const app = express();
 
-  app.use(
-    cors({
-      origin: process.env.LOCAL_DEV_CLIENT_URL,
-      credentials: true,
-    })
-  );
+  if (process.env.MODE !== "production") {
+    app.use(
+      cors({
+        origin: process.env.LOCAL_DEV_CLIENT_URL,
+        credentials: true,
+      })
+    );
+  }
   app.use(express.json());
 
   app.use("/api/lists", checkJwt, attachUser, listRoutes);
