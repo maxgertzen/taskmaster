@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`REDIS_KEYS should match snapshot 1`] = `
+{
+  "LIST": [Function],
+  "LISTS": [Function],
+  "TASK": [Function],
+  "TASKS_INDEX": "tasks_index",
+  "TASK_LIST": [Function],
+  "USER": [Function],
+}
+`;
