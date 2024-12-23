@@ -13,6 +13,8 @@ export class UserService {
     email?: string,
     name?: string
   ): Promise<BaseUser> {
+    if (!auth0Id) throw new Error("Invalid user ID");
+
     const user = await this.repository.getUser(auth0Id);
 
     if (!user) {

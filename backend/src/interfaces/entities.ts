@@ -9,7 +9,7 @@ export interface BaseUser {
   auth0Id: string;
   email: string;
   name: string;
-  preferences: Record<string, unknown>;
+  preferences?: Record<string, unknown>;
 }
 
 export interface BaseList extends BaseEntity {
