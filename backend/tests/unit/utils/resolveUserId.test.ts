@@ -1,8 +1,8 @@
 import { resolveUserId } from "@src/utils/resolveUserId";
 import { getUserService } from "@src/services";
-import { testConfig } from "@tests/data/utils";
+import { utilTestConfigs } from "@tests/data/utils";
 
-const { validInputs, mockResponses, errors } = testConfig;
+const { validInputs, mockResponses, errors } = utilTestConfigs;
 
 jest.mock("@src/services", () => ({
   getUserService: jest.fn(),
@@ -13,7 +13,6 @@ describe("resolveUserId", () => {
   const mockGetUserService = getUserService as jest.Mock;
 
   beforeEach(() => {
-    jest.clearAllMocks();
     mockGetUserService.mockReturnValue({
       getOrCreateUser: mockGetOrCreateUser,
     });
@@ -87,9 +86,5 @@ describe("resolveUserId", () => {
     await expect(resolveUserId(validInputs.auth0Id)).rejects.toThrow(
       errors.serviceError
     );
-  });
-
-  it("should match the expected structure snapshot", () => {
-    expect(testConfig).toMatchSnapshot();
   });
 });

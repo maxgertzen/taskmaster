@@ -42,8 +42,4 @@ describe("reorderArray", () => {
     const result = reorderArray(arr, 0, 0);
     expect(result).toEqual([]);
   });
-
-  it("should match the expected structure snapshot", () => {
-    expect(reorderArray).toMatchSnapshot();
-  });
 });

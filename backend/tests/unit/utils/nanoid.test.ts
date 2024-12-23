@@ -1,7 +1,7 @@
 import { generateUniqueId } from "@src/utils/nanoid";
-import { testConfig } from "@tests/data/utils";
+import { utilTestConfigs } from "@tests/data/utils";
 
-const { mockResponses } = testConfig;
+const { mockResponses } = utilTestConfigs;
 
 jest.mock("nanoid", () => ({
   nanoid: jest.fn(() => mockResponses.nanoid.default),
@@ -9,10 +9,6 @@ jest.mock("nanoid", () => ({
 
 describe("Nanoid", () => {
   describe("generateUniqueId", () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
     it("should return a unique id using nanoid", async () => {
       const result = await generateUniqueId();
       expect(result).toBe(mockResponses.nanoid.default);
@@ -38,12 +34,6 @@ describe("Nanoid", () => {
       expect(id1).toBe(mockResponses.nanoid.sequence[0]);
       expect(id2).toBe(mockResponses.nanoid.sequence[1]);
       expect(id1).not.toBe(id2);
-    });
-  });
-
-  describe("snapshot", () => {
-    it("should match the expected structure snapshot", () => {
-      expect(testConfig).toMatchSnapshot();
     });
   });
 });

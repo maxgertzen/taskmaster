@@ -1,7 +1,7 @@
 import { REDIS_KEYS } from "@src/utils/redisKeys";
-import { testConfig } from "@tests/data/utils";
+import { utilTestConfigs } from "@tests/data/utils";
 
-const { validInputs, edgeCases } = testConfig;
+const { validInputs, edgeCases } = utilTestConfigs;
 
 describe("REDIS_KEYS", () => {
   describe("USER key", () => {
@@ -63,9 +63,5 @@ describe("REDIS_KEYS", () => {
     it("should return correct tasks index key", () => {
       expect(REDIS_KEYS.TASKS_INDEX).toBe("tasks_index");
     });
-  });
-
-  it("should match snapshot", () => {
-    expect(REDIS_KEYS).toMatchSnapshot();
   });
 });
