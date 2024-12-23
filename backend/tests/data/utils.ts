@@ -1,6 +1,6 @@
 import type { TestConfig } from "@tests/types/utils";
 
-export const testConfig: TestConfig = {
+export const utilTestConfigs: TestConfig = {
   validInputs: {
     userId: "user123",
     taskId: "task456",
