@@ -1,4 +1,6 @@
 import { BaseList } from "@interfaces/entities";
+import { ListModel, MongoList } from "@src/models/list";
+import mongoose from "mongoose";
 
 export const listFactory = {
   generateBaseList: (overrides: Partial<BaseList> = {}): BaseList => ({
@@ -11,13 +13,13 @@ export const listFactory = {
     ...overrides,
   }),
 
-  generateMongoList: (overrides: Partial<BaseList> = {}): any => ({
-    _id: "mocked-mongo-id",
-    name: "Sample List",
-    creationDate: new Date(),
-    userId: "mocked-user-id",
-    sharedWith: ["mocked-user-id-2"],
-    orderIndex: 0,
-    ...overrides,
-  }),
+  generateMongoList: (
+    overrides: Partial<BaseList & { _id: mongoose.Types.ObjectId }> = {}
+  ): MongoList =>
+    new ListModel({
+      name: "Sample List",
+      userId: new mongoose.Types.ObjectId(),
+      orderIndex: 0,
+      ...overrides,
+    }),
 };

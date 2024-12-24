@@ -1,4 +1,6 @@
 import { BaseTask, ClientTask } from "@interfaces/entities";
+import { MongoTask, TaskModel } from "@src/models/task";
+import mongoose from "mongoose";
 
 export const taskFactory = {
   generateBaseTask: (overrides: Partial<BaseTask> = {}): BaseTask => ({
@@ -12,16 +14,18 @@ export const taskFactory = {
     ...overrides,
   }),
 
-  generateMongoTask: (overrides: Partial<BaseTask> = {}): any => ({
-    _id: "mocked-mongo-id",
-    text: "Sample Task",
-    completed: false,
-    creationDate: new Date(),
-    userId: "mocked-user-id",
-    listId: "mocked-list-id",
-    orderIndex: 0,
-    ...overrides,
-  }),
+  generateMongoTask: (
+    overrides: Partial<BaseTask & { _id: mongoose.Types.ObjectId }> = {}
+  ): MongoTask =>
+    new TaskModel({
+      text: "Sample Task",
+      creationDate: new Date(),
+      userId: new mongoose.Types.ObjectId(),
+      listId: new mongoose.Types.ObjectId(),
+      orderIndex: 0,
+      completed: false,
+      ...overrides,
+    }),
 
   generateClientTask: (overrides: Partial<ClientTask> = {}): ClientTask => {
     const baseTask = taskFactory.generateBaseTask(overrides);
