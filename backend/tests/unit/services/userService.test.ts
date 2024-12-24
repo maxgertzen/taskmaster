@@ -1,9 +1,9 @@
-import { UserService } from "@services/userService";
+import { UsersService } from "@src/services/usersService";
 import { IUserRepository } from "@interfaces/userRepository";
 import { userFactory } from "@tests/data";
 
-describe("UserService", () => {
-  let userService: UserService;
+describe("UsersService", () => {
+  let userService: UsersService;
   let mockUserRepository: jest.Mocked<IUserRepository>;
 
   beforeEach(() => {
@@ -13,7 +13,7 @@ describe("UserService", () => {
       updateUser: jest.fn(),
       updatePreferences: jest.fn(),
     };
-    userService = new UserService(mockUserRepository);
+    userService = new UsersService(mockUserRepository);
   });
 
   it("should retrieve a user by ID", async () => {

@@ -1,19 +1,19 @@
 import { resolveUserId } from "@src/utils/resolveUserId";
-import { getUserService } from "@src/services";
+import { getUsersService } from "@src/services";
 import { utilTestConfigs } from "@tests/data/utils";
 
 const { validInputs, mockResponses, errors } = utilTestConfigs;
 
 jest.mock("@src/services", () => ({
-  getUserService: jest.fn(),
+  getUsersService: jest.fn(),
 }));
 
 describe("resolveUserId", () => {
   const mockGetOrCreateUser = jest.fn();
-  const mockGetUserService = getUserService as jest.Mock;
+  const mockGetUsersService = getUsersService as jest.Mock;
 
   beforeEach(() => {
-    mockGetUserService.mockReturnValue({
+    mockGetUsersService.mockReturnValue({
       getOrCreateUser: mockGetOrCreateUser,
     });
   });

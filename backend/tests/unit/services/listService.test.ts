@@ -1,9 +1,9 @@
 import { IListRepository } from "@interfaces/listRepository";
-import { ListService } from "@src/services/listsService";
+import { ListsService } from "@src/services/listsService";
 import { listFactory } from "@tests/data";
 
-describe("ListService", () => {
-  let listService: ListService;
+describe("ListsService", () => {
+  let listService: ListsService;
   let mockListRepository: jest.Mocked<IListRepository>;
 
   beforeEach(() => {
@@ -14,7 +14,7 @@ describe("ListService", () => {
       deleteList: jest.fn(),
       reorderLists: jest.fn(),
     };
-    listService = new ListService(mockListRepository);
+    listService = new ListsService(mockListRepository);
   });
 
   it("should create a new list", async () => {

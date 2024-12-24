@@ -1,11 +1,14 @@
 import { BaseUser } from "../interfaces/entities";
 import { IUserRepository } from "../interfaces/userRepository";
+import { UsersCache } from "./cache/usersCache";
 
-export class UserService {
+export class UsersService {
   private repository: IUserRepository;
+  private cache: UsersCache;
 
   constructor(repository: IUserRepository) {
     this.repository = repository;
+    this.cache = new UsersCache();
   }
 
   async getOrCreateUser(
@@ -13,12 +16,12 @@ export class UserService {
     email?: string,
     name?: string
   ): Promise<BaseUser> {
-    if (!auth0Id) throw new Error("Invalid user ID");
+    const cachedUser = await this.cache.getUser(auth0Id);
+    if (cachedUser) return cachedUser;
 
-    const user = await this.repository.getUser(auth0Id);
-
+    let user = await this.repository.getUser(auth0Id);
     if (!user) {
-      return this.repository.createUser(auth0Id, email, name);
+      user = await this.repository.createUser(auth0Id, email, name);
     }
 
     if ((email && email !== user.email) || (name && name !== user.name)) {
@@ -30,6 +33,7 @@ export class UserService {
       return updated;
     }
 
+    await this.cache.setUser(auth0Id, user);
     return user;
   }
 
@@ -37,6 +41,10 @@ export class UserService {
     auth0Id: string,
     preferences: Record<string, unknown>
   ): Promise<BaseUser | null> {
-    return this.repository.updatePreferences(auth0Id, preferences);
+    const user = await this.repository.updatePreferences(auth0Id, preferences);
+    if (!user) return null;
+
+    await this.cache.setUser(auth0Id, user);
+    return user;
   }
 }

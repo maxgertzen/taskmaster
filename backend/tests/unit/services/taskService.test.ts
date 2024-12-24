@@ -1,9 +1,9 @@
 import { ITaskRepository } from "@interfaces/taskRepository";
-import { TaskService } from "@src/services/tasksService";
+import { TasksService } from "@src/services/tasksService";
 import { taskFactory } from "@tests/data";
 
-describe("TaskService", () => {
-  let taskService: TaskService;
+describe("TasksService", () => {
+  let taskService: TasksService;
   let mockTaskRepository: jest.Mocked<ITaskRepository>;
 
   beforeEach(() => {
@@ -17,7 +17,7 @@ describe("TaskService", () => {
       toggleCompleteAll: jest.fn(),
       bulkDelete: jest.fn(),
     };
-    taskService = new TaskService(mockTaskRepository);
+    taskService = new TasksService(mockTaskRepository);
   });
 
   it("should create a new task", async () => {

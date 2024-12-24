@@ -1,19 +1,32 @@
 import { List } from "../interfaces/entities";
 import { IListRepository } from "../interfaces/listRepository";
+import { ListsCache } from "./cache/listsCache";
 
-export class ListService {
+export class ListsService {
   private repository: IListRepository;
+  private cache: ListsCache;
 
   constructor(repository: IListRepository) {
     this.repository = repository;
+    this.cache = new ListsCache();
   }
 
   async createList(userId: string, name: string): Promise<List> {
-    return this.repository.createList(userId, name);
+    const list = await this.repository.createList(userId, name);
+    await this.cache.invalidateCache(userId);
+    return list;
   }
 
   async getLists(userId: string): Promise<List[]> {
-    return this.repository.getLists(userId);
+    const cachedLists = await this.cache.getLists(userId);
+    if (cachedLists) {
+      return cachedLists;
+    }
+
+    const lists = await this.repository.getLists(userId);
+    await this.cache.setLists(userId, lists);
+
+    return lists;
   }
 
   async updateList(
@@ -21,17 +34,23 @@ export class ListService {
     listId: string,
     name: string
   ): Promise<List> {
-    return this.repository.updateList(userId, listId, name);
+    const lists = await this.repository.updateList(userId, listId, name);
+    await this.cache.invalidateCache(userId);
+    return lists;
   }
 
   async deleteList(
     userId: string,
     listId: string
   ): Promise<{ deletedId: string }> {
-    return this.repository.deleteList(userId, listId);
+    const deletedId = await this.repository.deleteList(userId, listId);
+    await this.cache.invalidateCache(userId);
+    return deletedId;
   }
 
   async reorderLists(userId: string, orderedIds: string[]): Promise<List[]> {
-    return this.repository.reorderLists(userId, orderedIds);
+    const lists = await this.repository.reorderLists(userId, orderedIds);
+    await this.cache.setLists(userId, lists);
+    return lists;
   }
 }
