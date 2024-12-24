@@ -1,8 +1,9 @@
 import { CacheService } from "./cacheService";
 import { CACHE_KEYS } from "@utils/cacheKeys";
 import { BaseTask, ClientTask, SearchResults } from "@interfaces/entities";
+import { ITaskCache } from "@src/interfaces/cache";
 
-export class TasksCache {
+export class TasksCache implements ITaskCache {
   private cacheService: CacheService;
 
   constructor() {

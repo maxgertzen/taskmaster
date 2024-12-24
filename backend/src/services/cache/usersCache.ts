@@ -1,8 +1,9 @@
 import { CACHE_KEYS } from "@src/utils/cacheKeys";
 import { CacheService } from "./cacheService";
 import { BaseUser } from "@src/interfaces/entities";
+import { IUserCache } from "@src/interfaces/cache";
 
-export class UsersCache {
+export class UsersCache implements IUserCache {
   private readonly cacheService: CacheService;
 
   constructor() {

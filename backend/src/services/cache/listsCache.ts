@@ -1,8 +1,9 @@
 import { CacheService } from "./cacheService";
 import { CACHE_KEYS } from "@src/utils/cacheKeys";
 import { BaseList } from "@src/interfaces/entities";
+import { IListCache } from "@src/interfaces/cache";
 
-export class ListsCache {
+export class ListsCache implements IListCache {
   private readonly cacheService: CacheService;
 
   constructor() {
