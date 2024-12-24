@@ -13,15 +13,15 @@ export class ListRepositoryMongo implements IListRepository {
       const orderIndex = await ListModel.countDocuments({ userId });
 
       const list = new ListModel({ userId, name, orderIndex });
-      await list.save();
+      const result = await list.save();
 
       return {
-        id: list._id.toString(),
-        name: list.name,
-        creationDate: list.creationDate,
-        userId: list.userId.toString(),
-        sharedWith: list.sharedWith?.map((id) => id.toString()),
-        orderIndex: list.orderIndex,
+        id: result._id.toString(),
+        name: result.name,
+        creationDate: result.creationDate,
+        userId: result.userId.toString(),
+        sharedWith: result.sharedWith?.map((id) => id.toString()),
+        orderIndex: result.orderIndex,
       };
     }
   );

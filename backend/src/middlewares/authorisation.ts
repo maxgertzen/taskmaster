@@ -3,14 +3,16 @@ import { Request, Response, NextFunction } from "express";
 import { auth } from "express-oauth2-jwt-bearer";
 import { resolveUserId } from "../utils/resolveUserId";
 
-const isMock = process.env.USE_MOCK === "true";
-
-export const checkJwt = isMock
-  ? (_req: Request, _res: Response, next: NextFunction) => next()
-  : auth({
-      audience: process.env.AUTH0_AUDIENCE,
-      issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
-    });
+export const checkJwt = (_req: Request, _res: Response, next: NextFunction) => {
+  if (process.env.USE_MOCK === "true") {
+    next();
+    return;
+  }
+  auth({
+    audience: process.env.AUTH0_AUDIENCE,
+    issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
+  });
+};
 
 export const attachUser = async (
   req: Request,
@@ -18,7 +20,7 @@ export const attachUser = async (
   next: NextFunction
 ) => {
   try {
-    if (isMock) {
+    if (process.env.USE_MOCK === "true") {
       const userId = await resolveUserId(MOCK_USER_ID);
       req.userId = userId;
       next();

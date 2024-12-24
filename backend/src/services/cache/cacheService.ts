@@ -1,6 +1,6 @@
 import { RedisClientType } from "redis";
-import { getCacheClient } from "../../config/database";
-import { CACHE_CONFIG } from "../../config/cache";
+import { getCacheClient } from "@config/database";
+import { CACHE_CONFIG } from "@config/cache";
 import { CacheKey } from "../../types/cache";
 
 export class CacheService {
