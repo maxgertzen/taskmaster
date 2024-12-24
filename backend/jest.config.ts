@@ -16,7 +16,7 @@ const config: Config = {
     "^@repositories/(.*)$": "<rootDir>/src/repositories/$1",
     "^@tests/(.*)$": "<rootDir>/tests/$1",
   },
-  testPathIgnorePatterns: ["/node_modules/", "/dist/"],
+  testPathIgnorePatterns: ["/node_modules/(?!(nanoid)/)", "/dist/"],
   roots: ["<rootDir>/src", "<rootDir>/tests"],
   setupFilesAfterEnv: ["./tests/setup/jest.setup.ts"],
 };

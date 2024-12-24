@@ -20,9 +20,6 @@ export const createTask = async (
   try {
     const { userId } = req;
     const { listId, text } = req.body;
-    if (!listId || !text) {
-      throw new Error("List ID and text are required");
-    }
 
     const task = await getTaskService().createTask(
       userId as string,
@@ -113,10 +110,6 @@ export const reorderTasks = async (
   try {
     const { userId } = req;
     const { listId, orderedIds } = req.body;
-
-    if (!orderedIds || !Array.isArray(orderedIds) || orderedIds.length === 0) {
-      throw new Error("Ordered IDs are required");
-    }
 
     const reorderedTasks = await getTaskService().reorderTasks(
       userId as string,

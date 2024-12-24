@@ -31,10 +31,6 @@ export const createList = async (
     const { userId } = req;
     const { name } = req.body;
 
-    if (!name) {
-      throw new Error("Name is required");
-    }
-
     const newList = await getListService().createList(userId as string, name);
     res.status(200).json(newList);
   } catch (error) {
@@ -50,10 +46,6 @@ export const updateList = async (
   try {
     const { userId } = req;
     const { name, id } = req.body;
-
-    if (!name) {
-      throw new Error("Name is required");
-    }
 
     const updatedList = await getListService().updateList(
       userId as string,
@@ -75,10 +67,6 @@ export const deleteList = async (
     const { userId } = req;
     const { id } = req.body;
 
-    if (!id) {
-      throw new Error("ID is required");
-    }
-
     const result = await getListService().deleteList(userId as string, id);
     res.status(200).json(result);
   } catch (error) {
@@ -94,10 +82,6 @@ export const reorderLists = async (
   try {
     const { userId } = req;
     const { orderedIds } = req.body;
-
-    if (!orderedIds || !Array.isArray(orderedIds) || orderedIds.length === 0) {
-      throw new Error("Ordered IDs are required");
-    }
 
     const reorderedLists = await getListService().reorderLists(
       userId as string,
