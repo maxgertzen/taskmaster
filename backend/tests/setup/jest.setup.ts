@@ -1,4 +1,5 @@
 import { envManager } from "@tests/helpers/envManager";
+import "@tests/helpers/cacheServiceMock";
 
 beforeAll(async () => {});
 
