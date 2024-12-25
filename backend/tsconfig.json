@@ -19,7 +19,7 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
       "@src/*": [
         "src/*"
@@ -41,13 +41,26 @@
       ],
       "@utils/*": [
         "src/utils/*"
-      ]
+      ],
+      "@types/*": [
+        "src/types/*"
+      ],
+      "@interfaces/*": [
+        "src/interfaces/*"
+      ],
+      "@repositories/*": [
+        "src/repositories/*"
+      ],
+      "@tests/*": [
+        "tests/*"
+      ],
     },
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "."
   },
   "include": [
     "src/**/*.ts",
+    "tests/**/*.ts"
   ],
   "exclude": [
     "node_modules",

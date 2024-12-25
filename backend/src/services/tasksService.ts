@@ -1,11 +1,14 @@
 import { ITaskRepository } from "../interfaces/taskRepository";
 import { Task, ClientTask, SearchResults } from "../interfaces/entities";
+import { TasksCache } from "./cache/tasksCache";
 
-export class TaskService {
+export class TasksService {
   private repository: ITaskRepository;
+  private cache: TasksCache;
 
   constructor(repository: ITaskRepository) {
     this.repository = repository;
+    this.cache = new TasksCache();
   }
 
   async createTask(
@@ -13,18 +16,37 @@ export class TaskService {
     listId: string,
     text: string
   ): Promise<ClientTask> {
-    return this.repository.createTask(userId, listId, text);
+    const task = await this.repository.createTask(userId, listId, text);
+    await this.cache.invalidateTasks(userId, listId);
+    return task;
   }
 
   async getTasks(userId: string, listId: string): Promise<ClientTask[]> {
-    return await this.repository.getTasks(userId, listId);
+    const cachedTasks = await this.cache.getTasks(userId, listId);
+    if (cachedTasks) {
+      return cachedTasks.map((task) => ({
+        ...task,
+        completed: Boolean(task.completed),
+      }));
+    }
+
+    const tasks = await this.repository.getTasks(userId, listId);
+    await this.cache.setTasks(userId, listId, tasks);
+    return tasks;
   }
 
   async getTasksSearchResults(
     userId: string,
     search: string
   ): Promise<SearchResults> {
-    return this.repository.getTasksSearchResults(userId, search);
+    const cachedResults = await this.cache.getSearchResults(userId, search);
+    if (cachedResults) {
+      return cachedResults;
+    }
+
+    const results = await this.repository.getTasksSearchResults(userId, search);
+    await this.cache.setSearchResults(userId, search, results);
+    return results;
   }
 
   async updateTask(
@@ -32,7 +54,9 @@ export class TaskService {
     taskId: string,
     updates: Partial<Task>
   ): Promise<string> {
-    return this.repository.updateTask(userId, taskId, updates);
+    const listId = await this.repository.updateTask(userId, taskId, updates);
+    await this.cache.invalidateTasks(userId, listId);
+    return taskId;
   }
 
   async deleteTask(
@@ -40,7 +64,9 @@ export class TaskService {
     taskId: string,
     listId: string
   ): Promise<string> {
-    return this.repository.deleteTask(userId, taskId, listId);
+    const deletedId = await this.repository.deleteTask(userId, taskId, listId);
+    await this.cache.invalidateTasks(userId, listId);
+    return deletedId;
   }
 
   async reorderTasks(
@@ -48,7 +74,13 @@ export class TaskService {
     listId: string,
     orderedIds: string[]
   ): Promise<ClientTask[]> {
-    return this.repository.reorderTasks(userId, listId, orderedIds);
+    const tasks = await this.repository.reorderTasks(
+      userId,
+      listId,
+      orderedIds
+    );
+    await this.cache.setTasks(userId, listId, tasks);
+    return tasks;
   }
 
   async toggleCompleteAll(
@@ -56,7 +88,13 @@ export class TaskService {
     listId: string,
     newCompletedState: boolean
   ): Promise<ClientTask[]> {
-    return this.repository.toggleCompleteAll(userId, listId, newCompletedState);
+    const tasks = await this.repository.toggleCompleteAll(
+      userId,
+      listId,
+      newCompletedState
+    );
+    await this.cache.setTasks(userId, listId, tasks);
+    return tasks;
   }
 
   async bulkDelete(
@@ -64,6 +102,8 @@ export class TaskService {
     listId: string,
     mode: "all" | "completed"
   ): Promise<ClientTask[]> {
-    return this.repository.bulkDelete(userId, listId, mode);
+    const tasks = await this.repository.bulkDelete(userId, listId, mode);
+    await this.cache.setTasks(userId, listId, tasks);
+    return tasks;
   }
 }

@@ -10,7 +10,7 @@ import {
   GetTasksSearchResultsRequest,
 } from "../types/requests";
 import { ClientTask, SearchResults, Task } from "../interfaces/entities";
-import { getTaskService } from "../services";
+import { getTasksService } from "../services";
 
 export const createTask = async (
   req: CreateTaskRequest,
@@ -20,11 +20,8 @@ export const createTask = async (
   try {
     const { userId } = req;
     const { listId, text } = req.body;
-    if (!listId || !text) {
-      throw new Error("List ID and text are required");
-    }
 
-    const task = await getTaskService().createTask(
+    const task = await getTasksService().createTask(
       userId as string,
       listId,
       text
@@ -44,7 +41,7 @@ export const getTasks = async (
     const { userId } = req;
     const { listId } = req.params;
 
-    const tasks = await getTaskService().getTasks(userId as string, listId);
+    const tasks = await getTasksService().getTasks(userId as string, listId);
     res.status(200).json(tasks);
   } catch (error) {
     next(error);
@@ -60,7 +57,7 @@ export const getTasksSearchResults = async (
     const { userId } = req;
     const { search } = req.query;
 
-    const tasks = await getTaskService().getTasksSearchResults(
+    const tasks = await getTasksService().getTasksSearchResults(
       userId as string,
       search
     );
@@ -79,7 +76,7 @@ export const updateTask = async (
   try {
     const { userId } = req;
     const { id, ...task } = req.body;
-    const updatedTask = await getTaskService().updateTask(
+    const updatedTask = await getTasksService().updateTask(
       userId as string,
       id,
       task as Partial<Task>
@@ -98,7 +95,7 @@ export const deleteTask = async (
   try {
     const { userId } = req;
     const { taskId, listId } = req.body;
-    await getTaskService().deleteTask(userId as string, taskId, listId);
+    await getTasksService().deleteTask(userId as string, taskId, listId);
     res.status(200).json(taskId);
   } catch (error) {
     next(error);
@@ -114,11 +111,7 @@ export const reorderTasks = async (
     const { userId } = req;
     const { listId, orderedIds } = req.body;
 
-    if (!orderedIds || !Array.isArray(orderedIds) || orderedIds.length === 0) {
-      throw new Error("Ordered IDs are required");
-    }
-
-    const reorderedTasks = await getTaskService().reorderTasks(
+    const reorderedTasks = await getTasksService().reorderTasks(
       userId as string,
       listId,
       orderedIds
@@ -139,7 +132,7 @@ export const toggleCompleteAll = async (
     const { userId } = req;
     const { listId, newCompletedState } = req.body;
 
-    const completedTasks = await getTaskService().toggleCompleteAll(
+    const completedTasks = await getTasksService().toggleCompleteAll(
       userId as string,
       listId,
       newCompletedState
@@ -159,7 +152,7 @@ export const bulkDelete = async (
     const { userId } = req;
     const { listId, mode = "all" } = req.body;
 
-    const updatedTasks = await getTaskService().bulkDelete(
+    const updatedTasks = await getTasksService().bulkDelete(
       userId as string,
       listId,
       mode

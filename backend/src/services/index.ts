@@ -1,33 +1,33 @@
 import { RepositoryFactory } from "../repositories";
-import { ListService } from "./listsService";
-import { TaskService } from "./tasksService";
-import { UserService } from "./userService";
+import { ListsService } from "./listsService";
+import { TasksService } from "./tasksService";
+import { UsersService } from "./usersService";
 
-let listServiceInstance: ListService | null = null;
-let taskServiceInstance: TaskService | null = null;
-let userServiceInstance: UserService | null = null;
+let listServiceInstance: ListsService | null = null;
+let taskServiceInstance: TasksService | null = null;
+let userServiceInstance: UsersService | null = null;
 
-export const getListService = (): ListService => {
+export const getListsService = (): ListsService => {
   if (!listServiceInstance) {
-    listServiceInstance = new ListService(
+    listServiceInstance = new ListsService(
       RepositoryFactory.createListRepository()
     );
   }
   return listServiceInstance;
 };
 
-export const getTaskService = (): TaskService => {
+export const getTasksService = (): TasksService => {
   if (!taskServiceInstance) {
-    taskServiceInstance = new TaskService(
+    taskServiceInstance = new TasksService(
       RepositoryFactory.createTaskRepository()
     );
   }
   return taskServiceInstance;
 };
 
-export const getUserService = (): UserService => {
+export const getUsersService = (): UsersService => {
   if (!userServiceInstance) {
-    userServiceInstance = new UserService(
+    userServiceInstance = new UsersService(
       RepositoryFactory.createUserRepository()
     );
   }
