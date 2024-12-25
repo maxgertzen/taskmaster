@@ -1,15 +1,11 @@
 import { RedisClientType } from "redis";
-import { getCacheClient } from "@config/database";
 import { CACHE_CONFIG } from "@config/cache";
 import { CacheKey } from "../../types/cache";
 
 export class CacheService {
-  private readonly client: RedisClientType;
   private readonly keyPrefix = "cache:user:";
 
-  constructor() {
-    this.client = getCacheClient();
-  }
+  constructor(private client: RedisClientType) {}
 
   async get<T>(key: CacheKey): Promise<T | null> {
     try {

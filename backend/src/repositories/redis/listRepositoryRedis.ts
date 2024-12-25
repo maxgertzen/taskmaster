@@ -2,10 +2,10 @@ import { IListRepository } from "../../interfaces/listRepository";
 import { REDIS_KEYS } from "../../utils/redisKeys";
 import { BaseList } from "../../interfaces/entities";
 import { generateUniqueId } from "../../utils/nanoid";
-import { getRedisClient } from "../../config/database";
+import { RedisClientType } from "redis";
 
 export class ListRepositoryRedis implements IListRepository {
-  private redisClient = getRedisClient();
+  constructor(private readonly redisClient: RedisClientType) {}
 
   async createList(userId: string, name: string): Promise<BaseList> {
     const id = await generateUniqueId();

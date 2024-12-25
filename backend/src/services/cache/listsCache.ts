@@ -4,18 +4,14 @@ import { BaseList } from "@src/interfaces/entities";
 import { IListCache } from "@src/interfaces/cache";
 
 export class ListsCache implements IListCache {
-  private readonly cacheService: CacheService;
-
-  constructor() {
-    this.cacheService = new CacheService();
-  }
+  constructor(private cacheService: CacheService) {}
 
   async getLists(userId: string): Promise<BaseList[] | null> {
     return this.cacheService.get<BaseList[]>(CACHE_KEYS.LISTS(userId));
   }
 
   async setLists(userId: string, lists: BaseList[]): Promise<void> {
-    return this.cacheService.set(CACHE_KEYS.LISTS(userId), lists, "lists");
+    return this.cacheService.set(CACHE_KEYS.LISTS(userId), lists, "LISTS");
   }
 
   async invalidateCache(userId: string): Promise<void> {

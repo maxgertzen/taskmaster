@@ -3,6 +3,7 @@ dotenv.config();
 
 import { initializeDatabase } from "./config/database";
 import createApp from "./app";
+import { initializeContainer } from "./container";
 
 const PORT = process.env.PORT || 5000;
 
@@ -11,6 +12,7 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
     await initializeDatabase();
+    await initializeContainer();
     const app = await createApp();
 
     app.listen(PORT, () => {

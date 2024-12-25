@@ -3,13 +3,7 @@ import { IUserRepository } from "../interfaces/userRepository";
 import { UsersCache } from "./cache/usersCache";
 
 export class UsersService {
-  private repository: IUserRepository;
-  private cache: UsersCache;
-
-  constructor(repository: IUserRepository) {
-    this.repository = repository;
-    this.cache = new UsersCache();
-  }
+  constructor(private repository: IUserRepository, private cache: UsersCache) {}
 
   async getOrCreateUser(
     auth0Id: string,

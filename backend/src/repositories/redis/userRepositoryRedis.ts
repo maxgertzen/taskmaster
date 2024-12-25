@@ -1,10 +1,10 @@
 import { BaseUser } from "@src/interfaces/entities";
-import { getRedisClient } from "../../config/database";
 import { IUserRepository } from "../../interfaces/userRepository";
 import { REDIS_KEYS } from "../../utils/redisKeys";
+import { RedisClientType } from "redis";
 
 export class UserRepositoryRedis implements IUserRepository {
-  private redisClient = getRedisClient();
+  constructor(private readonly redisClient: RedisClientType) {}
 
   async getUser(auth0Id: string): Promise<BaseUser | null> {
     const userKey = REDIS_KEYS.USER(auth0Id);

@@ -27,14 +27,6 @@ export const createTaskValidationSchema: ValidationSchema = [
   { field: "text", type: "string" },
 ];
 
-export const getTasksValidationSchema: ValidationSchema = [
-  { field: "listId", type: "string" },
-];
-
-export const getTasksSearchResultsValidationSchema: ValidationSchema = [
-  { field: "search", type: "string" },
-];
-
 export const updateTaskValidationSchema: ValidationSchema = [
   { field: "id", type: "string" },
 ];

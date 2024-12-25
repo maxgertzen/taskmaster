@@ -1,11 +1,13 @@
-import { getUsersService } from "../services";
+import { getAppContainer } from "@src/container";
 
 export async function resolveUserId(
   auth0Id: string,
   email?: string,
   name?: string
 ): Promise<string> {
-  const user = await getUsersService().getOrCreateUser(auth0Id, email, name);
+  const container = getAppContainer();
+  const usersService = container.cradle.usersService;
+  const user = await usersService.getOrCreateUser(auth0Id, email, name);
 
   if (!user) {
     throw new Error(`User with auth0Id ${auth0Id} not found`);

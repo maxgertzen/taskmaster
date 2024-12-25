@@ -1,11 +1,11 @@
 import { ITaskRepository } from "../../interfaces/taskRepository";
-import { getRedisClient } from "../../config/database";
 import { REDIS_KEYS } from "../../utils/redisKeys";
 import { BaseTask, ClientTask, SearchResults } from "../../interfaces/entities";
 import { generateUniqueId } from "../../utils/nanoid";
+import { RedisClientType } from "redis";
 
 export class TaskRepositoryRedis implements ITaskRepository {
-  private redisClient = getRedisClient();
+  constructor(private readonly redisClient: RedisClientType) {}
 
   async createTask(
     userId: string,
