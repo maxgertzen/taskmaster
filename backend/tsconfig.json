@@ -53,7 +53,7 @@
       ],
       "@tests/*": [
         "tests/*"
-      ]
+      ],
     },
     "outDir": "dist",
     "rootDir": "."

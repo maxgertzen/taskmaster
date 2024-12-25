@@ -1,6 +1,6 @@
 import type { Config } from "jest";
 
-const config: Config = {
+const baseConfig: Config = {
   preset: "ts-jest",
   testEnvironment: "node",
   moduleNameMapper: {
@@ -18,7 +18,27 @@ const config: Config = {
   },
   testPathIgnorePatterns: ["/node_modules/(?!(nanoid)/)", "/dist/"],
   roots: ["<rootDir>/src", "<rootDir>/tests"],
-  setupFilesAfterEnv: ["./tests/setup/jest.setup.ts"],
+  transform: {
+    "^.+\\.(ts|tsx)$": "ts-jest",
+  },
+  extensionsToTreatAsEsm: [".ts"],
+};
+
+const config: Config = {
+  projects: [
+    {
+      displayName: "unit",
+      ...baseConfig,
+      testMatch: ["<rootDir>/tests/unit/**/*.test.ts"],
+      setupFilesAfterEnv: ["<rootDir>/tests/setup/jest.unit.setup.ts"],
+    },
+    {
+      displayName: "integration",
+      ...baseConfig,
+      testMatch: ["<rootDir>/tests/integration/**/*.test.ts"],
+      setupFilesAfterEnv: ["<rootDir>/tests/setup/jest.integration.setup.ts"],
+    },
+  ],
 };
 
 export default config;
