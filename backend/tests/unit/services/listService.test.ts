@@ -1,29 +1,28 @@
-import { IListRepository } from "@interfaces/listRepository";
-import { ListsService } from "@src/services/listsService";
 import { listFactory } from "@tests/data";
+import { setupServiceTest } from "@tests/helpers/serviceTestUtils";
+import { ServiceTestContext } from "@tests/types/serviceTypes";
 
 describe("ListsService", () => {
-  let listService: ListsService;
-  let mockListRepository: jest.Mocked<IListRepository>;
+  let testContext: ServiceTestContext<"lists">;
 
   beforeEach(() => {
-    mockListRepository = {
-      createList: jest.fn(),
-      getLists: jest.fn(),
-      updateList: jest.fn(),
-      deleteList: jest.fn(),
-      reorderLists: jest.fn(),
-    };
-    listService = new ListsService(mockListRepository);
+    testContext = setupServiceTest("lists");
+  });
+
+  afterEach(() => {
+    testContext.container.dispose();
   });
 
   it("should create a new list", async () => {
     const mockList = listFactory.generateBaseList();
-    mockListRepository.createList.mockResolvedValue(mockList);
+    testContext.repository.createList.mockResolvedValue(mockList);
 
-    const result = await listService.createList(mockList.userId, mockList.name);
+    const result = await testContext.service.createList(
+      mockList.userId,
+      mockList.name
+    );
     expect(result).toEqual(mockList);
-    expect(mockListRepository.createList).toHaveBeenCalledWith(
+    expect(testContext.repository.createList).toHaveBeenCalledWith(
       mockList.userId,
       mockList.name
     );
@@ -34,11 +33,11 @@ describe("ListsService", () => {
       listFactory.generateBaseList(),
       listFactory.generateBaseList(),
     ];
-    mockListRepository.getLists.mockResolvedValue(mockLists);
+    testContext.repository.getLists.mockResolvedValue(mockLists);
 
-    const result = await listService.getLists(mockLists[0].userId);
+    const result = await testContext.service.getLists(mockLists[0].userId);
     expect(result).toEqual(mockLists);
-    expect(mockListRepository.getLists).toHaveBeenCalledWith(
+    expect(testContext.repository.getLists).toHaveBeenCalledWith(
       mockLists[0].userId
     );
   });
@@ -51,15 +50,15 @@ describe("ListsService", () => {
       name: "Updated List Name",
     });
 
-    mockListRepository.updateList.mockResolvedValue(updatedList);
+    testContext.repository.updateList.mockResolvedValue(updatedList);
 
-    const result = await listService.updateList(
+    const result = await testContext.service.updateList(
       mockList.userId,
       mockList.id,
       updatedList.name
     );
     expect(result).toEqual(updatedList);
-    expect(mockListRepository.updateList).toHaveBeenCalledWith(
+    expect(testContext.repository.updateList).toHaveBeenCalledWith(
       mockList.userId,
       mockList.id,
       updatedList.name
@@ -70,11 +69,14 @@ describe("ListsService", () => {
     const mockList = listFactory.generateBaseList();
     const mockResponse = { deletedId: mockList.id };
 
-    mockListRepository.deleteList.mockResolvedValue(mockResponse);
+    testContext.repository.deleteList.mockResolvedValue(mockResponse);
 
-    const result = await listService.deleteList(mockList.userId, mockList.id);
+    const result = await testContext.service.deleteList(
+      mockList.userId,
+      mockList.id
+    );
     expect(result).toEqual(mockResponse);
-    expect(mockListRepository.deleteList).toHaveBeenCalledWith(
+    expect(testContext.repository.deleteList).toHaveBeenCalledWith(
       mockList.userId,
       mockList.id
     );
@@ -87,11 +89,11 @@ describe("ListsService", () => {
       listFactory.generateBaseList({ id, userId, orderIndex: index })
     );
 
-    mockListRepository.reorderLists.mockResolvedValue(reorderedLists);
+    testContext.repository.reorderLists.mockResolvedValue(reorderedLists);
 
-    const result = await listService.reorderLists(userId, orderedIds);
+    const result = await testContext.service.reorderLists(userId, orderedIds);
     expect(result).toEqual(reorderedLists);
-    expect(mockListRepository.reorderLists).toHaveBeenCalledWith(
+    expect(testContext.repository.reorderLists).toHaveBeenCalledWith(
       userId,
       orderedIds
     );

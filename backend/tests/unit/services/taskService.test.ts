@@ -1,39 +1,37 @@
-import { ITaskRepository } from "@interfaces/taskRepository";
-import { TasksService } from "@src/services/tasksService";
 import { taskFactory } from "@tests/data";
+import { setupServiceTest } from "@tests/helpers/serviceTestUtils";
+import { ServiceTestContext } from "@tests/types/serviceTypes";
 
 describe("TasksService", () => {
-  let taskService: TasksService;
-  let mockTaskRepository: jest.Mocked<ITaskRepository>;
+  let testContext: ServiceTestContext<"tasks">;
 
   beforeEach(() => {
-    mockTaskRepository = {
-      createTask: jest.fn(),
-      getTasks: jest.fn(),
-      getTasksSearchResults: jest.fn(),
-      updateTask: jest.fn(),
-      deleteTask: jest.fn(),
-      reorderTasks: jest.fn(),
-      toggleCompleteAll: jest.fn(),
-      bulkDelete: jest.fn(),
-    };
-    taskService = new TasksService(mockTaskRepository);
+    testContext = setupServiceTest("tasks");
   });
 
-  it("should create a new task", async () => {
-    const mockTask = taskFactory.generateClientTask();
-    mockTaskRepository.createTask.mockResolvedValue(mockTask);
+  afterEach(() => {
+    testContext.container.dispose();
+  });
 
-    const result = await taskService.createTask(
+  it("should create a new task and invalidate cache", async () => {
+    const mockTask = taskFactory.generateClientTask();
+    testContext.repository.createTask.mockResolvedValue(mockTask);
+
+    const result = await testContext.service.createTask(
       mockTask.userId,
       mockTask.listId,
       mockTask.text
     );
     expect(result).toEqual(mockTask);
-    expect(mockTaskRepository.createTask).toHaveBeenCalledWith(
+    expect(testContext.repository.createTask).toHaveBeenCalledWith(
       mockTask.userId,
       mockTask.listId,
       mockTask.text
+    );
+
+    expect(testContext.cache.invalidateTasks).toHaveBeenCalledWith(
+      mockTask.userId,
+      mockTask.listId
     );
   });
 
@@ -44,11 +42,14 @@ describe("TasksService", () => {
       taskFactory.generateClientTask({ listId: mockTask.listId }),
     ];
 
-    mockTaskRepository.getTasks.mockResolvedValue(mockTasks);
+    testContext.repository.getTasks.mockResolvedValue(mockTasks);
 
-    const result = await taskService.getTasks(mockTask.userId, mockTask.listId);
+    const result = await testContext.service.getTasks(
+      mockTask.userId,
+      mockTask.listId
+    );
     expect(result).toEqual(mockTasks);
-    expect(mockTaskRepository.getTasks).toHaveBeenCalledWith(
+    expect(testContext.repository.getTasks).toHaveBeenCalledWith(
       mockTask.userId,
       mockTask.listId
     );
@@ -66,16 +67,16 @@ describe("TasksService", () => {
       },
     ];
 
-    mockTaskRepository.getTasksSearchResults.mockResolvedValue(
+    testContext.repository.getTasksSearchResults.mockResolvedValue(
       mockSearchResults
     );
 
-    const result = await taskService.getTasksSearchResults(
+    const result = await testContext.service.getTasksSearchResults(
       mockTask.userId,
       "search"
     );
     expect(result).toEqual(mockSearchResults);
-    expect(mockTaskRepository.getTasksSearchResults).toHaveBeenCalledWith(
+    expect(testContext.repository.getTasksSearchResults).toHaveBeenCalledWith(
       mockTask.userId,
       "search"
     );
@@ -85,15 +86,15 @@ describe("TasksService", () => {
     const mockTask = taskFactory.generateClientTask();
     const updates = { text: "Updated Task Text" };
 
-    mockTaskRepository.updateTask.mockResolvedValue(mockTask.id);
+    testContext.repository.updateTask.mockResolvedValue(mockTask.id);
 
-    const result = await taskService.updateTask(
+    const result = await testContext.service.updateTask(
       mockTask.userId,
       mockTask.id,
       updates
     );
     expect(result).toBe(mockTask.id);
-    expect(mockTaskRepository.updateTask).toHaveBeenCalledWith(
+    expect(testContext.repository.updateTask).toHaveBeenCalledWith(
       mockTask.userId,
       mockTask.id,
       updates
@@ -103,15 +104,15 @@ describe("TasksService", () => {
   it("should delete a task", async () => {
     const mockTask = taskFactory.generateClientTask();
 
-    mockTaskRepository.deleteTask.mockResolvedValue(mockTask.id);
+    testContext.repository.deleteTask.mockResolvedValue(mockTask.id);
 
-    const result = await taskService.deleteTask(
+    const result = await testContext.service.deleteTask(
       mockTask.userId,
       mockTask.id,
       mockTask.listId
     );
     expect(result).toBe(mockTask.id);
-    expect(mockTaskRepository.deleteTask).toHaveBeenCalledWith(
+    expect(testContext.repository.deleteTask).toHaveBeenCalledWith(
       mockTask.userId,
       mockTask.id,
       mockTask.listId
@@ -130,15 +131,15 @@ describe("TasksService", () => {
       })
     );
 
-    mockTaskRepository.reorderTasks.mockResolvedValue(reorderedTasks);
+    testContext.repository.reorderTasks.mockResolvedValue(reorderedTasks);
 
-    const result = await taskService.reorderTasks(
+    const result = await testContext.service.reorderTasks(
       mockTask.userId,
       mockTask.listId,
       orderedIds
     );
     expect(result).toEqual(reorderedTasks);
-    expect(mockTaskRepository.reorderTasks).toHaveBeenCalledWith(
+    expect(testContext.repository.reorderTasks).toHaveBeenCalledWith(
       mockTask.userId,
       mockTask.listId,
       orderedIds
@@ -153,15 +154,15 @@ describe("TasksService", () => {
       taskFactory.generateClientTask({ completed: true }),
     ];
 
-    mockTaskRepository.toggleCompleteAll.mockResolvedValue(mockTasks);
+    testContext.repository.toggleCompleteAll.mockResolvedValue(mockTasks);
 
-    const result = await taskService.toggleCompleteAll(
+    const result = await testContext.service.toggleCompleteAll(
       mockTask.userId,
       mockTask.listId,
       newCompletedState
     );
     expect(result).toEqual(mockTasks);
-    expect(mockTaskRepository.toggleCompleteAll).toHaveBeenCalledWith(
+    expect(testContext.repository.toggleCompleteAll).toHaveBeenCalledWith(
       mockTask.userId,
       mockTask.listId,
       newCompletedState
@@ -176,15 +177,15 @@ describe("TasksService", () => {
       taskFactory.generateClientTask({ completed: true }),
     ];
 
-    mockTaskRepository.bulkDelete.mockResolvedValue(mockTasks);
+    testContext.repository.bulkDelete.mockResolvedValue(mockTasks);
 
-    const result = await taskService.bulkDelete(
+    const result = await testContext.service.bulkDelete(
       mockTask.userId,
       mockTask.listId,
       mode
     );
     expect(result).toEqual(mockTasks);
-    expect(mockTaskRepository.bulkDelete).toHaveBeenCalledWith(
+    expect(testContext.repository.bulkDelete).toHaveBeenCalledWith(
       mockTask.userId,
       mockTask.listId,
       mode
