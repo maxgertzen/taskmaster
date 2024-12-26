@@ -7,6 +7,7 @@ import { IUserRepository } from "../interfaces/userRepository";
 import { ListRepositoryMongo } from "./mongo/listRepositoryMongo";
 import { TaskRepositoryMongo } from "./mongo/taskRepositoryMongo";
 import { UserRepositoryMongo } from "./mongo/userRepositoryMongo";
+import { getRedisClient } from "@src/config/database";
 
 let listRepositoryInstance: IListRepository | null = null;
 let taskRepositoryInstance: ITaskRepository | null = null;
@@ -18,7 +19,7 @@ export class RepositoryFactory {
       const dbType = process.env.DB_TYPE || "redis";
       switch (dbType) {
         case "redis":
-          listRepositoryInstance = new ListRepositoryRedis();
+          listRepositoryInstance = new ListRepositoryRedis(getRedisClient());
           break;
         case "mongo":
           listRepositoryInstance = new ListRepositoryMongo();
@@ -35,7 +36,7 @@ export class RepositoryFactory {
       const dbType = process.env.DB_TYPE || "redis";
       switch (dbType) {
         case "redis":
-          taskRepositoryInstance = new TaskRepositoryRedis();
+          taskRepositoryInstance = new TaskRepositoryRedis(getRedisClient());
           break;
         case "mongo":
           taskRepositoryInstance = new TaskRepositoryMongo();
@@ -53,7 +54,7 @@ export class RepositoryFactory {
       const dbType = process.env.DB_TYPE || "redis";
       switch (dbType) {
         case "redis":
-          userRepositoryInstance = new UserRepositoryRedis();
+          userRepositoryInstance = new UserRepositoryRedis(getRedisClient());
           break;
         case "mongo":
           userRepositoryInstance = new UserRepositoryMongo();

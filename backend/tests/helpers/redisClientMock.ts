@@ -1,3 +1,5 @@
+import { RedisClientType } from "redis";
+
 export const mockRedisClient = {
   hGetAll: jest.fn(),
   hSet: jest.fn(),
@@ -6,4 +8,9 @@ export const mockRedisClient = {
   expire: jest.fn(),
   connect: jest.fn(),
   on: jest.fn(),
-};
+  isOpen: false,
+  isReady: false,
+  disconnect: jest.fn(),
+  quit: jest.fn(),
+  commandOptions: jest.fn(),
+} as unknown as RedisClientType;

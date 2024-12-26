@@ -33,6 +33,8 @@ export const utilTestConfigs: TestConfig = {
       withId: {
         _id: "user123",
         auth0Id: "auth0|123456",
+        email: "test@test.com",
+        name: "Test User",
       },
       withoutId: {
         auth0Id: "auth0|123456",

@@ -1,35 +1,43 @@
-import express from "express";
-import * as listController from "../controllers/listController";
-import { validateRequestBody } from "@src/middlewares/validateRequestBody";
+import express, { Router } from "express";
+import { validateRequestBody } from "@middlewares/validateRequestBody";
 import {
   createListValidationSchema,
   deleteListValidationSchema,
   reorderListsValidationSchema,
   updateListValidationSchema,
 } from "@src/validation";
+import { getAppContainer } from "@src/container";
 
-const router = express.Router();
+export const configureListRoutes = (): Router => {
+  const router = express.Router();
+  const container = getAppContainer();
+  const controller = container.resolve("listsController");
 
-router.get("/", listController.getLists);
-router.post(
-  "/",
-  validateRequestBody(createListValidationSchema),
-  listController.createList
-);
-router.post(
-  "/reorder",
-  validateRequestBody(reorderListsValidationSchema),
-  listController.reorderLists
-);
-router.put(
-  "/",
-  validateRequestBody(updateListValidationSchema),
-  listController.updateList
-);
-router.delete(
-  "/",
-  validateRequestBody(deleteListValidationSchema),
-  listController.deleteList
-);
+  if (!controller) {
+    throw new Error("Controller not found in container");
+  }
 
-export { router as listRoutes };
+  router.get("/", controller.getLists);
+  router.post(
+    "/",
+    validateRequestBody(createListValidationSchema),
+    controller.createList
+  );
+  router.post(
+    "/reorder",
+    validateRequestBody(reorderListsValidationSchema),
+    controller.reorderLists
+  );
+  router.put(
+    "/",
+    validateRequestBody(updateListValidationSchema),
+    controller.updateList
+  );
+  router.delete(
+    "/",
+    validateRequestBody(deleteListValidationSchema),
+    controller.deleteList
+  );
+
+  return router;
+};

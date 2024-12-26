@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import { listRoutes } from "./routes/listRoutes";
-import { taskRoutes } from "./routes/taskRoutes";
+import { configureListRoutes } from "./routes/listRoutes";
+import { configureTaskRoutes } from "./routes/taskRoutes";
 import { errorHandler } from "./middlewares/errorHandler";
 import { checkJwt, attachUser } from "./middlewares/authorisation";
 
@@ -18,8 +18,8 @@ const createApp = async () => {
   }
   app.use(express.json());
 
-  app.use("/api/lists", checkJwt, attachUser, listRoutes);
-  app.use("/api/tasks", checkJwt, attachUser, taskRoutes);
+  app.use("/api/lists", checkJwt, attachUser, configureListRoutes());
+  app.use("/api/tasks", checkJwt, attachUser, configureTaskRoutes());
 
   app.use(errorHandler);
 

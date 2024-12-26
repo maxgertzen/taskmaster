@@ -3,13 +3,7 @@ import { Task, ClientTask, SearchResults } from "../interfaces/entities";
 import { TasksCache } from "./cache/tasksCache";
 
 export class TasksService {
-  private repository: ITaskRepository;
-  private cache: TasksCache;
-
-  constructor(repository: ITaskRepository) {
-    this.repository = repository;
-    this.cache = new TasksCache();
-  }
+  constructor(private repository: ITaskRepository, private cache: TasksCache) {}
 
   async createTask(
     userId: string,

@@ -3,13 +3,7 @@ import { IListRepository } from "../interfaces/listRepository";
 import { ListsCache } from "./cache/listsCache";
 
 export class ListsService {
-  private repository: IListRepository;
-  private cache: ListsCache;
-
-  constructor(repository: IListRepository) {
-    this.repository = repository;
-    this.cache = new ListsCache();
-  }
+  constructor(private repository: IListRepository, private cache: ListsCache) {}
 
   async createList(userId: string, name: string): Promise<List> {
     const list = await this.repository.createList(userId, name);

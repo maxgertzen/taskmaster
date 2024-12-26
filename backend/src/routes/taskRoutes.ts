@@ -1,62 +1,65 @@
-import express from "express";
-import * as taskController from "../controllers/taskController";
+import express, { Router } from "express";
 import { transformCompletedToString } from "../middlewares/transformTask";
 import { validateRequestBody } from "@src/middlewares/validateRequestBody";
 import {
   bulkDeleteValidationSchema,
   createTaskValidationSchema,
   deleteTaskValidationSchema,
-  getTasksSearchResultsValidationSchema,
-  getTasksValidationSchema,
   reorderTasksValidationSchema,
   toggleCompleteAllValidationSchema,
   updateTaskValidationSchema,
 } from "@src/validation";
+import { getAppContainer } from "@src/container";
 
-const router = express.Router();
+export const configureTaskRoutes = (): Router => {
+  const router = express.Router();
+  const container = getAppContainer();
+  const {
+    getTasksSearchResults,
+    getTasks,
+    createTask,
+    reorderTasks,
+    toggleCompleteAll,
+    updateTask,
+    deleteTask,
+    bulkDelete,
+  } = container.resolve("tasksController");
 
-router.get(
-  "/search",
-  validateRequestBody(getTasksSearchResultsValidationSchema),
-  taskController.getTasksSearchResults
-);
-router.get(
-  "/:listId",
-  validateRequestBody(getTasksValidationSchema),
-  taskController.getTasks
-);
-router.post(
-  "/create",
-  validateRequestBody(createTaskValidationSchema),
-  taskController.createTask
-);
-router.post(
-  "/reorder",
-  validateRequestBody(reorderTasksValidationSchema),
-  transformCompletedToString,
-  taskController.reorderTasks
-);
-router.post(
-  "/toggle-complete",
-  validateRequestBody(toggleCompleteAllValidationSchema),
-  taskController.toggleCompleteAll
-);
-router.put(
-  "/",
-  validateRequestBody(updateTaskValidationSchema),
-  transformCompletedToString,
-  taskController.updateTask
-);
-router.delete(
-  "/",
-  validateRequestBody(deleteTaskValidationSchema),
-  taskController.deleteTask
-);
-router.delete(
-  "/bulk-delete",
-  validateRequestBody(bulkDeleteValidationSchema),
+  router.get("/search", getTasksSearchResults);
+  router.get("/:listId", getTasks);
+  router.post(
+    "/create",
+    validateRequestBody(createTaskValidationSchema),
+    createTask
+  );
+  router.post(
+    "/reorder",
+    validateRequestBody(reorderTasksValidationSchema),
+    transformCompletedToString,
+    reorderTasks
+  );
+  router.post(
+    "/toggle-complete",
+    validateRequestBody(toggleCompleteAllValidationSchema),
+    toggleCompleteAll
+  );
+  router.put(
+    "/",
+    validateRequestBody(updateTaskValidationSchema),
+    transformCompletedToString,
+    updateTask
+  );
+  router.delete(
+    "/",
+    validateRequestBody(deleteTaskValidationSchema),
+    deleteTask
+  );
+  router.delete(
+    "/bulk-delete",
+    validateRequestBody(bulkDeleteValidationSchema),
 
-  taskController.bulkDelete
-);
+    bulkDelete
+  );
 
-export { router as taskRoutes };
+  return router;
+};

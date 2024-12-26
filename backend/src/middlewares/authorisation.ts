@@ -3,15 +3,17 @@ import { Request, Response, NextFunction } from "express";
 import { auth } from "express-oauth2-jwt-bearer";
 import { resolveUserId } from "../utils/resolveUserId";
 
-export const checkJwt = (_req: Request, _res: Response, next: NextFunction) => {
+export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
   if (process.env.USE_MOCK === "true") {
     next();
     return;
   }
-  auth({
+  const authMiddleware = auth({
     audience: process.env.AUTH0_AUDIENCE,
     issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
   });
+
+  return authMiddleware(req, res, next);
 };
 
 export const attachUser = async (

@@ -4,18 +4,14 @@ import { BaseUser } from "@src/interfaces/entities";
 import { IUserCache } from "@src/interfaces/cache";
 
 export class UsersCache implements IUserCache {
-  private readonly cacheService: CacheService;
-
-  constructor() {
-    this.cacheService = new CacheService();
-  }
+  constructor(private cacheService: CacheService) {}
 
   async getUser(userId: string): Promise<BaseUser | null> {
     return this.cacheService.get(CACHE_KEYS.USER(userId));
   }
 
   async setUser(userId: string, user: BaseUser): Promise<void> {
-    return this.cacheService.set(CACHE_KEYS.USER(userId), user, "user");
+    return this.cacheService.set(CACHE_KEYS.USER(userId), user, "USER");
   }
 
   async invalidateCache(userId: string): Promise<void> {

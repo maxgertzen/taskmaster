@@ -4,11 +4,7 @@ import { BaseTask, ClientTask, SearchResults } from "@interfaces/entities";
 import { ITaskCache } from "@src/interfaces/cache";
 
 export class TasksCache implements ITaskCache {
-  private cacheService: CacheService;
-
-  constructor() {
-    this.cacheService = new CacheService();
-  }
+  constructor(private cacheService: CacheService) {}
 
   async getTasks(userId: string, listId: string): Promise<BaseTask[] | null> {
     return this.cacheService.get<BaseTask[]>(
