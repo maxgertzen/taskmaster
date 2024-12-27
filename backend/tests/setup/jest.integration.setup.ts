@@ -1,27 +1,40 @@
 import { envManager } from "@tests/helpers/envManager";
 import {
-  setupTestDatabase,
-  teardownTestDatabase,
-  clearTestDatabase,
-} from "@tests/integration/setup/database";
-import {
-  setupTestServer,
-  teardownTestServer,
-} from "@tests/integration/setup/testServer";
+  clearTestData,
+  setupTestEnvironment,
+  // teardownTestEnvironment,
+} from "@tests/integration/setup/testSetup";
+
+global.testDbType = process.env.DB_TYPE || "mongo";
 
 beforeAll(async () => {
-  await setupTestDatabase();
-  await setupTestServer();
-});
+  try {
+    envManager.setEnv("mock");
+    const testEnv = await setupTestEnvironment(global.testDbType);
+    global.testContainer = testEnv.container;
+
+    console.log("Test Environment setup completed");
+  } catch (error) {
+    console.error("Failed to setup test environment:", error);
+    throw error;
+  }
+}, 30000);
 
 afterAll(async () => {
-  await teardownTestDatabase();
-  await teardownTestServer();
-});
+  // try {
+  //   await teardownTestEnvironment();
+  //   console.log("Test Environment teardown completed");
+  // } catch (error) {
+  //   console.error("Failed to teardown test environment:", error);
+  //   throw error;
+  // }
+}, 30000);
 
-beforeEach(() => {});
-
-afterEach(async () => {
-  envManager.resetEnv();
-  await clearTestDatabase();
-});
+beforeEach(async () => {
+  try {
+    await clearTestData();
+  } catch (error) {
+    console.error("Failed to setup test data:", error);
+    throw error;
+  }
+}, 30000);

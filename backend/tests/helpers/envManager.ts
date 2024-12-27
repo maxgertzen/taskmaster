@@ -1,6 +1,8 @@
+import { DBType } from "@src/types/constants";
+
 const mockEnvironmentVariables = {
   NODE_ENV: "development" as const,
-  DB_TYPE: "mongo",
+  DB_TYPE: "mongo" as DBType,
   PORT: "3000",
   REDIS_PORT: "6379",
   REDIS_PASSWORD: "",

@@ -6,11 +6,13 @@ import {
   reorderListsValidationSchema,
   updateListValidationSchema,
 } from "@src/validation";
-import { getAppContainer } from "@src/container";
+import { ContainerType } from "@src/types/container";
+import { AwilixContainer } from "awilix";
 
-export const configureListRoutes = (): Router => {
+export const configureListRoutes = (
+  container: AwilixContainer<ContainerType>
+): Router => {
   const router = express.Router();
-  const container = getAppContainer();
   const controller = container.resolve("listsController");
 
   if (!controller) {

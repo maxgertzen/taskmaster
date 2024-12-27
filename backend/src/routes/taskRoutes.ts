@@ -9,11 +9,13 @@ import {
   toggleCompleteAllValidationSchema,
   updateTaskValidationSchema,
 } from "@src/validation";
-import { getAppContainer } from "@src/container";
+import { ContainerType } from "@src/types/container";
+import { AwilixContainer } from "awilix";
 
-export const configureTaskRoutes = (): Router => {
+export const configureTaskRoutes = (
+  container: AwilixContainer<ContainerType>
+): Router => {
   const router = express.Router();
-  const container = getAppContainer();
   const {
     getTasksSearchResults,
     getTasks,

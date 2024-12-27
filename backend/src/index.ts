@@ -12,8 +12,8 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
     await initializeDatabase();
-    await initializeContainer();
-    const app = await createApp();
+    const container = await initializeContainer();
+    const app = await createApp(container);
 
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
