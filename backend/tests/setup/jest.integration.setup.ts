@@ -2,6 +2,7 @@ import { envManager } from "@tests/helpers/envManager";
 import {
   clearTestData,
   setupTestEnvironment,
+  teardownTestEnvironment,
   // teardownTestEnvironment,
 } from "@tests/integration/setup/testSetup";
 
@@ -21,13 +22,13 @@ beforeAll(async () => {
 }, 30000);
 
 afterAll(async () => {
-  // try {
-  //   await teardownTestEnvironment();
-  //   console.log("Test Environment teardown completed");
-  // } catch (error) {
-  //   console.error("Failed to teardown test environment:", error);
-  //   throw error;
-  // }
+  try {
+    await teardownTestEnvironment();
+    console.log("Test Environment teardown completed");
+  } catch (error) {
+    console.error("Failed to teardown test environment:", error);
+    throw error;
+  }
 }, 30000);
 
 beforeEach(async () => {

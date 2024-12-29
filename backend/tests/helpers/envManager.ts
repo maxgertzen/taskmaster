@@ -11,12 +11,13 @@ const mockEnvironmentVariables = {
   MONGODB_URI: "mongodb://localhost:27017/taskmaster",
   AUTH0_ISSUER_BASE_URL: "https://dummy-auth0-issuer.com",
   AUTH0_AUDIENCE: "https://dummy-audience.com",
-  USE_MOCK: "true" as const,
+  MOCK_USER_ID: "mock-user-id",
+  IS_AUTH0_DISABLED: "true" as const,
 };
 
 const prodEnvironmentVariables = {
   ...mockEnvironmentVariables,
-  USE_MOCK: "false" as const,
+  IS_AUTH0_DISABLED: "false" as const,
 };
 
 class EnvManager {
