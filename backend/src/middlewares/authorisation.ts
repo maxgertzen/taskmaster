@@ -1,51 +1,80 @@
-import { MOCK_USER_ID } from "../mocks/constants";
 import { Request, Response, NextFunction } from "express";
 import { auth } from "express-oauth2-jwt-bearer";
 import { resolveUserId } from "../utils/resolveUserId";
+import { UnauthorizedError } from "@src/errors";
 
-export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
-  if (process.env.USE_MOCK === "true") {
-    next();
-    return;
-  }
-  const authMiddleware = auth({
-    audience: process.env.AUTH0_AUDIENCE,
-    issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
-  });
+interface AuthConfig {
+  audience: string;
+  issuerBaseURL: string;
+  isDisabled: boolean;
+  mockUserId?: string;
+}
 
-  return authMiddleware(req, res, next);
+const authConfig: AuthConfig = {
+  audience: process.env.AUTH0_AUDIENCE!,
+  issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL!,
+  isDisabled: process.env.IS_AUTH0_DISABLED === "true",
+  mockUserId:
+    process.env.IS_AUTH0_DISABLED === "true"
+      ? process.env.MOCK_USER_ID
+      : undefined,
 };
 
-export const attachUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    if (process.env.USE_MOCK === "true") {
-      const userId = await resolveUserId(MOCK_USER_ID);
-      req.userId = userId;
+class AuthMiddleware {
+  private authValidator: ReturnType<typeof auth>;
+
+  constructor(private config: AuthConfig) {
+    this.authValidator = auth({
+      audience: this.config.audience,
+      issuerBaseURL: this.config.issuerBaseURL,
+    });
+  }
+
+  validateToken = (req: Request, res: Response, next: NextFunction) => {
+    if (this.config.isDisabled) {
+      if (this.config.mockUserId === req.headers.authorization) {
+        req.userId = this.config.mockUserId;
+        next();
+        return;
+      }
+      throw new UnauthorizedError("Unauthorized");
+    }
+
+    return this.authValidator(req, res, next);
+  };
+
+  resolveUser = async (req: Request, _res: Response, next: NextFunction) => {
+    try {
+      if (this.config.isDisabled) {
+        const userId = await this.resolveMockUser();
+        req.userId = userId;
+        return next();
+      }
+
+      const auth = req.auth?.payload;
+
+      if (!auth?.sub) {
+        throw new UnauthorizedError("Missing user identifier");
+      }
+
+      req.userId = await resolveUserId(
+        auth.sub,
+        auth.email as string | undefined,
+        auth.name as string | undefined
+      );
+
       next();
-      return;
+    } catch (error) {
+      next(error);
     }
+  };
 
-    const auth = req.auth?.payload;
-
-    if (!auth?.sub) {
-      res.status(401).json({ message: "Unauthorized" });
-      return;
+  private async resolveMockUser(): Promise<string> {
+    if (!this.config.mockUserId) {
+      throw new Error("Mock user ID not configured");
     }
-
-    const auth0Id = auth.sub;
-    const email = (auth.email as string) || "";
-    const name = (auth.name as string) || "";
-
-    const userId = await resolveUserId(auth0Id, email, name);
-
-    req.userId = userId;
-
-    next();
-  } catch (error) {
-    next(error);
+    return resolveUserId(this.config.mockUserId);
   }
-};
+}
+
+export const authMiddleware = new AuthMiddleware(authConfig);

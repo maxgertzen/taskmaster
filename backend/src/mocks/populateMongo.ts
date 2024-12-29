@@ -16,8 +16,10 @@ const populateMongo = async () => {
     return;
   }
 
-  if (process.env.USE_MOCK !== "true") {
-    console.log("Skipping mock data population (USE_MOCK is not true).");
+  if (process.env.IS_AUTH0_DISABLED !== "true") {
+    console.log(
+      "Skipping mock data population (IS_AUTH0_DISABLED is not true)."
+    );
     return;
   }
 

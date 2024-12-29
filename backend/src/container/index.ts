@@ -14,6 +14,7 @@ import { makeListsController } from "../controllers/listController";
 import { makeTasksController } from "../controllers/taskController";
 import { getCacheClient } from "../config/database";
 import { ContainerType } from "@src/types/container";
+import { ServiceUnavailableError } from "@src/errors";
 
 let containerInstance: AwilixContainer<ContainerType> | null = null;
 
@@ -94,7 +95,7 @@ const createAppContainer = async () => {
 
 export const getAppContainer = () => {
   if (!containerInstance) {
-    throw new Error("Container not initialized");
+    throw new ServiceUnavailableError("Container not initialized");
   }
   return containerInstance;
 };
