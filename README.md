@@ -92,7 +92,7 @@ Ensure you have the following installed:
 
   Alternatively, update `DB_TYPE` in your `.env.development` file to `redis` or `mongo`.
 
-- **VITE_USE_MOCK**:
+- **VITE_IS_AUTH0_DISABLED**:
   - For security reasons, configuration data for Auth0 was omitted and mocked login was made.
   - This means the login/logout functionality is disabled and you'd be considered "logged in".
 

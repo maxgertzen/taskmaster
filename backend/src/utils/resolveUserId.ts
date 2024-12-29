@@ -1,4 +1,5 @@
 import { getAppContainer } from "@src/container";
+import { DatabaseError } from "@src/errors";
 
 export async function resolveUserId(
   auth0Id: string,
@@ -7,15 +8,19 @@ export async function resolveUserId(
 ): Promise<string> {
   const container = getAppContainer();
   const usersService = container.cradle.usersService;
-  const user = await usersService.getOrCreateUser(auth0Id, email, name);
+  try {
+    const user = await usersService.getOrCreateUser(auth0Id, email, name);
 
-  if (!user) {
-    throw new Error(`User with auth0Id ${auth0Id} not found`);
+    if (!user) {
+      throw new DatabaseError(`User with auth0Id ${auth0Id} not found`);
+    }
+
+    return "_id" in user ? user._id?.toString() ?? auth0Id : user.auth0Id;
+  } catch (error) {
+    throw new DatabaseError("Failed to resolve user ID", {
+      auth0Id,
+      email,
+      name,
+    });
   }
-
-  if ("_id" in user) {
-    return user._id?.toString() ?? "";
-  }
-
-  return user.auth0Id;
 }

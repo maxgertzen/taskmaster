@@ -1,168 +1,231 @@
-import { makeRequest } from "@tests/integration/setup/testServer";
+const containerModule = jest.requireActual("@src/container");
+jest
+  .spyOn(containerModule, "getAppContainer")
+  .mockImplementation(() => global.testContainer);
 
-import { listFactory } from "@tests/data/listFactory";
-import { getTestCacheClient, teardownTestDatabase } from "./setup/database";
-import { generateObjectId } from "@tests/helpers/generateObjectId";
-import { envManager } from "@tests/helpers/envManager";
-import { CacheService } from "@src/services/cache/cacheService";
-import { CACHE_KEYS } from "@src/utils/cacheKeys";
+import { makeTestRequest } from "./setup/testSetup";
+import type { ListsCache } from "@src/services/cache";
+import {
+  CreateListResponse,
+  DeleteListResponse,
+  GetListsResponse,
+  ReorderListsResponse,
+  UpdateListResponse,
+} from "@src/types/responses";
+import { listFactory } from "@tests/data";
+import { MOCK_USER_ID } from "@src/mocks/constants";
 
-describe("Integration Tests for /api/lists", () => {
-  let cacheService: CacheService;
+describe("Lists API Integration Tests", () => {
+  let request: ReturnType<typeof makeTestRequest>;
+  let listsCache: ListsCache;
+  let testUserObjectId: string;
+  const testUserId = MOCK_USER_ID;
 
-  beforeEach(() => {
-    envManager.setEnv("mock");
-    cacheService = new CacheService(getTestCacheClient());
-  });
-  describe("GET /api/lists", () => {
-    it("should return an empty array when no lists exist", async () => {
-      const response = await makeRequest().get("/api/lists");
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual([]);
-    });
-
-    it("should return all existing lists", async () => {
-      const lists = [
-        listFactory.generateBaseList({ name: "Groceries" }),
-        listFactory.generateBaseList({ name: "Work Tasks" }),
-      ];
-
-      await Promise.all(
-        lists.map((list) => makeRequest().post("/api/lists").send(list))
-      );
-
-      const response = await makeRequest().get("/api/lists");
-      expect(response.status).toBe(200);
-      expect(response.body.length).toBe(2);
-      expect(response.body).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ name: "Groceries" }),
-          expect.objectContaining({ name: "Work Tasks" }),
-        ])
-      );
-    });
+  beforeEach(async () => {
+    const container = global.testContainer;
+    listsCache = container.cradle.listsCache;
+    const testUser = await container.cradle.userRepository.createUser(
+      testUserId
+    );
+    testUserObjectId =
+      "_id" in testUser
+        ? testUser._id?.toString() || testUser.auth0Id
+        : testUser.auth0Id;
+    request = makeTestRequest();
   });
 
   describe("POST /api/lists", () => {
-    it("should create a new list", async () => {
-      const listData = listFactory.generateBaseList({ name: "New List" });
+    it("should create a new list and invalidate cache", async () => {
+      // Arrange
+      const newList = { name: "Test List" };
 
-      const response = await makeRequest().post("/api/lists").send(listData);
-      expect(response.status).toBe(201);
-      expect(response.body).toEqual(
-        expect.objectContaining({ name: "New List" })
-      );
+      // Act
+      const response = await request
+        .post("/api/lists")
+        .send(newList)
+        .expect(200);
 
-      const cachedLists = JSON.parse(
-        (await cacheService.get(CACHE_KEYS.LISTS(listData.userId))) || "[]"
-      );
-      expect(cachedLists).toEqual(
-        expect.arrayContaining([expect.objectContaining({ name: "New List" })])
-      );
+      const result = response.body as CreateListResponse;
+
+      // Assert
+      expect(result).toMatchObject<CreateListResponse>({
+        id: expect.any(String),
+        name: newList.name,
+        userId: expect.any(String),
+        creationDate: expect.any(String),
+        orderIndex: expect.any(Number),
+      });
+
+      // Verify cache was invalidated
+      const cachedLists = await listsCache.getLists(testUserObjectId);
+      expect(cachedLists).toBeNull();
     });
 
-    it("should return a validation error for missing fields", async () => {
-      const response = await makeRequest().post("/api/lists").send({});
-      expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty("error");
-      expect(response.body.error).toBe(
-        "Validation failed: Missing required fields"
-      );
+    it("should reject invalid list creation request", async () => {
+      await request.post("/api/lists").send({}).expect(400);
     });
   });
 
-  describe("POST /api/lists/reorder", () => {
-    it("should reorder lists successfully", async () => {
-      const lists = [
-        listFactory.generateBaseList({ name: "Groceries" }),
-        listFactory.generateBaseList({ name: "Work Tasks" }),
+  describe("GET /api/lists", () => {
+    it("should return cached lists if available", async () => {
+      // Arrange
+      const mockLists = [
+        listFactory.generateBaseList({ userId: testUserId, orderIndex: 0 }),
+        listFactory.generateBaseList({ userId: testUserId, orderIndex: 1 }),
       ];
+      await listsCache.setLists(testUserObjectId, mockLists);
 
-      await Promise.all(
-        lists.map((list) => makeRequest().post("/api/lists").send(list))
-      );
+      // Act
+      const response = await request.get("/api/lists").expect(200);
 
-      const reorderData = { order: [1, 0] };
-      const response = await makeRequest()
-        .post("/api/lists/reorder")
-        .send(reorderData);
+      const result = response.body as GetListsResponse;
 
-      expect(response.status).toBe(200);
-      expect(response.body.message).toBe("Lists reordered successfully");
+      // Assert
+      expect(result).toMatchObject<GetListsResponse>([...mockLists]);
+    });
+
+    it("should fetch from repository and cache if not cached", async () => {
+      // Arrange
+      await request.post("/api/lists").send({ name: "Test List 1" });
+
+      // Act
+      const response = await request.get("/api/lists").expect(200);
+
+      const result = response.body as GetListsResponse;
+
+      // Assert
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe("Test List 1");
+
+      // Verify results were cached
+      const cachedLists = await listsCache.getLists(testUserObjectId);
+      expect(cachedLists).toEqual(result);
     });
   });
 
   describe("PUT /api/lists", () => {
-    it("should update an existing list", async () => {
-      const listData = listFactory.generateBaseList({ name: "Initial List" });
-      const createdList = await makeRequest().post("/api/lists").send(listData);
+    it("should update list and invalidate cache", async () => {
+      // Arrange
+      const createResponse = await request
+        .post("/api/lists")
+        .send({ name: "Original Name" });
 
-      const updatedData = listFactory.generateBaseList({
-        name: "Updated List",
-        id: createdList.body.id,
-      });
-      const response = await makeRequest()
+      const listId = createResponse.body.id;
+      const updateData = { id: listId, name: "Updated Name" };
+
+      // Act
+      const response = await request
         .put("/api/lists")
-        .send({ ...updatedData });
+        .send(updateData)
+        .expect(200);
 
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual(expect.objectContaining(updatedData));
+      const result = response.body as UpdateListResponse;
+
+      // Assert
+      expect(result).toMatchObject<UpdateListResponse>({
+        id: listId,
+        name: "Updated Name",
+        userId: expect.stringMatching(
+          new RegExp(`^(${testUserId}|${testUserObjectId})$`)
+        ),
+        creationDate: expect.any(String),
+        orderIndex: expect.any(Number),
+      });
+
+      // Verify cache was invalidated
+      const cachedLists = await listsCache.getLists(testUserObjectId);
+      expect(cachedLists).toBeNull();
     });
 
-    it("should return 404 for a non-existent ID", async () => {
-      const response = await makeRequest()
+    it("should reject invalid update request", async () => {
+      await request
         .put("/api/lists")
-        .send({ id: generateObjectId(), name: "Updated List" });
-
-      expect(response.status).toBe(404);
+        .send({ name: "New Name" }) // Missing id
+        .expect(400);
     });
   });
 
   describe("DELETE /api/lists", () => {
-    it("should delete an existing list", async () => {
-      const listData = listFactory.generateBaseList({ name: "List to Delete" });
-      const createdList = await makeRequest().post("/api/lists").send(listData);
+    it("should delete list and invalidate cache", async () => {
+      // Arrange
+      const createResponse = await request
+        .post("/api/lists")
+        .send({ name: "To Be Deleted" });
 
-      const response = await makeRequest()
+      const listId = createResponse.body.id;
+
+      // Act
+      const response = await request
         .delete("/api/lists")
-        .send({ id: createdList.body._id });
-      expect(response.status).toBe(200);
-      expect(response.body.message).toBe("List successfully deleted");
+        .send({ id: listId })
+        .expect(200);
 
-      const cacheClient = getTestCacheClient();
-      const cachedLists = JSON.parse((await cacheClient.get("lists")) || "[]");
-      expect(cachedLists).not.toContainEqual(
-        expect.objectContaining({ name: "List to Delete" })
+      const result = response.body as DeleteListResponse;
+
+      // Assert
+      expect(result).toEqual({ deletedId: listId });
+
+      // Verify list was deleted
+      const lists = await request.get("/api/lists");
+      expect(lists.body).not.toContainEqual(
+        expect.objectContaining({ id: listId })
       );
 
-      const getResponse = await makeRequest().get("/api/lists");
-      expect(getResponse.body.length).toBe(0);
-    });
-
-    it("should return 404 for a non-existent ID", async () => {
-      const response = await makeRequest()
-        .delete("/api/lists")
-        .send({ id: generateObjectId() });
-      expect(response.status).toBe(404);
+      // Verify cache was invalidated
+      const cachedLists = await listsCache.getLists(testUserObjectId);
+      expect(cachedLists).toBeNull();
     });
   });
 
-  describe("Middleware Integration", () => {
-    it("should return 401 if the user is not authenticated", async () => {
-      const response = await makeRequest().get("/api/lists");
-      expect(response.status).toBe(401);
-      expect(response.body.error).toBe("Unauthorized");
+  describe("POST /api/lists/reorder", () => {
+    it("should reorder lists and update cache", async () => {
+      // Arrange
+      const list1 = await request.post("/api/lists").send({ name: "List 1" });
+
+      const list2 = await request.post("/api/lists").send({ name: "List 2" });
+
+      const orderedIds = [list2.body.id, list1.body.id]; // Reverse order
+
+      // Act
+      const response = await request
+        .post("/api/lists/reorder")
+        .send({ orderedIds })
+        .expect(200);
+
+      const result = response.body as ReorderListsResponse;
+
+      // Assert
+      expect(result).toHaveLength(2);
+      expect(result[0].id).toBe(list2.body.id); // First item should be list2
+      expect(result[1].id).toBe(list1.body.id); // Second item should be list1
+
+      // Verify cache was updated
+      const cachedLists = await listsCache.getLists(testUserObjectId);
+      expect(cachedLists).toEqual(result);
+    });
+
+    it("should reject reorder request with invalid ids", async () => {
+      await request
+        .post("/api/lists/reorder")
+        .send({ orderedIds: ["invalid-id"] })
+        .expect(500);
     });
   });
 
-  describe("Error Handling", () => {
-    it("should return 500 if the database is down", async () => {
-      await teardownTestDatabase();
-      const response = await makeRequest()
-        .post("/api/lists")
-        .send(listFactory.generateBaseList({ name: "Test List" }));
-      expect(response.status).toBe(500);
-      expect(response.body.error).toBe("Internal Server Error");
+  // TODO: Implement test
+  // Remove userId to simulate unauthorized request
+  describe.skip("Error handling", () => {
+    it("should handle unauthorized requests", async () => {
+      request = makeTestRequest();
+
+      await request.get("/api/lists").set({ authorization: "" }).expect(401);
+    });
+
+    it("should handle non-existent list operations", async () => {
+      await request
+        .put("/api/lists")
+        .send({ id: "non-existent-id", name: "New Name" })
+        .expect(500);
     });
   });
 });

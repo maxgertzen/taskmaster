@@ -8,15 +8,18 @@ import { ListRepositoryMongo } from "./mongo/listRepositoryMongo";
 import { TaskRepositoryMongo } from "./mongo/taskRepositoryMongo";
 import { UserRepositoryMongo } from "./mongo/userRepositoryMongo";
 import { getRedisClient } from "@src/config/database";
+import { DBType } from "@src/types/constants";
+import { DatabaseError } from "@src/errors";
 
 let listRepositoryInstance: IListRepository | null = null;
 let taskRepositoryInstance: ITaskRepository | null = null;
 let userRepositoryInstance: IUserRepository | null = null;
 
 export class RepositoryFactory {
-  static createListRepository(): IListRepository {
+  static createListRepository(
+    dbType: DBType = process.env.DB_TYPE || "mongo"
+  ): IListRepository {
     if (!listRepositoryInstance) {
-      const dbType = process.env.DB_TYPE || "redis";
       switch (dbType) {
         case "redis":
           listRepositoryInstance = new ListRepositoryRedis(getRedisClient());
@@ -25,15 +28,16 @@ export class RepositoryFactory {
           listRepositoryInstance = new ListRepositoryMongo();
           break;
         default:
-          throw new Error(`Unsupported DB_TYPE: ${dbType}`);
+          throw new DatabaseError(`Unsupported DB_TYPE: ${dbType}`);
       }
     }
     return listRepositoryInstance;
   }
 
-  static createTaskRepository(): ITaskRepository {
+  static createTaskRepository(
+    dbType: DBType = process.env.DB_TYPE || "mongo"
+  ): ITaskRepository {
     if (!taskRepositoryInstance) {
-      const dbType = process.env.DB_TYPE || "redis";
       switch (dbType) {
         case "redis":
           taskRepositoryInstance = new TaskRepositoryRedis(getRedisClient());
@@ -42,16 +46,17 @@ export class RepositoryFactory {
           taskRepositoryInstance = new TaskRepositoryMongo();
           break;
         default:
-          throw new Error(`Unsupported DB_TYPE: ${dbType}`);
+          throw new DatabaseError(`Unsupported DB_TYPE: ${dbType}`);
       }
     }
 
     return taskRepositoryInstance;
   }
 
-  static createUserRepository(): IUserRepository {
+  static createUserRepository(
+    dbType: DBType = process.env.DB_TYPE || "mongo"
+  ): IUserRepository {
     if (!userRepositoryInstance) {
-      const dbType = process.env.DB_TYPE || "redis";
       switch (dbType) {
         case "redis":
           userRepositoryInstance = new UserRepositoryRedis(getRedisClient());
@@ -60,7 +65,7 @@ export class RepositoryFactory {
           userRepositoryInstance = new UserRepositoryMongo();
           break;
         default:
-          throw new Error(`Unsupported DB_TYPE: ${dbType}`);
+          throw new DatabaseError(`Unsupported DB_TYPE: ${dbType}`);
       }
     }
 

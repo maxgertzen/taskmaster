@@ -12,27 +12,9 @@ import { ListsService, TasksService, UsersService } from "../services";
 import { RepositoryFactory } from "../repositories";
 import { makeListsController } from "../controllers/listController";
 import { makeTasksController } from "../controllers/taskController";
-import { RedisClientType } from "redis";
-import { IListRepository } from "../interfaces/listRepository";
-import { ITaskRepository } from "../interfaces/taskRepository";
-import { IUserRepository } from "../interfaces/userRepository";
 import { getCacheClient } from "../config/database";
-
-export interface ContainerType {
-  redisClient: RedisClientType;
-  cacheService: CacheService;
-  listsCache: ListsCache;
-  tasksCache: TasksCache;
-  usersCache: UsersCache;
-  listRepository: IListRepository;
-  taskRepository: ITaskRepository;
-  userRepository: IUserRepository;
-  listsController: ReturnType<typeof makeListsController>;
-  listsService: ListsService;
-  tasksController: ReturnType<typeof makeTasksController>;
-  tasksService: TasksService;
-  usersService: UsersService;
-}
+import { ContainerType } from "@src/types/container";
+import { ServiceUnavailableError } from "@src/errors";
 
 let containerInstance: AwilixContainer<ContainerType> | null = null;
 
@@ -113,7 +95,7 @@ const createAppContainer = async () => {
 
 export const getAppContainer = () => {
   if (!containerInstance) {
-    throw new Error("Container not initialized");
+    throw new ServiceUnavailableError("Container not initialized");
   }
   return containerInstance;
 };

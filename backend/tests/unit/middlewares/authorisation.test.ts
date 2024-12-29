@@ -54,7 +54,7 @@ describe("authorisation middlewares", () => {
 
     describe("checkJwt", () => {
       it("should invoke JWT validation in production mode", () => {
-        process.env.USE_MOCK = "false";
+        process.env.IS_AUTH0_DISABLED = "false";
 
         checkJwt(req as Request, res as Response, next);
 

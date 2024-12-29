@@ -44,7 +44,7 @@ services:
       args:
         NODE_ENV: ${NODE_ENV:-development}
         DB_TYPE: ${DB_TYPE:-mongo}
-        USE_MOCK: ${USE_MOCK:-true}
+        IS_AUTH0_DISABLED: ${IS_AUTH0_DISABLED:-true}
     container_name: backend
     ports:
       - "3000:3000"
@@ -52,7 +52,7 @@ services:
       - ./backend/.env.development
     environment:
       - NODE_ENV=${NODE_ENV:-development}
-      - USE_MOCK=${USE_MOCK:-true}
+      - IS_AUTH0_DISABLED=${IS_AUTH0_DISABLED:-true}
       - DB_TYPE=${DB_TYPE:-mongo}
       - MONGODB_URI=mongodb://mongodb:27017/taskmaster
       - REDIS_HOST=redis
@@ -83,7 +83,8 @@ services:
       context: ./client
       args:
         VITE_MODE: development
-        VITE_USE_MOCK: true
+        VITE_MOCK_USER_ID: ${VITE_MOCK_USER_ID:-mock-user-id}
+        VITE_IS_AUTH0_DISABLED: true
     container_name: client
     ports:
       - "3001:4173"
@@ -91,7 +92,8 @@ services:
       - ./client/.env.development
     environment:
       - VITE_MODE=${NODE_ENV:-staging}
-      - VITE_USE_MOCK=${USE_MOCK:-true}
+      - VITE_IS_AUTH0_DISABLED=${USE_MOCK:-true}
+      - VITE_MOCK_USER_ID=${VITE_MOCK_USER_ID:-mock-user-id}
     depends_on:
       backend:
         condition: service_healthy

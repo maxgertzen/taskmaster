@@ -6,15 +6,18 @@ import {
   reorderListsValidationSchema,
   updateListValidationSchema,
 } from "@src/validation";
-import { getAppContainer } from "@src/container";
+import { ContainerType } from "@src/types/container";
+import { AwilixContainer } from "awilix";
+import { InternalServerError } from "@src/errors";
 
-export const configureListRoutes = (): Router => {
+export const configureListRoutes = (
+  container: AwilixContainer<ContainerType>
+): Router => {
   const router = express.Router();
-  const container = getAppContainer();
   const controller = container.resolve("listsController");
 
   if (!controller) {
-    throw new Error("Controller not found in container");
+    throw new InternalServerError("Controller not found in container");
   }
 
   router.get("/", controller.getLists);

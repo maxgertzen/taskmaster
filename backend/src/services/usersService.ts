@@ -1,3 +1,4 @@
+import { DatabaseError } from "@src/errors";
 import { BaseUser } from "../interfaces/entities";
 import { IUserRepository } from "../interfaces/userRepository";
 import { UsersCache } from "./cache/usersCache";
@@ -25,7 +26,7 @@ export class UsersService {
         email,
         name,
       });
-      if (!updated) throw new Error("Failed to update user");
+      if (!updated) throw new DatabaseError("Failed to update user");
       return updated;
     }
 

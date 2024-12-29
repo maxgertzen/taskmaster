@@ -3,7 +3,7 @@ import React, { ReactNode } from 'react';
 
 import { MockAuth0Provider } from '../mocks';
 
-const isMock = import.meta.env.VITE_USE_MOCK === 'true';
+const isMock = import.meta.env.VITE_IS_AUTH0_DISABLED === 'true';
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,

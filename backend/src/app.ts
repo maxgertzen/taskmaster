@@ -3,9 +3,11 @@ import cors from "cors";
 import { configureListRoutes } from "./routes/listRoutes";
 import { configureTaskRoutes } from "./routes/taskRoutes";
 import { errorHandler } from "./middlewares/errorHandler";
-import { checkJwt, attachUser } from "./middlewares/authorisation";
+import { authMiddleware } from "./middlewares/authorisation";
+import { AwilixContainer } from "awilix";
+import { ContainerType } from "./types/container";
 
-const createApp = async () => {
+const createApp = async (container: AwilixContainer<ContainerType>) => {
   const app = express();
 
   if (process.env.MODE !== "production") {
@@ -18,8 +20,18 @@ const createApp = async () => {
   }
   app.use(express.json());
 
-  app.use("/api/lists", checkJwt, attachUser, configureListRoutes());
-  app.use("/api/tasks", checkJwt, attachUser, configureTaskRoutes());
+  app.use(
+    "/api/lists",
+    authMiddleware.validateToken,
+    authMiddleware.resolveUser,
+    configureListRoutes(container)
+  );
+  app.use(
+    "/api/tasks",
+    authMiddleware.validateToken,
+    authMiddleware.resolveUser,
+    configureTaskRoutes(container)
+  );
 
   app.use(errorHandler);
 

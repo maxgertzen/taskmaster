@@ -9,7 +9,6 @@ export const listFactory = {
     userId: "user123",
     orderIndex: 0,
     name: "Sample List",
-    sharedWith: ["user456", "user789"],
     ...overrides,
   }),
 

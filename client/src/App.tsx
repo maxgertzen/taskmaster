@@ -13,7 +13,6 @@ const App: React.FC = () => {
   useViewportListener();
   useInitializeToken();
 
-  console.log(import.meta.env.MODE);
   return (
     <QueryClientProvider client={queryClient}>
       {import.meta.env.MODE === 'development' && (
