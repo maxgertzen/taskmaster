@@ -11,7 +11,8 @@ declare global {
       AUTH0_ISSUER_BASE_URL: string;
       AUTH0_AUDIENCE: string;
       NODE_ENV: "development" | "production" | "test";
-      USE_MOCK: "true" | "false";
+      MOCK_USER_ID: string;
+      IS_AUTH0_DISABLED: "true" | "false";
       MONGODB_URI: string;
       DB_TYPE: DBType;
     }
