@@ -1,3 +1,4 @@
+import { ValidationError } from "@src/errors";
 import { ValidationSchema } from "@src/validation";
 import { Request, Response, NextFunction } from "express";
 
@@ -38,7 +39,10 @@ export const validateRequestBody = (schema: ValidationSchema) => {
     });
 
     if (errors.length) {
-      res.status(400).json({ errors });
+      const validationError = new ValidationError(
+        `Invalid request body ${JSON.stringify(errors, null, 2)}`
+      );
+      res.status(validationError.status).json(validationError.response);
       return;
     }
 

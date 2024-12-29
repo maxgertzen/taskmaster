@@ -18,7 +18,9 @@ export class CacheService {
 
       return data as T;
     } catch (error) {
-      console.error("Cache get error:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.warn("Cache get error:", error);
+      }
       return null;
     }
   }
@@ -48,7 +50,9 @@ export class CacheService {
         await this.client.expire(key, config.ttl);
       }
     } catch (error) {
-      console.error("Cache set error:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.warn("Cache get error:", error);
+      }
     }
   }
 
@@ -56,7 +60,9 @@ export class CacheService {
     try {
       await this.client.del(key);
     } catch (error) {
-      console.error("Cache delete error:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.warn("Cache get error:", error);
+      }
     }
   }
 
@@ -67,7 +73,9 @@ export class CacheService {
         await this.client.del(keys);
       }
     } catch (error) {
-      console.error("Cache invalidation error:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.warn("Cache get error:", error);
+      }
     }
   }
 }

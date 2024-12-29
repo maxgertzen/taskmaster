@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { createClient, RedisClientType } from "redis";
 import { createMongoIndexes } from "./mongoIndexes";
+import { DatabaseError, InternalServerError } from "@src/errors";
 
 let dbClient: RedisClientType | null = null;
 let cacheClient: RedisClientType | null = null;
@@ -59,7 +60,7 @@ const initializeDatabase = async () => {
         await initializeCache();
         break;
       default:
-        throw new Error("Invalid DB Type");
+        throw new DatabaseError("Invalid DB Type");
     }
   } catch (error) {
     console.error("Failed to initialize database:", error);
@@ -109,7 +110,7 @@ const initializeCache = async () => {
 
 const getRedisClient = () => {
   if (!dbClient) {
-    throw new Error("Database not initialized");
+    throw new InternalServerError("Database not initialized");
   }
 
   return dbClient;
@@ -117,7 +118,7 @@ const getRedisClient = () => {
 
 const getCacheClient = () => {
   if (!cacheClient) {
-    throw new Error("Cache not initialized");
+    throw new InternalServerError("Cache not initialized");
   }
   return cacheClient;
 };

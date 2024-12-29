@@ -8,6 +8,7 @@ import {
 } from "@src/validation";
 import { ContainerType } from "@src/types/container";
 import { AwilixContainer } from "awilix";
+import { InternalServerError } from "@src/errors";
 
 export const configureListRoutes = (
   container: AwilixContainer<ContainerType>
@@ -16,7 +17,7 @@ export const configureListRoutes = (
   const controller = container.resolve("listsController");
 
   if (!controller) {
-    throw new Error("Controller not found in container");
+    throw new InternalServerError("Controller not found in container");
   }
 
   router.get("/", controller.getLists);
