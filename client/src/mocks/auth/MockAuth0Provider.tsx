@@ -1,21 +1,55 @@
-import React from 'react';
+import { useState, useCallback, ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-export const MockAuth0Provider: React.FC<{ children: React.ReactNode }> = ({
+import { initialMockAuth0State, MockContext } from './MockContext';
+
+export const MockAuth0Provider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const mockAuth0 = {
-    isAuthenticated: true,
-    user: { name: 'Test User', email: 'test@example.com' },
-    getAccessTokenSilently: async () => 'mock-token',
-    loginWithRedirect: () => console.log('Mock Login'),
-    logout: () => console.log('Mock Logout'),
+  const navigate = useNavigate();
+  const [authState, setAuthState] = useState(initialMockAuth0State);
+
+  const loginWithRedirect = useCallback(
+    (options: { appState: { returnTo: string } }) => {
+      setAuthState({
+        ...authState,
+        isAuthenticated: true,
+        user: { name: 'Test User', email: 'test@user.com' },
+        isLoading: false,
+      });
+
+      localStorage.setItem(
+        'mock-auth0-token',
+        import.meta.env.VITE_MOCK_USER_ID || ''
+      );
+
+      navigate(options.appState.returnTo);
+    },
+    [navigate, authState]
+  );
+
+  const logout = useCallback(() => {
+    setAuthState({
+      ...authState,
+      isAuthenticated: false,
+      user: null,
+      isLoading: false,
+    });
+
+    localStorage.removeItem('mock-auth0-token');
+    navigate('/signin');
+  }, [navigate, authState]);
+
+  const getAccessTokenSilently = useCallback(async () => {
+    return localStorage.getItem('mock-auth0-token') || '';
+  }, []);
+
+  const value = {
+    ...authState,
+    loginWithRedirect,
+    logout,
+    getAccessTokenSilently,
   };
 
-  const MockContext = React.createContext(mockAuth0);
-
-  return (
-    <MockContext.Provider value={mockAuth0}>{children}</MockContext.Provider>
-  );
+  return <MockContext.Provider value={value}>{children}</MockContext.Provider>;
 };
-
-export default MockAuth0Provider;

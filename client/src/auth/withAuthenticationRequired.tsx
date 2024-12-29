@@ -2,7 +2,7 @@ import { withAuthenticationRequired as realWithAuthenticationRequired } from '@a
 
 import { mockWithAuthenticationRequired } from '../mocks';
 
-const isMock = import.meta.env.VITE_USE_MOCK === 'true';
+const isMock = import.meta.env.VITE_IS_AUTH0_DISABLED === 'true';
 
 export const withAuthenticationRequired = isMock
   ? mockWithAuthenticationRequired
