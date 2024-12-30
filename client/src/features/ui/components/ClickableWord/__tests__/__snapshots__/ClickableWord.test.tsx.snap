@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ClickableWord > renders correctly in dark theme 1`] = `
+<div>
+  <a
+    class="css-t1i85f"
+    data-testid="clickable-word"
+    href="#"
+  >
+    Click me
+  </a>
+</div>
+`;
+
+exports[`ClickableWord > renders correctly in light theme 1`] = `
+<div>
+  <a
+    class="css-1hmk8d3"
+    data-testid="clickable-word"
+    href="#"
+  >
+    Click me
+  </a>
+</div>
+`;

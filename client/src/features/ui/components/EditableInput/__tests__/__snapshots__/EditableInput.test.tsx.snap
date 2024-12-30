@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`EditableInput > renders correctly in dark theme 1`] = `
+<div>
+  <input
+    class="css-1i27l4i"
+    data-testid="editable-input"
+    placeholder="Type something"
+    value=""
+  />
+</div>
+`;
+
+exports[`EditableInput > renders correctly in light theme 1`] = `
+<div>
+  <input
+    class="css-1i27l4i"
+    data-testid="editable-input"
+    placeholder="Type something"
+    value=""
+  />
+</div>
+`;

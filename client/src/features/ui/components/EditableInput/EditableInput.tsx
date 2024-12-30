@@ -44,6 +44,7 @@ export const EditableInput: FC<EditableInputProps> = ({
 
   return (
     <StyledEditableInput
+      data-testid='editable-input'
       value={text}
       onChange={handleChange}
       onKeyDown={handleKeyPress}

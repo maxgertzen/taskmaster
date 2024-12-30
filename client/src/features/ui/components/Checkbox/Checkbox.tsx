@@ -20,6 +20,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   return (
     <CheckboxContainer>
       <StyledCheckbox
+        data-testid='checkbox'
         type='checkbox'
         checked={checked}
         onChange={handleOnChange}

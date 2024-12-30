@@ -20,7 +20,7 @@ export const ClickableWord: FC<ClickableWordProps> = ({ target, children }) => {
     }, 1500);
   };
   return (
-    <StyledLink href='#' onClick={handleClick}>
+    <StyledLink data-testid='clickable-word' href='#' onClick={handleClick}>
       {children}
     </StyledLink>
   );
