@@ -1,12 +1,11 @@
 import styled from '@emotion/styled';
 
-import { ButtonType } from '@/shared/types/ui';
-
 import PrimaryEmboss from '@/shared/assets/images/primary-emboss.png';
 import PrimaryOutline from '@/shared/assets/images/primary-empty.png';
 import PrimaryFilled from '@/shared/assets/images/primary-filled.png';
 import SuccessEmpty from '@/shared/assets/images/success-empty.png';
 import SuccessFilled from '@/shared/assets/images/success-filled.png';
+import { ButtonType } from '@/shared/types/ui';
 
 const buttonMap: Record<string, string> = {
   primary: PrimaryOutline,

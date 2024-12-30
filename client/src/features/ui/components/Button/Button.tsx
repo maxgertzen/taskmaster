@@ -27,7 +27,7 @@ export const Button: FC<ButtonProps> = ({
       isActive={isActive}
       isDarkTheme={theme === 'dark'}
     >
-      <StyledButton disabled={disabled} onClick={onClick}>
+      <StyledButton data-testid='button' disabled={disabled} onClick={onClick}>
         {children}
       </StyledButton>
     </ButtonWrapper>
