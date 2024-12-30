@@ -1,3 +1,4 @@
+import { API_URL } from '@/constants';
 import {
   DeleteListRequest,
   ReorderListRequest,
@@ -6,7 +7,7 @@ import {
 import { List } from '@/shared/types/shared';
 import { fetcher } from '@/shared/utils/fetcher';
 
-const LISTS_API_URL = `${import.meta.env.VITE_API_URL}/lists`;
+const LISTS_API_URL = `${API_URL}/lists`;
 
 export const fetchLists =
   (token: string | null) => async (): Promise<List[]> => {

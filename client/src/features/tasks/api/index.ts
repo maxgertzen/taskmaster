@@ -1,5 +1,6 @@
 import { QueryFunctionContext } from '@tanstack/react-query';
 
+import { API_URL } from '@/constants';
 import { QUERY_KEYS } from '@/shared/api/query-keys';
 import {
   CompleteAllRequest,
@@ -12,7 +13,7 @@ import {
 import { SearchResults, Task } from '@/shared/types/shared';
 import { fetcher } from '@/shared/utils/fetcher';
 
-const TASKS_API_URL = `${import.meta.env.VITE_API_URL}/tasks`;
+const TASKS_API_URL = `${API_URL}/tasks`;
 
 export const fetchTasks =
   (token: string | null) =>

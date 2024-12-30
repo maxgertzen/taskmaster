@@ -1,6 +1,8 @@
 import { useState, useCallback, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { MOCK_USER_ID } from '@/constants';
+
 import { initialMockAuth0State, MockContext } from './MockContext';
 
 export const MockAuth0Provider: React.FC<{ children: ReactNode }> = ({
@@ -18,10 +20,7 @@ export const MockAuth0Provider: React.FC<{ children: ReactNode }> = ({
         isLoading: false,
       });
 
-      localStorage.setItem(
-        'mock-auth0-token',
-        import.meta.env.VITE_MOCK_USER_ID || ''
-      );
+      localStorage.setItem('mock-auth0-token', MOCK_USER_ID || '');
 
       navigate(options.appState.returnTo);
     },

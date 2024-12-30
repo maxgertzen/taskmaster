@@ -1,9 +1,15 @@
 import { Auth0Provider } from '@auth0/auth0-react';
 import React, { ReactNode } from 'react';
 
+import {
+  AUTH0_AUDIENCE,
+  AUTH0_CLIENT_ID,
+  AUTH0_DOMAIN,
+  IS_AUTH0_DISABLED,
+} from '@/constants';
 import { MockAuth0Provider } from '@/mocks';
 
-const isMock = import.meta.env.VITE_IS_AUTH0_DISABLED === 'true';
+const isMock = IS_AUTH0_DISABLED === 'true';
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -12,11 +18,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   return (
     <Provider
-      domain={import.meta.env.VITE_AUTH0_DOMAIN}
-      clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+      domain={AUTH0_DOMAIN}
+      clientId={AUTH0_CLIENT_ID}
       authorizationParams={{
         redirect_uri: window.location.origin,
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+        audience: AUTH0_AUDIENCE,
       }}
     >
       {children}
