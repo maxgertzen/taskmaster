@@ -9,18 +9,7 @@ import svgr from 'vite-plugin-svgr';
 import { defineConfig as defineVitestConfig } from 'vitest/config';
 
 const config = defineConfig({
-  plugins: [
-    react(),
-    svgr({
-      svgrOptions: {
-        icon: true,
-        ref: true,
-        svgo: false,
-        titleProp: true,
-      },
-      include: '*.svg?react',
-    }),
-  ],
+  plugins: [react(), svgr()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -48,6 +37,7 @@ const vitestConfig = defineVitestConfig({
         transformAssets: true,
       },
     },
+    reporters: ['default', 'html'],
   },
 });
 
