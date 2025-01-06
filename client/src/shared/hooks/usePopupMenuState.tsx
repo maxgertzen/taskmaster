@@ -18,3 +18,5 @@ export const usePopupMenuState = () => {
 
   return { isOpen, toggleMenu, closeMenu, openMenu };
 };
+
+export type PopupMenuState = ReturnType<typeof usePopupMenuState>;

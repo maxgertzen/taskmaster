@@ -10,7 +10,6 @@ interface PopupMenuProps {
   }>;
   onClose: () => void;
   isOpen: boolean;
-  triggerRef: React.RefObject<HTMLElement>;
   orientation?: 'left' | 'right' | 'full';
 }
 
@@ -18,19 +17,13 @@ export const PopupMenu: FC<PopupMenuProps> = ({
   options,
   onClose,
   isOpen,
-  triggerRef,
   orientation = 'left',
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target as Node) &&
-        triggerRef.current &&
-        !triggerRef.current.contains(event.target as Node)
-      ) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
@@ -41,7 +34,7 @@ export const PopupMenu: FC<PopupMenuProps> = ({
     return () => {
       document.removeEventListener('mouseup', handleClickOutside);
     };
-  }, [isOpen, onClose, triggerRef]);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
