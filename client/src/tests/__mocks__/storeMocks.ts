@@ -1,0 +1,33 @@
+import { vi } from 'vitest';
+
+import type { PopupMenuState } from '@/shared/hooks/usePopupMenuState';
+import type { DashboardStore } from '@/shared/store/dashboardStore';
+import type { ViewportStore } from '@/shared/store/viewportStore';
+
+export const mockSelectedList = { id: 'test-list-id', name: 'Test List' };
+export const mockSetSelectedList = vi.fn();
+export const mockSetSearchTerm = vi.fn();
+
+export const mockDashboardStore = (
+  selector: (state: DashboardStore) => unknown
+) =>
+  selector({
+    searchTerm: '',
+    selectedList: mockSelectedList,
+    setSelectedList: mockSetSelectedList,
+    setSearchTerm: mockSetSearchTerm,
+  } as DashboardStore);
+
+export const mockIsMobile = vi.fn().mockReturnValue(false);
+export const mockViewportStore = (
+  selector: (state: ViewportStore) => unknown
+) => selector({ isMobile: mockIsMobile() } as ViewportStore);
+
+export const mockCloseMenu = vi.fn();
+export const mockToggleMenu = vi.fn();
+export const mockPopupMenuState = (): PopupMenuState => ({
+  closeMenu: mockCloseMenu,
+  isOpen: false,
+  toggleMenu: mockToggleMenu,
+  openMenu: vi.fn(),
+});
