@@ -11,7 +11,7 @@ interface HomeButtonProps {
 
 export const HomeButton: FC<HomeButtonProps> = ({ isCollapsed, onClick }) => {
   return (
-    <StyledHomeButton role='button' onClick={onClick}>
+    <StyledHomeButton data-testid='home-button' role='button' onClick={onClick}>
       <TitleContainer>
         <SpriteIcon name='home' />
         {!isCollapsed && <Title variant='h6'>Home</Title>}
