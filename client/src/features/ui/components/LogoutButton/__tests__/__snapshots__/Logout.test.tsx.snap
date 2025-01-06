@@ -1,0 +1,41 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`LogoutButton > renders correctly in dark theme 1`] = `
+<div>
+  <button
+    class="css-3ersaf"
+  >
+    <div
+      class="css-4dcg29"
+      data-testid="icon-logout"
+      role="button"
+      size="3"
+    >
+      <svg
+        data-testid="logout-icon"
+      />
+    </div>
+    Logout
+  </button>
+</div>
+`;
+
+exports[`LogoutButton > renders correctly in light theme 1`] = `
+<div>
+  <button
+    class="css-h00ms8"
+  >
+    <div
+      class="css-4dcg29"
+      data-testid="icon-logout"
+      role="button"
+      size="3"
+    >
+      <svg
+        data-testid="logout-icon"
+      />
+    </div>
+    Logout
+  </button>
+</div>
+`;

@@ -41,6 +41,7 @@ export const PopupMenu: FC<PopupMenuProps> = ({
   return (
     <MenuContainer
       ref={menuRef}
+      data-testid='popup-menu'
       role='menu'
       aria-labelledby='popup-menu-trigger'
       orientation={orientation}
@@ -49,6 +50,7 @@ export const PopupMenu: FC<PopupMenuProps> = ({
       {options.map((option, index) => (
         <MenuItem
           key={index}
+          data-testid='popup-menu-item'
           role='menuitem'
           onClick={() => {
             if (!option.disabled) {
