@@ -17,7 +17,7 @@ exports[`ExitButton > when collapsed (isCollapsed: true) > renders correctly in 
         size="3"
       >
         <svg
-          data-testid="test-svg"
+          data-testid="exit-icon"
         />
       </div>
     </div>
@@ -42,7 +42,7 @@ exports[`ExitButton > when collapsed (isCollapsed: true) > renders correctly in 
         size="3"
       >
         <svg
-          data-testid="test-svg"
+          data-testid="exit-icon"
         />
       </div>
     </div>
@@ -67,7 +67,7 @@ exports[`ExitButton > when expanded (isCollapsed: false) > renders correctly in 
         size="3"
       >
         <svg
-          data-testid="test-svg"
+          data-testid="exit-icon"
         />
       </div>
       <h6
@@ -97,7 +97,7 @@ exports[`ExitButton > when expanded (isCollapsed: false) > renders correctly in 
         size="3"
       >
         <svg
-          data-testid="test-svg"
+          data-testid="exit-icon"
         />
       </div>
       <h6

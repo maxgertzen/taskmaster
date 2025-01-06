@@ -22,7 +22,7 @@ describe('ExitButton', () => {
     it('renders icon correctly', () => {
       render(<ExitButton isCollapsed={isCollapsed} />);
       const button = screen.getByTestId('exit-button');
-      expect(within(button).getByTestId('test-svg')).toBeInTheDocument();
+      expect(within(button).getByTestId('exit-icon')).toBeInTheDocument();
     });
 
     it('handles text visibility correctly', () => {

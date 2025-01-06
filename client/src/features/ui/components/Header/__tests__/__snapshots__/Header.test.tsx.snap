@@ -46,7 +46,7 @@ exports[`Header > Desktop View > renders correctly in dark theme 1`] = `
             size="4"
           >
             <svg
-              data-testid="test-svg"
+              data-testid="magnifying-icon"
             />
           </div>
         </div>
@@ -58,7 +58,7 @@ exports[`Header > Desktop View > renders correctly in dark theme 1`] = `
         size="3"
       >
         <svg
-          data-testid="test-svg"
+          data-testid="moon-icon"
         />
       </div>
       <div
@@ -88,7 +88,7 @@ exports[`Header > Desktop View > renders correctly in dark theme 1`] = `
             size="4"
           >
             <svg
-              data-testid="test-svg"
+              data-testid="user-icon"
             />
           </div>
         </div>
@@ -144,7 +144,7 @@ exports[`Header > Desktop View > renders correctly in light theme 1`] = `
             size="4"
           >
             <svg
-              data-testid="test-svg"
+              data-testid="magnifying-icon"
             />
           </div>
         </div>
@@ -156,7 +156,7 @@ exports[`Header > Desktop View > renders correctly in light theme 1`] = `
         size="3"
       >
         <svg
-          data-testid="test-svg"
+          data-testid="moon-icon"
         />
       </div>
       <div
@@ -186,7 +186,7 @@ exports[`Header > Desktop View > renders correctly in light theme 1`] = `
             size="4"
           >
             <svg
-              data-testid="test-svg"
+              data-testid="user-icon"
             />
           </div>
         </div>
@@ -218,7 +218,7 @@ exports[`Header > Mobile View > renders correctly in dark theme 1`] = `
           size="4"
         >
           <svg
-            data-testid="test-svg"
+            data-testid="arrowButton-icon"
           />
         </div>
         <label>
@@ -240,7 +240,7 @@ exports[`Header > Mobile View > renders correctly in dark theme 1`] = `
             size="4"
           >
             <svg
-              data-testid="test-svg"
+              data-testid="magnifying-icon"
             />
           </div>
         </div>
@@ -272,7 +272,7 @@ exports[`Header > Mobile View > renders correctly in light theme 1`] = `
           size="4"
         >
           <svg
-            data-testid="test-svg"
+            data-testid="arrowButton-icon"
           />
         </div>
         <label>
@@ -294,7 +294,7 @@ exports[`Header > Mobile View > renders correctly in light theme 1`] = `
             size="4"
           >
             <svg
-              data-testid="test-svg"
+              data-testid="magnifying-icon"
             />
           </div>
         </div>
