@@ -1,0 +1,305 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Header > Desktop View > renders correctly in dark theme 1`] = `
+<div>
+  <header
+    class="css-1s39ib8"
+    data-testid="header"
+  >
+    <div
+      class="css-q3eegb"
+    >
+      <img
+        alt="TaskMaster Logo"
+        class="css-fhjm1v"
+        data-testid="logo"
+        src="/src/shared/assets/images/taskmaster.png"
+      />
+      <h1
+        class="css-dytuun"
+      >
+        TaskMaster
+      </h1>
+    </div>
+    <div
+      class="css-f0nxor"
+    >
+      <div
+        class="css-1egpccx"
+        data-testid="searchbar"
+      >
+        <input
+          class="css-1q2qwsy"
+          data-testid="input"
+          placeholder="Search tasks"
+          type="text"
+          value=""
+        />
+        <div
+          class="css-1rqeb1j"
+          data-spotlight=""
+        >
+          <div
+            class="css-y8t6if"
+            data-testid="search-icon"
+            role="button"
+            size="4"
+          >
+            <svg
+              data-testid="test-svg"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="css-4dcg29"
+        data-testid="icon-moon"
+        role="button"
+        size="3"
+      >
+        <svg
+          data-testid="test-svg"
+        />
+      </div>
+      <div
+        class="css-1n1a5w1"
+      />
+      <span
+        class="css-ijuw38"
+      >
+        <span
+          data-testid="user-name"
+        >
+          Hi
+          , 
+          <b>
+            John Doe
+            !
+          </b>
+        </span>
+        <div
+          aria-expanded="false"
+          aria-haspopup="true"
+        >
+          <div
+            class="css-y8t6if"
+            data-testid="icon-user"
+            role="button"
+            size="4"
+          >
+            <svg
+              data-testid="test-svg"
+            />
+          </div>
+        </div>
+      </span>
+    </div>
+  </header>
+</div>
+`;
+
+exports[`Header > Desktop View > renders correctly in light theme 1`] = `
+<div>
+  <header
+    class="css-qbgrf2"
+    data-testid="header"
+  >
+    <div
+      class="css-v7ss51"
+    >
+      <img
+        alt="TaskMaster Logo"
+        class="css-fhjm1v"
+        data-testid="logo"
+        src="/src/shared/assets/images/taskmaster.png"
+      />
+      <h1
+        class="css-dytuun"
+      >
+        TaskMaster
+      </h1>
+    </div>
+    <div
+      class="css-1jhy33"
+    >
+      <div
+        class="css-1egpccx"
+        data-testid="searchbar"
+      >
+        <input
+          class="css-10md7mk"
+          data-testid="input"
+          placeholder="Search tasks"
+          type="text"
+          value=""
+        />
+        <div
+          class="css-1rqeb1j"
+          data-spotlight=""
+        >
+          <div
+            class="css-y8t6if"
+            data-testid="search-icon"
+            role="button"
+            size="4"
+          >
+            <svg
+              data-testid="test-svg"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="css-4dcg29"
+        data-testid="icon-moon"
+        role="button"
+        size="3"
+      >
+        <svg
+          data-testid="test-svg"
+        />
+      </div>
+      <div
+        class="css-a14o6c"
+      />
+      <span
+        class="css-ijuw38"
+      >
+        <span
+          data-testid="user-name"
+        >
+          Hi
+          , 
+          <b>
+            John Doe
+            !
+          </b>
+        </span>
+        <div
+          aria-expanded="false"
+          aria-haspopup="true"
+        >
+          <div
+            class="css-y8t6if"
+            data-testid="icon-user"
+            role="button"
+            size="4"
+          >
+            <svg
+              data-testid="test-svg"
+            />
+          </div>
+        </div>
+      </span>
+    </div>
+  </header>
+</div>
+`;
+
+exports[`Header > Mobile View > renders correctly in dark theme 1`] = `
+<div>
+  <header
+    class="css-1s39ib8"
+    data-testid="header"
+  >
+    <div
+      class="css-1nfnfq9"
+    >
+      <div
+        aria-label="Back to lists"
+        class="css-10ei59g"
+        data-testid="back-to-lists"
+        role="button"
+      >
+        <div
+          class="css-y8t6if"
+          data-testid="icon-arrowButton"
+          role="button"
+          size="4"
+        >
+          <svg
+            data-testid="test-svg"
+          />
+        </div>
+        <label>
+          Lists
+        </label>
+      </div>
+      <div
+        class="css-1egpccx"
+        data-testid="searchbar"
+      >
+        <div
+          class="css-1rqeb1j"
+          data-spotlight=""
+        >
+          <div
+            class="css-y8t6if"
+            data-testid="search-icon"
+            role="button"
+            size="4"
+          >
+            <svg
+              data-testid="test-svg"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+</div>
+`;
+
+exports[`Header > Mobile View > renders correctly in light theme 1`] = `
+<div>
+  <header
+    class="css-qbgrf2"
+    data-testid="header"
+  >
+    <div
+      class="css-1nfnfq9"
+    >
+      <div
+        aria-label="Back to lists"
+        class="css-10ei59g"
+        data-testid="back-to-lists"
+        role="button"
+      >
+        <div
+          class="css-y8t6if"
+          data-testid="icon-arrowButton"
+          role="button"
+          size="4"
+        >
+          <svg
+            data-testid="test-svg"
+          />
+        </div>
+        <label>
+          Lists
+        </label>
+      </div>
+      <div
+        class="css-1egpccx"
+        data-testid="searchbar"
+      >
+        <div
+          class="css-1rqeb1j"
+          data-spotlight=""
+        >
+          <div
+            class="css-y8t6if"
+            data-testid="search-icon"
+            role="button"
+            size="4"
+          >
+            <svg
+              data-testid="test-svg"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+</div>
+`;

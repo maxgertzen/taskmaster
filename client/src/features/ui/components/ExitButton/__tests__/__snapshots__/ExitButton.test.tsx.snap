@@ -12,6 +12,7 @@ exports[`ExitButton > when collapsed (isCollapsed: true) > renders correctly in 
     >
       <div
         class="css-4dcg29"
+        data-testid="icon-exit"
         role="button"
         size="3"
       >
@@ -36,6 +37,7 @@ exports[`ExitButton > when collapsed (isCollapsed: true) > renders correctly in 
     >
       <div
         class="css-4dcg29"
+        data-testid="icon-exit"
         role="button"
         size="3"
       >
@@ -60,6 +62,7 @@ exports[`ExitButton > when expanded (isCollapsed: false) > renders correctly in 
     >
       <div
         class="css-4dcg29"
+        data-testid="icon-exit"
         role="button"
         size="3"
       >
@@ -89,6 +92,7 @@ exports[`ExitButton > when expanded (isCollapsed: false) > renders correctly in 
     >
       <div
         class="css-4dcg29"
+        data-testid="icon-exit"
         role="button"
         size="3"
       >
