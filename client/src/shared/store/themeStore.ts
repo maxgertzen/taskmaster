@@ -2,12 +2,12 @@ import { create } from 'zustand';
 
 type ThemeMode = 'light' | 'dark';
 
-interface ThemeState {
+interface ThemeStoreState {
   theme: ThemeMode;
   toggleTheme: () => void;
 }
 
-export const useThemeStore = create<ThemeState>((set) => ({
+export const useThemeStore = create<ThemeStoreState>((set) => ({
   theme: (localStorage.getItem('theme') as ThemeMode) || 'light',
   toggleTheme: () =>
     set((state) => {
@@ -16,3 +16,5 @@ export const useThemeStore = create<ThemeState>((set) => ({
       return { theme: newTheme };
     }),
 }));
+
+export type ThemeStore = ReturnType<typeof useThemeStore>;

@@ -2,6 +2,8 @@ import { vi } from 'vitest';
 
 import type { PopupMenuState } from '@/shared/hooks/usePopupMenuState';
 import type { DashboardStore } from '@/shared/store/dashboardStore';
+import type { SpotlightStore } from '@/shared/store/spotlightStore';
+import type { ThemeStore } from '@/shared/store/themeStore';
 import type { ViewportStore } from '@/shared/store/viewportStore';
 
 export const mockSelectedList = { id: 'test-list-id', name: 'Test List' };
@@ -31,3 +33,12 @@ export const mockPopupMenuState = (): PopupMenuState => ({
   toggleMenu: mockToggleMenu,
   openMenu: vi.fn(),
 });
+
+export const mockUseSpotlightStore = vi.fn();
+export const mockSpotlightStore = (
+  selector: (state: SpotlightStore) => unknown
+) => selector({ spotlightTarget: null } as SpotlightStore);
+
+export const mockThemeStoreMode = vi.fn().mockReturnValue('light');
+export const mockThemeStore = (selector: (state: ThemeStore) => unknown) =>
+  selector({ theme: mockThemeStoreMode() } as ThemeStore);
