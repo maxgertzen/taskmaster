@@ -1,4 +1,4 @@
-import { Fragment, useRef } from 'react';
+import { Fragment } from 'react';
 
 import { usePopupMenuState } from '@/shared/hooks';
 import { useDashboardStore } from '@/shared/store/dashboardStore';
@@ -33,7 +33,7 @@ interface HeaderProps {
 
 const UserName: React.FC<HeaderProps> = ({ user }) => {
   return (
-    <span>
+    <span data-testid='user-name'>
       Hi
       {user?.name ? (
         <>
@@ -52,7 +52,6 @@ export const Header: React.FC<HeaderProps> = ({
   setView,
   onBack,
 }) => {
-  const triggerRef = useRef<HTMLDivElement>(null);
   const { closeMenu, isOpen, toggleMenu } = usePopupMenuState();
   const selectedList = useDashboardStore((state) => state.selectedList);
   const setSelectedList = useDashboardStore((state) => state.setSelectedList);
@@ -60,13 +59,14 @@ export const Header: React.FC<HeaderProps> = ({
   const isMobile = useViewportStore((state) => state.isMobile);
 
   return (
-    <HeaderContainer>
+    <HeaderContainer data-testid='header'>
       {!isMobile && <Logo withTitle />}
       {onBack && isMobile ? (
         <UserActionPanelViewContainer>
           <BackButtonWrapper
             role='button'
             aria-label='Back to lists'
+            data-testid='back-to-lists'
             onClick={onBack}
           >
             <SpriteIcon name='arrowButton' size={4} />
@@ -98,6 +98,7 @@ export const Header: React.FC<HeaderProps> = ({
           <UserNameContainer>
             {view === 'board' && isMobile ? (
               <BackButtonWrapper
+                data-testid='back-to-lists'
                 role='button'
                 aria-label='Back to lists'
                 onClick={onBack}
@@ -109,7 +110,6 @@ export const Header: React.FC<HeaderProps> = ({
               <Fragment>
                 <UserName user={user} />
                 <div
-                  ref={triggerRef}
                   aria-haspopup='true'
                   aria-expanded={isOpen}
                   onClick={toggleMenu}
@@ -121,7 +121,6 @@ export const Header: React.FC<HeaderProps> = ({
                     ]}
                     onClose={closeMenu}
                     isOpen={isOpen}
-                    triggerRef={triggerRef}
                   />
                   <SpriteIcon name='user' size={4} />
                 </div>
