@@ -33,6 +33,7 @@ export const Searchbar: FC<SearchbarProps> = ({
 
   return (
     <Input
+      data-testid='searchbar'
       placeholder={placeholder}
       isSearch
       withToggle={isMobile}

@@ -12,6 +12,7 @@ interface SpriteIconProps {
   size?: number;
   isVisible?: boolean;
   onClick?: MouseEventHandler<HTMLDivElement>;
+  'data-testid'?: string;
 }
 
 export const SpriteIcon: FC<SpriteIconProps> = ({
@@ -19,6 +20,7 @@ export const SpriteIcon: FC<SpriteIconProps> = ({
   alt = 'icon',
   size = 3,
   isVisible = true,
+  'data-testid': dataTestId,
   onClick,
 }) => {
   const mode = useThemeStore((state) => state.theme);
@@ -45,6 +47,7 @@ export const SpriteIcon: FC<SpriteIconProps> = ({
   return (
     <StyledIconWrapper
       applyInvert={applyInvert}
+      data-testid={dataTestId ?? `icon-${name}`}
       size={size}
       role='button'
       isVisible={isVisible}

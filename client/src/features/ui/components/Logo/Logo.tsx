@@ -20,6 +20,7 @@ export const Logo: FC<LogoProps> = ({ size = 'medium', withTitle = false }) => {
   return (
     <LogoContainer>
       <TaskMasterLogoComponent
+        data-testid='logo'
         src={themeMode === 'dark' ? taskMasterGrayScaleUrl : taskMasterUrl}
         alt='TaskMaster Logo'
       />

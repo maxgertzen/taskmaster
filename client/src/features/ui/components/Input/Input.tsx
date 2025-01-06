@@ -14,6 +14,7 @@ interface InputProps {
   value?: string;
   withToggle?: boolean;
   highlightId?: string;
+  'data-testid'?: string;
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -24,6 +25,7 @@ export const Input: React.FC<InputProps> = ({
   value = '',
   withToggle = false,
   isSearch = false,
+  'data-testid': dataTestId,
 }) => {
   const [showInput, setShowInput] = useState<boolean>(!withToggle || !!value);
   const [text, setText] = useState<string>(value);
@@ -89,9 +91,10 @@ export const Input: React.FC<InputProps> = ({
   }, [isSearch, value]);
 
   return (
-    <StyledInputContainer isSearch={isSearch}>
+    <StyledInputContainer data-testid={dataTestId} isSearch={isSearch}>
       {showInput && (
         <StyledInput
+          data-testid='input'
           type='text'
           value={text}
           onChange={handleChange}
@@ -102,6 +105,7 @@ export const Input: React.FC<InputProps> = ({
       )}
       <HighlightedArea id={highlightId ?? ''}>
         <SpriteIcon
+          data-testid={isSearch ? 'search-icon' : 'add-icon'}
           name={isSearch ? 'magnifying' : 'plus'}
           size={4}
           onClick={withToggle ? toggleInput : handleOnSubmit}
