@@ -1,11 +1,13 @@
 import { create } from 'zustand';
 
-type ViewportStore = {
+type ViewportStoreState = {
   isMobile: boolean;
   setViewport: (width: number) => void;
 };
 
-export const useViewportStore = create<ViewportStore>((set) => ({
+export const useViewportStore = create<ViewportStoreState>((set) => ({
   isMobile: window.innerWidth < 768,
   setViewport: (width) => set({ isMobile: width < 768 }),
 }));
+
+export type ViewportStore = ReturnType<typeof useViewportStore>;
