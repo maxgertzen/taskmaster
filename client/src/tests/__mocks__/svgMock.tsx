@@ -1,3 +1,5 @@
-export default function SvgMock() {
-  return <svg data-testid='test-svg' />;
+export default function SvgMock(iconName: string = 'test') {
+  return function () {
+    return <svg data-testid={`${iconName}-icon`} />;
+  };
 }
