@@ -35,8 +35,10 @@ export const forceClick = (
   element: HTMLElement
 ): {
   preventDefaultMock: ReturnType<typeof vi.fn>;
+  stopPropagationMock: ReturnType<typeof vi.fn>;
 } => {
   const preventDefaultMock = vi.fn();
+  const stopPropagationMock = vi.fn();
 
   const mockClickEvent = new MouseEvent('click', {
     bubbles: true,
@@ -47,9 +49,13 @@ export const forceClick = (
     value: preventDefaultMock,
   });
 
+  Object.defineProperty(mockClickEvent, 'stopPropagation', {
+    value: stopPropagationMock,
+  });
+
   element.dispatchEvent(mockClickEvent);
 
-  return { preventDefaultMock };
+  return { preventDefaultMock, stopPropagationMock };
 };
 
 export { customRender as render, within, screen, userEvent };

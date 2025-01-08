@@ -1,0 +1,41 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Title > applies custom color when provided 1`] = `
+<div>
+  <h1
+    css="[object Object]"
+  >
+    Colored Title
+  </h1>
+</div>
+`;
+
+exports[`Title > renders h1 heading correctly 1`] = `
+<div>
+  <h1
+    css="[object Object]"
+  >
+    Test Title
+  </h1>
+</div>
+`;
+
+exports[`Title > renders h2 heading correctly 1`] = `
+<div>
+  <h2
+    css="[object Object]"
+  >
+    Subtitle
+  </h2>
+</div>
+`;
+
+exports[`Title > renders h3 heading correctly 1`] = `
+<div>
+  <h3
+    css="[object Object]"
+  >
+    Small Title
+  </h3>
+</div>
+`;

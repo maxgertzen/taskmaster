@@ -8,13 +8,15 @@ import type { ViewportStore } from '@/shared/store/viewportStore';
 
 export const mockSelectedList = { id: 'test-list-id', name: 'Test List' };
 export const mockSetSelectedList = vi.fn();
+
 export const mockSetSearchTerm = vi.fn();
+export const mockSearchTerm = '';
 
 export const mockDashboardStore = (
   selector: (state: DashboardStore) => unknown
 ) =>
   selector({
-    searchTerm: '',
+    searchTerm: mockSearchTerm,
     selectedList: mockSelectedList,
     setSelectedList: mockSetSelectedList,
     setSearchTerm: mockSetSearchTerm,
@@ -37,8 +39,12 @@ export const mockPopupMenuState = (): PopupMenuState => ({
 export const mockUseSpotlightStore = vi.fn();
 export const mockSpotlightStore = (
   selector: (state: SpotlightStore) => unknown
-) => selector({ spotlightTarget: null } as SpotlightStore);
+) => selector({ spotlightTarget: mockUseSpotlightStore() } as SpotlightStore);
 
 export const mockThemeStoreMode = vi.fn().mockReturnValue('light');
+export const mockToggleTheme = vi.fn();
 export const mockThemeStore = (selector: (state: ThemeStore) => unknown) =>
-  selector({ theme: mockThemeStoreMode() } as ThemeStore);
+  selector({
+    theme: mockThemeStoreMode(),
+    toggleTheme: mockToggleTheme,
+  } as ThemeStore);

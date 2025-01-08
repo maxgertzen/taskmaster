@@ -19,7 +19,11 @@ export const SwitchThemeButton: FC<SwitchThemeButtonProps> = ({ withText }) => {
 
   if (withText) {
     return (
-      <StyledSwitchThemeButton role='button' onClick={toggleTheme}>
+      <StyledSwitchThemeButton
+        data-testid='switch-theme-button'
+        role='button'
+        onClick={toggleTheme}
+      >
         <SpriteIcon
           alt='switch theme'
           name={activeTheme === 'light' ? 'moon' : 'sun'}

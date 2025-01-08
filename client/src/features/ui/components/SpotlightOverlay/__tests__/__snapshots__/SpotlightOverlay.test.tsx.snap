@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SpotlightOverlay > handles non-existent target element 1`] = `
+<div>
+  <div
+    class="css-12ictld"
+  />
+</div>
+`;
+
+exports[`SpotlightOverlay > renders without target 1`] = `
+<div>
+  <div
+    class="css-12ictld"
+  />
+</div>
+`;
+
+exports[`SpotlightOverlay > should match snapshot 1`] = `
+<div>
+  <div
+    class="css-12ictld"
+  />
+</div>
+`;

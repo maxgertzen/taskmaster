@@ -1,11 +1,10 @@
-import { Theme } from '@emotion/react';
 import { createElement, FC, ReactNode } from 'react';
 
 import { Headings } from '@/shared/types/ui';
 
 interface TitleProps {
   variant: Headings;
-  color?: Theme['colors'];
+  color?: string;
   children: ReactNode;
 }
 

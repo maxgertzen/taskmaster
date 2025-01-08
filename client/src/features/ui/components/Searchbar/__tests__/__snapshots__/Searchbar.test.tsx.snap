@@ -1,0 +1,115 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Searchbar > on desktop view > renders correctly in dark theme 1`] = `
+<div>
+  <div
+    class="css-1egpccx"
+    data-testid="searchbar"
+  >
+    <input
+      class="css-1q2qwsy"
+      data-testid="input"
+      placeholder="Search"
+      type="text"
+      value=""
+    />
+    <div
+      class="css-1rqeb1j"
+      data-spotlight=""
+    >
+      <div
+        class="css-y8t6if"
+        data-testid="search-icon"
+        role="button"
+        size="4"
+      >
+        <svg
+          data-testid="magnifying-icon"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Searchbar > on desktop view > renders correctly in light theme 1`] = `
+<div>
+  <div
+    class="css-1egpccx"
+    data-testid="searchbar"
+  >
+    <input
+      class="css-10md7mk"
+      data-testid="input"
+      placeholder="Search"
+      type="text"
+      value=""
+    />
+    <div
+      class="css-1rqeb1j"
+      data-spotlight=""
+    >
+      <div
+        class="css-y8t6if"
+        data-testid="search-icon"
+        role="button"
+        size="4"
+      >
+        <svg
+          data-testid="magnifying-icon"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Searchbar > on mobile view > renders correctly in dark theme 1`] = `
+<div>
+  <div
+    class="css-1egpccx"
+    data-testid="searchbar"
+  >
+    <div
+      class="css-1rqeb1j"
+      data-spotlight=""
+    >
+      <div
+        class="css-y8t6if"
+        data-testid="search-icon"
+        role="button"
+        size="4"
+      >
+        <svg
+          data-testid="magnifying-icon"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Searchbar > on mobile view > renders correctly in light theme 1`] = `
+<div>
+  <div
+    class="css-1egpccx"
+    data-testid="searchbar"
+  >
+    <div
+      class="css-1rqeb1j"
+      data-spotlight=""
+    >
+      <div
+        class="css-y8t6if"
+        data-testid="search-icon"
+        role="button"
+        size="4"
+      >
+        <svg
+          data-testid="magnifying-icon"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
