@@ -1,0 +1,41 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Loader > in dark theme > renders correctly 1`] = `
+<div>
+  <h4
+    css="[object Object]"
+  >
+    Loading...
+  </h4>
+</div>
+`;
+
+exports[`Loader > in dark theme > renders with custom padding 1`] = `
+<div>
+  <h4
+    css="[object Object]"
+  >
+    Loading...
+  </h4>
+</div>
+`;
+
+exports[`Loader > in light theme > renders correctly 1`] = `
+<div>
+  <h4
+    css="[object Object]"
+  >
+    Loading...
+  </h4>
+</div>
+`;
+
+exports[`Loader > in light theme > renders with custom padding 1`] = `
+<div>
+  <h4
+    css="[object Object]"
+  >
+    Loading...
+  </h4>
+</div>
+`;

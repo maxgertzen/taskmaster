@@ -1,0 +1,211 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Logo > in dark theme > renders correctly with size=large and withTitle=false 1`] = `
+<div>
+  <div
+    class="css-v7ss51"
+  >
+    <img
+      alt="TaskMaster Logo"
+      class="css-fhjm1v"
+      data-testid="logo"
+      src="taskmaster-grayscale.png"
+    />
+  </div>
+</div>
+`;
+
+exports[`Logo > in dark theme > renders correctly with size=large and withTitle=true 1`] = `
+<div>
+  <div
+    class="css-v7ss51"
+  >
+    <img
+      alt="TaskMaster Logo"
+      class="css-fhjm1v"
+      data-testid="logo"
+      src="taskmaster-grayscale.png"
+    />
+    <h1
+      class="css-1obiie8"
+    >
+      TaskMaster
+    </h1>
+  </div>
+</div>
+`;
+
+exports[`Logo > in dark theme > renders correctly with size=medium and withTitle=false 1`] = `
+<div>
+  <div
+    class="css-v7ss51"
+  >
+    <img
+      alt="TaskMaster Logo"
+      class="css-fhjm1v"
+      data-testid="logo"
+      src="taskmaster-grayscale.png"
+    />
+  </div>
+</div>
+`;
+
+exports[`Logo > in dark theme > renders correctly with size=medium and withTitle=true 1`] = `
+<div>
+  <div
+    class="css-v7ss51"
+  >
+    <img
+      alt="TaskMaster Logo"
+      class="css-fhjm1v"
+      data-testid="logo"
+      src="taskmaster-grayscale.png"
+    />
+    <h1
+      class="css-dytuun"
+    >
+      TaskMaster
+    </h1>
+  </div>
+</div>
+`;
+
+exports[`Logo > in dark theme > renders correctly with size=small and withTitle=false 1`] = `
+<div>
+  <div
+    class="css-v7ss51"
+  >
+    <img
+      alt="TaskMaster Logo"
+      class="css-fhjm1v"
+      data-testid="logo"
+      src="taskmaster-grayscale.png"
+    />
+  </div>
+</div>
+`;
+
+exports[`Logo > in dark theme > renders correctly with size=small and withTitle=true 1`] = `
+<div>
+  <div
+    class="css-v7ss51"
+  >
+    <img
+      alt="TaskMaster Logo"
+      class="css-fhjm1v"
+      data-testid="logo"
+      src="taskmaster-grayscale.png"
+    />
+    <h1
+      class="css-nczlas"
+    >
+      TaskMaster
+    </h1>
+  </div>
+</div>
+`;
+
+exports[`Logo > in light theme > renders correctly with size=large and withTitle=false 1`] = `
+<div>
+  <div
+    class="css-v7ss51"
+  >
+    <img
+      alt="TaskMaster Logo"
+      class="css-fhjm1v"
+      data-testid="logo"
+      src="taskmaster.png"
+    />
+  </div>
+</div>
+`;
+
+exports[`Logo > in light theme > renders correctly with size=large and withTitle=true 1`] = `
+<div>
+  <div
+    class="css-v7ss51"
+  >
+    <img
+      alt="TaskMaster Logo"
+      class="css-fhjm1v"
+      data-testid="logo"
+      src="taskmaster.png"
+    />
+    <h1
+      class="css-1obiie8"
+    >
+      TaskMaster
+    </h1>
+  </div>
+</div>
+`;
+
+exports[`Logo > in light theme > renders correctly with size=medium and withTitle=false 1`] = `
+<div>
+  <div
+    class="css-v7ss51"
+  >
+    <img
+      alt="TaskMaster Logo"
+      class="css-fhjm1v"
+      data-testid="logo"
+      src="taskmaster.png"
+    />
+  </div>
+</div>
+`;
+
+exports[`Logo > in light theme > renders correctly with size=medium and withTitle=true 1`] = `
+<div>
+  <div
+    class="css-v7ss51"
+  >
+    <img
+      alt="TaskMaster Logo"
+      class="css-fhjm1v"
+      data-testid="logo"
+      src="taskmaster.png"
+    />
+    <h1
+      class="css-dytuun"
+    >
+      TaskMaster
+    </h1>
+  </div>
+</div>
+`;
+
+exports[`Logo > in light theme > renders correctly with size=small and withTitle=false 1`] = `
+<div>
+  <div
+    class="css-v7ss51"
+  >
+    <img
+      alt="TaskMaster Logo"
+      class="css-fhjm1v"
+      data-testid="logo"
+      src="taskmaster.png"
+    />
+  </div>
+</div>
+`;
+
+exports[`Logo > in light theme > renders correctly with size=small and withTitle=true 1`] = `
+<div>
+  <div
+    class="css-v7ss51"
+  >
+    <img
+      alt="TaskMaster Logo"
+      class="css-fhjm1v"
+      data-testid="logo"
+      src="taskmaster.png"
+    />
+    <h1
+      class="css-nczlas"
+    >
+      TaskMaster
+    </h1>
+  </div>
+</div>
+`;

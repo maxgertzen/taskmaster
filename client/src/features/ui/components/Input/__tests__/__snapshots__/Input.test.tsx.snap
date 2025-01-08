@@ -1,0 +1,125 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Input > regular input type > renders correctly in dark theme 1`] = `
+<div>
+  <div
+    class="css-1hqlkg7"
+  >
+    <input
+      class="css-1jaynes"
+      data-testid="input"
+      placeholder="Enter text"
+      type="text"
+      value=""
+    />
+    <div
+      class="css-1rqeb1j"
+      data-spotlight=""
+    >
+      <div
+        class="css-y8t6if"
+        data-testid="add-icon"
+        role="button"
+        size="4"
+      >
+        <svg
+          data-testid="plus-icon"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Input > regular input type > renders correctly in light theme 1`] = `
+<div>
+  <div
+    class="css-1hqlkg7"
+  >
+    <input
+      class="css-wy3ceo"
+      data-testid="input"
+      placeholder="Enter text"
+      type="text"
+      value=""
+    />
+    <div
+      class="css-1rqeb1j"
+      data-spotlight=""
+    >
+      <div
+        class="css-y8t6if"
+        data-testid="add-icon"
+        role="button"
+        size="4"
+      >
+        <svg
+          data-testid="plus-icon"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Input > search input type > renders correctly in dark theme 1`] = `
+<div>
+  <div
+    class="css-1egpccx"
+  >
+    <input
+      class="css-1q2qwsy"
+      data-testid="input"
+      placeholder="Enter text"
+      type="text"
+      value=""
+    />
+    <div
+      class="css-1rqeb1j"
+      data-spotlight=""
+    >
+      <div
+        class="css-y8t6if"
+        data-testid="search-icon"
+        role="button"
+        size="4"
+      >
+        <svg
+          data-testid="magnifying-icon"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Input > search input type > renders correctly in light theme 1`] = `
+<div>
+  <div
+    class="css-1egpccx"
+  >
+    <input
+      class="css-10md7mk"
+      data-testid="input"
+      placeholder="Enter text"
+      type="text"
+      value=""
+    />
+    <div
+      class="css-1rqeb1j"
+      data-spotlight=""
+    >
+      <div
+        class="css-y8t6if"
+        data-testid="search-icon"
+        role="button"
+        size="4"
+      >
+        <svg
+          data-testid="magnifying-icon"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;

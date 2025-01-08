@@ -1,0 +1,53 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`HighlightedArea > when active > renders correctly in dark theme 1`] = `
+<div>
+  <div
+    class="css-1rqeb1j"
+    data-spotlight="test-area"
+  >
+    <div>
+      Test Content
+    </div>
+  </div>
+</div>
+`;
+
+exports[`HighlightedArea > when active > renders correctly in light theme 1`] = `
+<div>
+  <div
+    class="css-1rqeb1j"
+    data-spotlight="test-area"
+  >
+    <div>
+      Test Content
+    </div>
+  </div>
+</div>
+`;
+
+exports[`HighlightedArea > when inactive > renders correctly in dark theme 1`] = `
+<div>
+  <div
+    class="css-1rqeb1j"
+    data-spotlight="test-area"
+  >
+    <div>
+      Test Content
+    </div>
+  </div>
+</div>
+`;
+
+exports[`HighlightedArea > when inactive > renders correctly in light theme 1`] = `
+<div>
+  <div
+    class="css-1rqeb1j"
+    data-spotlight="test-area"
+  >
+    <div>
+      Test Content
+    </div>
+  </div>
+</div>
+`;

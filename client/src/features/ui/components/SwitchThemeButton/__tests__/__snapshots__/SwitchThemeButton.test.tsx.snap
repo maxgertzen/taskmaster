@@ -1,0 +1,79 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SwitchThemeButton > in dark mode > renders correctly with text 1`] = `
+<div>
+  <div
+    class="css-1mzk1eu"
+    data-testid="switch-theme-button"
+    role="button"
+  >
+    <div
+      class="css-4dcg29"
+      data-testid="icon-sun"
+      role="button"
+      size="3"
+    >
+      <svg
+        data-testid="sun-icon"
+      />
+    </div>
+    <label>
+      Light
+    </label>
+  </div>
+</div>
+`;
+
+exports[`SwitchThemeButton > in dark mode > renders correctly without text 1`] = `
+<div>
+  <div
+    class="css-4dcg29"
+    data-testid="icon-sun"
+    role="button"
+    size="3"
+  >
+    <svg
+      data-testid="sun-icon"
+    />
+  </div>
+</div>
+`;
+
+exports[`SwitchThemeButton > in light mode > renders correctly with text 1`] = `
+<div>
+  <div
+    class="css-1mzk1eu"
+    data-testid="switch-theme-button"
+    role="button"
+  >
+    <div
+      class="css-4dcg29"
+      data-testid="icon-moon"
+      role="button"
+      size="3"
+    >
+      <svg
+        data-testid="moon-icon"
+      />
+    </div>
+    <label>
+      Dark
+    </label>
+  </div>
+</div>
+`;
+
+exports[`SwitchThemeButton > in light mode > renders correctly without text 1`] = `
+<div>
+  <div
+    class="css-4dcg29"
+    data-testid="icon-moon"
+    role="button"
+    size="3"
+  >
+    <svg
+      data-testid="moon-icon"
+    />
+  </div>
+</div>
+`;

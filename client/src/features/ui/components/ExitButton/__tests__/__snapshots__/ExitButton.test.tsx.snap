@@ -1,0 +1,111 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ExitButton > when collapsed (isCollapsed: true) > renders correctly in dark theme 1`] = `
+<div>
+  <div
+    class="css-xee8n6"
+    data-testid="exit-button"
+    role="button"
+  >
+    <div
+      class="css-axw7ok"
+    >
+      <div
+        class="css-4dcg29"
+        data-testid="icon-exit"
+        role="button"
+        size="3"
+      >
+        <svg
+          data-testid="exit-icon"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ExitButton > when collapsed (isCollapsed: true) > renders correctly in light theme 1`] = `
+<div>
+  <div
+    class="css-xee8n6"
+    data-testid="exit-button"
+    role="button"
+  >
+    <div
+      class="css-axw7ok"
+    >
+      <div
+        class="css-4dcg29"
+        data-testid="icon-exit"
+        role="button"
+        size="3"
+      >
+        <svg
+          data-testid="exit-icon"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ExitButton > when expanded (isCollapsed: false) > renders correctly in dark theme 1`] = `
+<div>
+  <div
+    class="css-xee8n6"
+    data-testid="exit-button"
+    role="button"
+  >
+    <div
+      class="css-axw7ok"
+    >
+      <div
+        class="css-4dcg29"
+        data-testid="icon-exit"
+        role="button"
+        size="3"
+      >
+        <svg
+          data-testid="exit-icon"
+        />
+      </div>
+      <h6
+        css="[object Object]"
+      >
+        Exit
+      </h6>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ExitButton > when expanded (isCollapsed: false) > renders correctly in light theme 1`] = `
+<div>
+  <div
+    class="css-xee8n6"
+    data-testid="exit-button"
+    role="button"
+  >
+    <div
+      class="css-axw7ok"
+    >
+      <div
+        class="css-4dcg29"
+        data-testid="icon-exit"
+        role="button"
+        size="3"
+      >
+        <svg
+          data-testid="exit-icon"
+        />
+      </div>
+      <h6
+        css="[object Object]"
+      >
+        Exit
+      </h6>
+    </div>
+  </div>
+</div>
+`;

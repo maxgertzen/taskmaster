@@ -1,0 +1,163 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PopupMenu > with full orientation > renders correctly in dark theme when open 1`] = `
+<div>
+  <div
+    aria-labelledby="popup-menu-trigger"
+    class="css-1g1q5t1"
+    data-testid="popup-menu"
+    orientation="full"
+    role="menu"
+  >
+    <span
+      class="css-vjep5o"
+      data-testid="popup-menu-item"
+      role="menuitem"
+    >
+      Option 1
+    </span>
+    <span
+      class="css-vjep5o"
+      data-testid="popup-menu-item"
+      role="menuitem"
+    >
+      Option 2
+    </span>
+  </div>
+</div>
+`;
+
+exports[`PopupMenu > with full orientation > renders correctly in light theme when open 1`] = `
+<div>
+  <div
+    aria-labelledby="popup-menu-trigger"
+    class="css-ufn8v6"
+    data-testid="popup-menu"
+    orientation="full"
+    role="menu"
+  >
+    <span
+      class="css-t8ojuo"
+      data-testid="popup-menu-item"
+      role="menuitem"
+    >
+      Option 1
+    </span>
+    <span
+      class="css-t8ojuo"
+      data-testid="popup-menu-item"
+      role="menuitem"
+    >
+      Option 2
+    </span>
+  </div>
+</div>
+`;
+
+exports[`PopupMenu > with left orientation > renders correctly in dark theme when open 1`] = `
+<div>
+  <div
+    aria-labelledby="popup-menu-trigger"
+    class="css-19la4k7"
+    data-testid="popup-menu"
+    orientation="left"
+    role="menu"
+  >
+    <span
+      class="css-vjep5o"
+      data-testid="popup-menu-item"
+      role="menuitem"
+    >
+      Option 1
+    </span>
+    <span
+      class="css-vjep5o"
+      data-testid="popup-menu-item"
+      role="menuitem"
+    >
+      Option 2
+    </span>
+  </div>
+</div>
+`;
+
+exports[`PopupMenu > with left orientation > renders correctly in light theme when open 1`] = `
+<div>
+  <div
+    aria-labelledby="popup-menu-trigger"
+    class="css-mr4zrh"
+    data-testid="popup-menu"
+    orientation="left"
+    role="menu"
+  >
+    <span
+      class="css-t8ojuo"
+      data-testid="popup-menu-item"
+      role="menuitem"
+    >
+      Option 1
+    </span>
+    <span
+      class="css-t8ojuo"
+      data-testid="popup-menu-item"
+      role="menuitem"
+    >
+      Option 2
+    </span>
+  </div>
+</div>
+`;
+
+exports[`PopupMenu > with right orientation > renders correctly in dark theme when open 1`] = `
+<div>
+  <div
+    aria-labelledby="popup-menu-trigger"
+    class="css-qw809l"
+    data-testid="popup-menu"
+    orientation="right"
+    role="menu"
+  >
+    <span
+      class="css-vjep5o"
+      data-testid="popup-menu-item"
+      role="menuitem"
+    >
+      Option 1
+    </span>
+    <span
+      class="css-vjep5o"
+      data-testid="popup-menu-item"
+      role="menuitem"
+    >
+      Option 2
+    </span>
+  </div>
+</div>
+`;
+
+exports[`PopupMenu > with right orientation > renders correctly in light theme when open 1`] = `
+<div>
+  <div
+    aria-labelledby="popup-menu-trigger"
+    class="css-f0tv5q"
+    data-testid="popup-menu"
+    orientation="right"
+    role="menu"
+  >
+    <span
+      class="css-t8ojuo"
+      data-testid="popup-menu-item"
+      role="menuitem"
+    >
+      Option 1
+    </span>
+    <span
+      class="css-t8ojuo"
+      data-testid="popup-menu-item"
+      role="menuitem"
+    >
+      Option 2
+    </span>
+  </div>
+</div>
+`;

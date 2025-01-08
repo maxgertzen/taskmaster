@@ -1,0 +1,31 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Button > renders correctly in dark theme 1`] = `
+<div>
+  <div
+    class="css-pl2bwv"
+  >
+    <button
+      class="css-1p3b2wb"
+      data-testid="button"
+    >
+      Click me
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Button > renders correctly in light theme 1`] = `
+<div>
+  <div
+    class="css-aud1u0"
+  >
+    <button
+      class="css-1p3b2wb"
+      data-testid="button"
+    >
+      Click me
+    </button>
+  </div>
+</div>
+`;

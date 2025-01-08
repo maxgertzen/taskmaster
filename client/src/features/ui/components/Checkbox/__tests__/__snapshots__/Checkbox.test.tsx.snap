@@ -1,0 +1,61 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Checkbox > renders correctly in dark theme 1`] = `
+<div>
+  <label
+    class="css-1kptg10"
+  >
+    <input
+      checked=""
+      class="css-1f6w2vg"
+      data-testid="checkbox"
+      type="checkbox"
+    />
+    <span
+      class="css-9nuk9i"
+    >
+      Label
+    </span>
+  </label>
+</div>
+`;
+
+exports[`Checkbox > renders correctly in light theme 1`] = `
+<div>
+  <label
+    class="css-1kptg10"
+  >
+    <input
+      checked=""
+      class="css-1x1rvkf"
+      data-testid="checkbox"
+      type="checkbox"
+    />
+    <span
+      class="css-9nuk9i"
+    >
+      Label
+    </span>
+  </label>
+</div>
+`;
+
+exports[`Checkbox > renders the label 1`] = `
+<div>
+  <label
+    class="css-1kptg10"
+  >
+    <input
+      checked=""
+      class="css-1x1rvkf"
+      data-testid="checkbox"
+      type="checkbox"
+    />
+    <span
+      class="css-9nuk9i"
+    >
+      Label
+    </span>
+  </label>
+</div>
+`;

@@ -9,8 +9,15 @@
     }
   ],
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
     "types": [
       "vite-plugin-svgr/client"
     ]
-  }
+  },
+  "include": []
 }

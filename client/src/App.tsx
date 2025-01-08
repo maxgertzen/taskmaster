@@ -3,9 +3,10 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-import { useInitializeToken } from './hooks/useInitializeToken';
-import { useViewportListener } from './hooks/useViewportListener';
+import { ENVIRONMENT } from './constants';
+import { useViewportListener } from './features/ui/hooks/useViewportListener';
 import { DashboardPage, HomePage } from './pages';
+import { useInitializeToken } from './shared/hooks';
 
 const queryClient = new QueryClient();
 
@@ -15,7 +16,7 @@ const App: React.FC = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {import.meta.env.MODE === 'development' && (
+      {ENVIRONMENT === 'development' && (
         <ReactQueryDevtools initialIsOpen={false} />
       )}
       <Router>

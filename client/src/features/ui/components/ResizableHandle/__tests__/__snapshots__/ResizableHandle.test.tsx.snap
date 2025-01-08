@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ResizableHandle > renders correctly in dark theme 1`] = `
+<div>
+  <div
+    class="css-omm4x9"
+  />
+</div>
+`;
+
+exports[`ResizableHandle > renders correctly in light theme 1`] = `
+<div>
+  <div
+    class="css-omm4x9"
+  />
+</div>
+`;

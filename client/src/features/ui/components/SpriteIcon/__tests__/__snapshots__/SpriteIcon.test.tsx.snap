@@ -1,0 +1,121 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SpriteIcon > in dark mode > handles visibility prop 1`] = `
+<div>
+  <div
+    class="css-j6qdau"
+    data-testid="icon-plus"
+    role="button"
+    size="3"
+  >
+    <svg
+      data-testid="plusDark-icon"
+    />
+  </div>
+</div>
+`;
+
+exports[`SpriteIcon > in dark mode > renders basic icon correctly 1`] = `
+<div>
+  <div
+    class="css-4dcg29"
+    data-testid="icon-plus"
+    role="button"
+    size="3"
+  >
+    <svg
+      data-testid="plusDark-icon"
+    />
+  </div>
+</div>
+`;
+
+exports[`SpriteIcon > in dark mode > renders with custom size 1`] = `
+<div>
+  <div
+    class="css-1tr2yd6"
+    data-testid="icon-plus"
+    role="button"
+    size="5"
+  >
+    <svg
+      data-testid="plusDark-icon"
+    />
+  </div>
+</div>
+`;
+
+exports[`SpriteIcon > in dark mode > uses dark variant of icon when available in dark mode 1`] = `
+<div>
+  <div
+    class="css-4dcg29"
+    data-testid="icon-plus"
+    role="button"
+    size="3"
+  >
+    <svg
+      data-testid="plusDark-icon"
+    />
+  </div>
+</div>
+`;
+
+exports[`SpriteIcon > in light mode > handles visibility prop 1`] = `
+<div>
+  <div
+    class="css-j6qdau"
+    data-testid="icon-plus"
+    role="button"
+    size="3"
+  >
+    <svg
+      data-testid="plus-icon"
+    />
+  </div>
+</div>
+`;
+
+exports[`SpriteIcon > in light mode > renders basic icon correctly 1`] = `
+<div>
+  <div
+    class="css-4dcg29"
+    data-testid="icon-plus"
+    role="button"
+    size="3"
+  >
+    <svg
+      data-testid="plus-icon"
+    />
+  </div>
+</div>
+`;
+
+exports[`SpriteIcon > in light mode > renders with custom size 1`] = `
+<div>
+  <div
+    class="css-1tr2yd6"
+    data-testid="icon-plus"
+    role="button"
+    size="5"
+  >
+    <svg
+      data-testid="plus-icon"
+    />
+  </div>
+</div>
+`;
+
+exports[`SpriteIcon > in light mode > uses dark variant of icon when available in dark mode 1`] = `
+<div>
+  <div
+    class="css-4dcg29"
+    data-testid="icon-plus"
+    role="button"
+    size="3"
+  >
+    <svg
+      data-testid="plus-icon"
+    />
+  </div>
+</div>
+`;
