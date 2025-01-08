@@ -1,9 +1,14 @@
 import { ReactNode } from 'react';
-import { vi } from 'vitest';
+import { beforeEach, vi } from 'vitest';
 
 import '@testing-library/jest-dom/vitest';
 import { IconName } from '@/shared/types/icons';
 
+import {
+  mockListsApi,
+  mockTasksApi,
+  resetAllMocks,
+} from './__mocks__/apiMocks';
 import SvgMock from './__mocks__/svgMock';
 
 vi.mock('@/shared/store/themeStore', () => ({
@@ -46,3 +51,10 @@ vi.mock('@/shared/assets/icons', () => ({
     z2a: SvgMock('z2a'),
   } as Record<IconName, () => ReactNode>,
 }));
+
+vi.mock('@/features/tasks/api', () => mockTasksApi);
+vi.mock('@/features/lists/api', () => mockListsApi);
+
+beforeEach(() => {
+  resetAllMocks();
+});
