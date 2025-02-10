@@ -19,6 +19,7 @@ export const StyledInputContainer = styled.div<{ isSearch: boolean }>(
       gap: theme.spacing(0.5),
       justifyContent: 'flex-end',
       marginRight: 0,
+      alignItems: 'end',
     },
   })
 );

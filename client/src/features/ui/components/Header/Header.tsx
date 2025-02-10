@@ -61,7 +61,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <HeaderContainer data-testid='header'>
       {!isMobile && <Logo withTitle />}
-      {onBack && isMobile ? (
+      {onBack && isMobile && view === 'board' ? (
         <UserActionPanelViewContainer>
           <BackButtonWrapper
             role='button'
