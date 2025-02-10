@@ -1,9 +1,9 @@
-import { RedisClientType } from "redis";
-import { CACHE_CONFIG } from "@config/cache";
-import { CacheKey } from "../../types/cache";
+import { RedisClientType } from 'redis';
+import { CACHE_CONFIG } from '@config/cache';
+import { CacheKey } from '../../types/cache';
 
 export class CacheService {
-  private readonly keyPrefix = "cache:user:";
+  private readonly keyPrefix = 'cache:user:';
 
   constructor(private client: RedisClientType) {}
 
@@ -18,8 +18,8 @@ export class CacheService {
 
       return data as T;
     } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        console.warn("Cache get error:", error);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Cache get error:', error);
       }
       return null;
     }
@@ -34,7 +34,7 @@ export class CacheService {
       const config = CACHE_CONFIG[type];
       if (!config.enabled) return;
 
-      if (Array.isArray(data) || (data && typeof data === "object")) {
+      if (Array.isArray(data) || (data && typeof data === 'object')) {
         await this.client.hSet(key, { value: JSON.stringify(data) });
       } else {
         const stringifiedData: Record<string, string> = {};
@@ -50,8 +50,8 @@ export class CacheService {
         await this.client.expire(key, config.ttl);
       }
     } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        console.warn("Cache get error:", error);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Cache get error:', error);
       }
     }
   }
@@ -60,8 +60,8 @@ export class CacheService {
     try {
       await this.client.del(key);
     } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        console.warn("Cache get error:", error);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Cache get error:', error);
       }
     }
   }
@@ -73,8 +73,8 @@ export class CacheService {
         await this.client.del(keys);
       }
     } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        console.warn("Cache get error:", error);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Cache get error:', error);
       }
     }
   }

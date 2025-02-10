@@ -1,12 +1,12 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 import {
   CreateListRequest,
   DeleteListRequest,
   ReorderListRequest,
   UpdateListRequest,
-} from "../types/requests";
-import { List } from "../interfaces/entities";
-import { ListsService } from "../services";
+} from '../types/requests';
+import { List } from '../interfaces/entities';
+import { ListsService } from '../services';
 
 export function makeListsController({
   listsService,
@@ -14,7 +14,7 @@ export function makeListsController({
   listsService: ListsService;
 }) {
   if (!listsService) {
-    throw new Error("ListsService is required for controller creation");
+    throw new Error('ListsService is required for controller creation');
   }
 
   return {
