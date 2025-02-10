@@ -16,6 +16,7 @@ export const TaskAreaContainer = styled('div')(({ theme }) => ({
     justifyContent: 'flex-start',
     '& [data-spotlight="add-task"]:last-child': {
       marginTop: 'auto',
+      paddingBottom: theme.spacing(1),
     },
   },
 }));

@@ -51,23 +51,21 @@ export const useListsMutation = () => {
         return createList(token)(input.name);
       }
     },
-    onMutate: async (input) => {
-      return onMutateShared<List>({
+    onMutate: async (input) =>
+      onMutateShared<List>({
         input,
         queryKey: QUERY_KEYS.lists,
         queryClient,
         operation: 'add',
         newItemDefaults: { name: input.name },
-      });
-    },
-    onSuccess: (data, variables, context) => {
+      }),
+    onSuccess: (data, variables, context) =>
       replaceTemporaryId<List>({
         tempId: context?.tempId || variables.listId || '',
         realId: data?.id || '',
         queryKey: QUERY_KEYS.lists,
         queryClient,
-      });
-    },
+      }),
     onError: (_err, _var, context) =>
       onErrorShared<List>({
         queryKey: QUERY_KEYS.lists,

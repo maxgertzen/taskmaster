@@ -1,7 +1,7 @@
-import { CacheService } from "./cacheService";
-import { CACHE_KEYS } from "@src/utils/cacheKeys";
-import { BaseList } from "@src/interfaces/entities";
-import { IListCache } from "@src/interfaces/cache";
+import { CacheService } from './cacheService';
+import { CACHE_KEYS } from '@src/utils/cacheKeys';
+import { BaseList } from '@src/interfaces/entities';
+import { IListCache } from '@src/interfaces/cache';
 
 export class ListsCache implements IListCache {
   constructor(private cacheService: CacheService) {}
@@ -11,10 +11,10 @@ export class ListsCache implements IListCache {
   }
 
   async setLists(userId: string, lists: BaseList[]): Promise<void> {
-    return this.cacheService.set(CACHE_KEYS.LISTS(userId), lists, "LISTS");
+    return this.cacheService.set(CACHE_KEYS.LISTS(userId), lists, 'LISTS');
   }
 
   async invalidateCache(userId: string): Promise<void> {
-    return this.cacheService.invalidateCache(CACHE_KEYS.LISTS(userId));
+    return this.cacheService.invalidateCache(userId);
   }
 }

@@ -1,8 +1,8 @@
-import { IListRepository } from "../../interfaces/listRepository";
-import { ListModel, MongoList } from "../../models/list";
-import { BaseList } from "../../interfaces/entities";
-import mongoose from "mongoose";
-import { BadRequestError, DatabaseError, NotFoundError } from "@src/errors";
+import { IListRepository } from '../../interfaces/listRepository';
+import { ListModel, MongoList } from '../../models/list';
+import { BaseList } from '../../interfaces/entities';
+import mongoose from 'mongoose';
+import { BadRequestError, DatabaseError, NotFoundError } from '@src/errors';
 
 export class ListRepositoryMongo implements IListRepository {
   async createList(userId: string, name: string): Promise<BaseList> {
@@ -22,7 +22,7 @@ export class ListRepositoryMongo implements IListRepository {
       };
     } catch (error) {
       throw new DatabaseError(
-        "Failed to create list",
+        'Failed to create list',
         {
           userId,
           name,
@@ -39,7 +39,7 @@ export class ListRepositoryMongo implements IListRepository {
         .lean<MongoList[]>();
 
       if (!lists || lists.length === 0) {
-        throw new NotFoundError(`No lists found for user with ID ${userId}`);
+        return [];
       }
 
       return lists.map((list) => ({
@@ -52,7 +52,7 @@ export class ListRepositoryMongo implements IListRepository {
       }));
     } catch (error) {
       throw new DatabaseError(
-        "Failed to get lists",
+        'Failed to get lists',
         { userId },
         error as Error
       );
@@ -85,7 +85,7 @@ export class ListRepositoryMongo implements IListRepository {
       };
     } catch (error) {
       throw new DatabaseError(
-        "Failed to update list",
+        'Failed to update list',
         {
           userId,
           listId,
@@ -110,7 +110,7 @@ export class ListRepositoryMongo implements IListRepository {
       return { deletedId: listId };
     } catch (error) {
       throw new DatabaseError(
-        "Failed to delete list",
+        'Failed to delete list',
         {
           userId,
           listId,
@@ -125,7 +125,7 @@ export class ListRepositoryMongo implements IListRepository {
     orderedIds: string[]
   ): Promise<BaseList[]> {
     if (!mongoose.Types.ObjectId.isValid(userId)) {
-      throw new BadRequestError("Invalid user ID");
+      throw new BadRequestError('Invalid user ID');
     }
 
     try {
@@ -139,7 +139,7 @@ export class ListRepositoryMongo implements IListRepository {
       const result = await ListModel.bulkWrite(bulkOperations);
 
       if (result.hasWriteErrors()) {
-        throw new DatabaseError("Failed to reorder lists", {
+        throw new DatabaseError('Failed to reorder lists', {
           writeErrors: result.getWriteErrors().map((error) => ({
             code: error.code,
             message: error.errmsg,
@@ -149,7 +149,7 @@ export class ListRepositoryMongo implements IListRepository {
 
       return await this.getLists(userId);
     } catch (error) {
-      throw new DatabaseError("Failed to reorder lists", {}, error as Error);
+      throw new DatabaseError('Failed to reorder lists', {}, error as Error);
     }
   }
 }

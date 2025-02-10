@@ -1,6 +1,6 @@
-import { List } from "../interfaces/entities";
-import { IListRepository } from "../interfaces/listRepository";
-import { ListsCache } from "./cache/listsCache";
+import { List } from '../interfaces/entities';
+import { IListRepository } from '../interfaces/listRepository';
+import { ListsCache } from './cache/listsCache';
 
 export class ListsService {
   constructor(private repository: IListRepository, private cache: ListsCache) {}

@@ -1,7 +1,7 @@
-import { CACHE_KEYS } from "@src/utils/cacheKeys";
-import { CacheService } from "./cacheService";
-import { BaseUser } from "@src/interfaces/entities";
-import { IUserCache } from "@src/interfaces/cache";
+import { CACHE_KEYS } from '@src/utils/cacheKeys';
+import { CacheService } from './cacheService';
+import { BaseUser } from '@src/interfaces/entities';
+import { IUserCache } from '@src/interfaces/cache';
 
 export class UsersCache implements IUserCache {
   constructor(private cacheService: CacheService) {}
@@ -11,10 +11,10 @@ export class UsersCache implements IUserCache {
   }
 
   async setUser(userId: string, user: BaseUser): Promise<void> {
-    return this.cacheService.set(CACHE_KEYS.USER(userId), user, "USER");
+    return this.cacheService.set(CACHE_KEYS.USER(userId), user, 'USER');
   }
 
   async invalidateCache(userId: string): Promise<void> {
-    return this.cacheService.invalidateCache(CACHE_KEYS.USER(userId));
+    return this.cacheService.invalidateCache(userId);
   }
 }
